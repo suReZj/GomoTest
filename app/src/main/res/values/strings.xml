@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">GomoTest</string>
+    <string name="Album">相册</string>
+    <string name="Photograph">拍照</string>
+</resources>
