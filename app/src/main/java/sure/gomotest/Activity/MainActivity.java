@@ -1,4 +1,4 @@
-package sure.gomotest;
+package sure.gomotest.Activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+
+import sure.gomotest.R;
 
 public class MainActivity extends AppCompatActivity {
     private File file;
