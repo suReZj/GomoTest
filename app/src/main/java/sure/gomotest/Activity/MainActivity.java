@@ -13,15 +13,28 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import gson.gson_result;
+import gson.gson_welfare;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit.getData;
+import retrofit2.Retrofit;
 import sure.gomotest.R;
+import util.RetrofitUtil;
+
+import static util.Contants.url;
+
 
 public class MainActivity extends AppCompatActivity {
     private File file;
@@ -113,6 +126,41 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
+                List<String> urlList;
+                Retrofit retrofit = RetrofitUtil.getRetrofit(url, "1");
+                getData getData = retrofit.create(getData.class);
+                getData.getWelfare("10", "1")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<gson_welfare>() {
+                            private Disposable disposable;
+
+                            @Override
+                            public void onSubscribe(Disposable d) {
+                                disposable = d;
+                            }
+
+                            @Override
+                            public void onNext(gson_welfare value) {
+                                List<String> images = new ArrayList<>();
+                                List<gson_result> results = new ArrayList<>();
+                                results = value.getResults();
+                                for (int i = 0; i < results.size(); i++) {
+                                    images.add(results.get(i).getUrl());
+                                }
+                                Log.e("list", images.size() + "");
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                disposable.dispose();
+                                Log.e("error",e.toString());
+                            }
+
+                            @Override
+                            public void onComplete() {
+                            }
+                        });
                 break;
             case R.id.photograph:
                 applyWritePermission();
