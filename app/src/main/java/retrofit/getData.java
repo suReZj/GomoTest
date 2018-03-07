@@ -11,5 +11,5 @@ import retrofit2.http.Path;
 
 public interface getData {
     @GET("福利/{number}/{page}")
-    Observable<gson_welfare> getWelfare(@Path("number") String number, @Path("page") String page);
+    Observable<gson_welfare> getWelfare(@Path("number") String number, @Path("page") Integer page);
 }

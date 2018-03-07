@@ -12,16 +12,24 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+
+import com.liaoinstan.springview.container.DefaultFooter;
+import com.liaoinstan.springview.container.DefaultHeader;
+import com.liaoinstan.springview.widget.SpringView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapter.recycle_adapter;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -39,6 +47,12 @@ import static util.Contants.url;
 public class MainActivity extends AppCompatActivity {
     private File file;
     private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    private recycle_adapter adapter;
+    private int page = 1;
+    private List<String> list = new ArrayList<>();
+    private SpringView springView;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +63,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        toolbar = findViewById(R.id.activity_main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
+        layoutManager=new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new recycle_adapter(list);
+        recyclerView.setAdapter(adapter);
+        setImage(page);
+        springView=(SpringView)findViewById(R.id.activity_main_frame);
+        springView.setFooter(new DefaultFooter(MainActivity.this));
     }
 
     private void setListener() {
+        springView.setListener(new SpringView.OnFreshListener() {
+            @Override
+            public void onRefresh() {
+            }
+            @Override
+            public void onLoadmore() {
+                setImage(++page);
+            }
+        });
     }
 
     /**
@@ -126,46 +157,53 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
-                List<String> urlList;
-                Retrofit retrofit = RetrofitUtil.getRetrofit(url, "1");
-                getData getData = retrofit.create(getData.class);
-                getData.getWelfare("10", "1")
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Observer<gson_welfare>() {
-                            private Disposable disposable;
-
-                            @Override
-                            public void onSubscribe(Disposable d) {
-                                disposable = d;
-                            }
-
-                            @Override
-                            public void onNext(gson_welfare value) {
-                                List<String> images = new ArrayList<>();
-                                List<gson_result> results = new ArrayList<>();
-                                results = value.getResults();
-                                for (int i = 0; i < results.size(); i++) {
-                                    images.add(results.get(i).getUrl());
-                                }
-                                Log.e("list", images.size() + "");
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                disposable.dispose();
-                                Log.e("error",e.toString());
-                            }
-
-                            @Override
-                            public void onComplete() {
-                            }
-                        });
                 break;
             case R.id.photograph:
                 applyWritePermission();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void setImage(final int page) {
+        Retrofit retrofit = RetrofitUtil.getRetrofit(url);
+        getData getData = retrofit.create(getData.class);
+        getData.getWelfare("20", page)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<gson_welfare>() {
+                    private Disposable disposable;
+
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        disposable = d;
+                    }
+
+                    @Override
+                    public void onNext(gson_welfare value) {
+                        List<gson_result> results = value.getResults();
+                        int start = list.size();
+                        int end = start;
+                        for (int i = 0; i < results.size(); i++) {
+                            list.add(results.get(i).getUrl());
+                            adapter.notifyItemInserted(end);
+                            end++;
+                        }
+//                        adapter.notifyItemRangeChanged(start,end);
+                        if(page!=1){
+                            springView.onFinishFreshAndLoad();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        disposable.dispose();
+                        Log.e("error", e.toString());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 }

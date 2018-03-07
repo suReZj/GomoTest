@@ -19,42 +19,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitUtil {
     public static List<String> path=new ArrayList<>();
-    public static Retrofit getRetrofit(String url,String page){
+    public static Retrofit getRetrofit(String url){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
-//        getData getData=retrofit.create(getData.class);
-//        getData.getWelfare("10",page)
-//                .subscribeOn(Schedulers.io())
-//                .subscribe(new Observer<gson_welfare>() {
-//                    private Disposable disposable;
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//                        disposable = d;
-//                    }
-//
-//                    @Override
-//                    public void onNext(gson_welfare value) {
-//                        List<String> images=new ArrayList<>();
-//                        List<gson_result> results=new ArrayList<>();
-//                        results=value.getResults();
-//                        for(int i=0;i<results.size();i++){
-//                            images.add(results.get(i).getUrl());
-//                        }
-//                        path=images;
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        disposable.dispose();
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//                    }
-//                });
         return retrofit;
     }
 }
