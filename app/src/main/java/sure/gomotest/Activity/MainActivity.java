@@ -18,18 +18,21 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.container.DefaultHeader;
 import com.liaoinstan.springview.widget.SpringView;
+import com.previewlibrary.GPreviewBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.recycle_adapter;
+import bean.pathInfo;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -42,6 +45,7 @@ import sure.gomotest.R;
 import util.RetrofitUtil;
 
 import static util.Contants.url;
+import static util.Contants.width;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private recycle_adapter adapter;
     private int page = 1;
     private List<String> list = new ArrayList<>();
+    private List <pathInfo> pathInfolist=new ArrayList<>();
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
 
@@ -67,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
-        layoutManager=new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager=new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new recycle_adapter(list);
         recyclerView.setAdapter(adapter);
@@ -84,6 +89,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLoadmore() {
                 setImage(++page);
+            }
+        });
+
+        adapter.setOnItemClickLitener(new recycle_adapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+//                GPreviewBuilder.from(MainActivity.this)//activity实例必须
+//                        .setData(pathInfolist)//集合
+//                        .setCurrentIndex(position)
+//                        .setSingleFling(false)//是否在黑屏区域点击返回
+//                        .setDrag(false)//是否禁用图片拖拽返回
+//                        .start();//启动
+//                Log.e("position",position+"");
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
             }
         });
     }
@@ -166,9 +188,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        Retrofit retrofit = RetrofitUtil.getRetrofit(url);
+        Retrofit retrofit = RetrofitUtil.getRetrofit(url+width);
         getData getData = retrofit.create(getData.class);
-        getData.getWelfare("20", page)
+        getData.getWelfare("10", page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<gson_welfare>() {
@@ -187,6 +209,8 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < results.size(); i++) {
                             list.add(results.get(i).getUrl());
                             adapter.notifyItemInserted(end);
+                            pathInfo pathInfo=new pathInfo(results.get(i).getUrl());
+                            pathInfolist.add(pathInfo);
                             end++;
                         }
 //                        adapter.notifyItemRangeChanged(start,end);
