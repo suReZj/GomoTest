@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 
 import com.liaoinstan.springview.container.DefaultFooter;
-import com.liaoinstan.springview.container.DefaultHeader;
 import com.liaoinstan.springview.widget.SpringView;
 import com.previewlibrary.GPreviewBuilder;
 
@@ -74,11 +73,12 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
         layoutManager=new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new recycle_adapter(list);
+        adapter = new recycle_adapter(list,MainActivity.this);
         recyclerView.setAdapter(adapter);
         setImage(page);
         springView=(SpringView)findViewById(R.id.activity_main_frame);
         springView.setFooter(new DefaultFooter(MainActivity.this));
+//        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
     }
 
     private void setListener() {
@@ -95,13 +95,12 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-//                GPreviewBuilder.from(MainActivity.this)//activity实例必须
-//                        .setData(pathInfolist)//集合
-//                        .setCurrentIndex(position)
-//                        .setSingleFling(false)//是否在黑屏区域点击返回
-//                        .setDrag(false)//是否禁用图片拖拽返回
-//                        .start();//启动
-//                Log.e("position",position+"");
+                GPreviewBuilder.from(MainActivity.this)//activity实例必须
+                        .setData(pathInfolist)//集合
+                        .setCurrentIndex(position)
+                        .setSingleFling(false)//是否在黑屏区域点击返回
+                        .setDrag(false)//是否禁用图片拖拽返回
+                        .start();//启动
             }
 
             @Override
@@ -229,5 +228,17 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete() {
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        adapter.closeDisk();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        adapter.fluchCache();
+        super.onPause();
     }
 }

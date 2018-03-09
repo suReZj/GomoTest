@@ -38,6 +38,24 @@ public class imageLoader implements IZoomMediaLoader {
                         simpleTarget.onLoadFailed(errorDrawable);
                     }
                 });
+        SimpleTarget<Bitmap> bitmap=new SimpleTarget<Bitmap>(){
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                simpleTarget.onResourceReady(resource);
+            }
+
+            @Override
+            public void onLoadStarted(Drawable placeholder) {
+                super.onLoadStarted(placeholder);
+                simpleTarget.onLoadStarted();
+            }
+
+            @Override
+            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                super.onLoadFailed(e, errorDrawable);
+                simpleTarget.onLoadFailed(errorDrawable);
+            }
+        };
     }
 
     @Override
