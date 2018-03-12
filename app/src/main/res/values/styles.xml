@@ -8,4 +8,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="toolBar">
+        <item name="colorControlNormal">#ffffff</item>
+    </style>
 </resources>

@@ -33,7 +33,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.AlbumActivity"></activity>
+        <activity android:name=".Activity.AlbumActivity" />
+        <activity android:name=".Activity.SelectActivity"/>
     </application>
 
 </manifest>

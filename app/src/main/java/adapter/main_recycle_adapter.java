@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,7 @@ import util.imageCache;
  * Created by dell88 on 2018/3/6 0006.
  */
 
-public class recycle_adapter extends RecyclerView.Adapter<recycle_adapter.ViewHolder> {
+public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adapter.ViewHolder> {
     private List<String> list;
     private Context context;
     private imageCache imageCache;
@@ -78,7 +77,7 @@ public class recycle_adapter extends RecyclerView.Adapter<recycle_adapter.ViewHo
         }
     }
 
-    public recycle_adapter(List<String> list, Context context) {
+    public main_recycle_adapter(List<String> list, Context context) {
         this.list = list;
         this.imageCache = new imageCache(context);
     }

@@ -30,7 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapter.recycle_adapter;
+import adapter.main_recycle_adapter;
 import bean.pathInfo;
 import gson.gson_result;
 import gson.gson_welfare;
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private File file;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
-    private recycle_adapter adapter;
+    private main_recycle_adapter adapter;
     private int page = 1;
     private List<String> list = new ArrayList<>();
     private List <pathInfo> pathInfolist=new ArrayList<>();
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
         layoutManager=new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new recycle_adapter(list,MainActivity.this);
+        adapter = new main_recycle_adapter(list,MainActivity.this);
         recyclerView.setAdapter(adapter);
         setImage(page);
         springView=(SpringView)findViewById(R.id.activity_main_frame);
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        adapter.setOnItemClickLitener(new recycle_adapter.OnItemClickLitener() {
+        adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
                 GPreviewBuilder.from(MainActivity.this)//activity实例必须
@@ -178,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
+                Intent intent=new Intent(this,SelectActivity.class);
+                startActivity(intent);
                 break;
             case R.id.photograph:
                 applyWritePermission();
