@@ -1,7 +1,9 @@
 package sure.gomotest.Activity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,9 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +33,10 @@ public class SelectActivity extends AppCompatActivity {
     private TextView textView;
     private RecyclerView recyclerView;
     private select_recycle_adapter adapter;
+    List<MediaBean> mediaBeen = new ArrayList<>();
+    HashMap<String,List<MediaBean>> allPhotosTemp = new HashMap<>();//所有照片
+    Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+    List<String> albumName=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,6 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     public void setListener(){
-
     }
 
     @Override
@@ -75,10 +82,6 @@ public class SelectActivity extends AppCompatActivity {
 
     public void getData(){
         new Thread(new Runnable() {
-            List<MediaBean> mediaBeen = new ArrayList<>();
-            HashMap<String,List<MediaBean>> allPhotosTemp = new HashMap<>();//所有照片
-            Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-            List<String> albumName=new ArrayList<>();
             @Override
             public void run() {
                 String[] projImage = { MediaStore.Images.Media._ID
@@ -124,6 +127,22 @@ public class SelectActivity extends AppCompatActivity {
                         adapter=new select_recycle_adapter(allPhotosTemp,albumName);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));
+                        adapter.setOnItemClickLitener(new select_recycle_adapter.OnItemClickLitener() {
+                            @Override
+                            public void onItemClick(View view, int position) {
+                                Intent intent=new Intent(SelectActivity.this,AlbumActivity.class);
+                                String name=albumName.get(position);
+                                List<MediaBean> data = allPhotosTemp.get(name);
+                                intent.putExtra("name",name);
+                                intent.putExtra("data", (Serializable) data);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onItemLongClick(View view, int position) {
+
+                            }
+                        });
                     }
                 });
             }

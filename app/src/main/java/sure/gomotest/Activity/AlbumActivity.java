@@ -7,11 +7,14 @@ import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.io.File;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import adapter.album_recycle_adapter;
 import bean.MediaBean;
 import sure.gomotest.R;
 
@@ -26,6 +30,10 @@ public class AlbumActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private TextView textView;
+    private album_recycle_adapter adapter;
+    private List<MediaBean> data;
+    private String albumName;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +44,10 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     public void initView() {
+        intent=getIntent();
+        data=(ArrayList<MediaBean>)intent.getSerializableExtra("data");
+        albumName=intent.getStringExtra("name");
+
         toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -47,10 +59,29 @@ public class AlbumActivity extends AppCompatActivity {
         recyclerView=(RecyclerView) findViewById(R.id.activity_album_recyclerView);
         textView=(TextView) findViewById(R.id.activity_album_textView);
 
+        int position=albumName.lastIndexOf("/");
+        albumName=albumName.substring(position+1,albumName.length());
+        textView.setText(albumName);
+
+        adapter=new album_recycle_adapter(data);
+//        GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
+//        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+        recyclerView.setAdapter(adapter);
     }
 
     public void setListener() {
+        adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
 
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
     }
 
     @Override

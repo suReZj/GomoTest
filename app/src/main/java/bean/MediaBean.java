@@ -1,10 +1,12 @@
 package bean;
 
+import java.io.Serializable;
+
 /**
  * Created by dell88 on 2018/3/11 0011.
  */
 
-public class MediaBean {
+public class MediaBean implements Serializable{
     public String localPath;//本地文件路径
     public String thumbPath;//缩略图
     public int duration;//时长

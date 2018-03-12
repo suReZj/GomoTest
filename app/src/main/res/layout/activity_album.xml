@@ -21,7 +21,6 @@
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="最近照片"
             android:clickable="false"
             android:id="@+id/activity_album_textView"
             />
