@@ -31,12 +31,11 @@ public class imageCache {
     /**
      * 图片硬盘缓存核心类。
      */
-    private DiskLruCache mDiskLruCache=null;
+    private DiskLruCache mDiskLruCache = null;
 
 
-
-    public imageCache(Context context){
-        this.mContext=context;
+    public imageCache(Context context) {
+        this.mContext = context;
         //获取最大可用内存
         int maxMemory = (int) Runtime.getRuntime().maxMemory();
         //设置缓存的大小
@@ -65,15 +64,14 @@ public class imageCache {
     }
 
 
-
     /**
      * 将bitmap加入到LruCache缓存中
      *
-     * @param url LruCache的键，即图片的下载路径
+     * @param url    LruCache的键，即图片的下载路径
      * @param bitmap LruCache的值，即图片的Bitmap对象
      */
     public void addBitmapToCache(String url, Bitmap bitmap) {
-            mCache.put(url, bitmap);
+        mCache.put(url, bitmap);
 //        Log.e("add",url);
     }
 
@@ -114,8 +112,6 @@ public class imageCache {
     }
 
 
-
-
     //将图片的URL进行MD5编码，编码后的字符串肯定是唯一的，并且只会包含0-F这样的字符，完全符合文件的命名规则
     public String hashKeyForDisk(String key) {
         String cacheKey;
@@ -143,17 +139,16 @@ public class imageCache {
 
 
     //添加bitmap到磁盘缓存
-    public void addToDiskLruCache(String url,Bitmap bitmap){
+    public void addToDiskLruCache(String url, Bitmap bitmap) {
         String key = hashKeyForDisk(url);
-//        Log.e("add",url);
         try {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);
             if (editor != null) {
-                OutputStream outputStream = editor.newOutputStream(0);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                outputStream=baos;
-                if (outputStream!=null) {
+                OutputStream outputStream;
+                outputStream = editor.newOutputStream(0);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
+                if (outputStream != null) {
                     editor.commit();
                 } else {
                     editor.abort();
@@ -166,10 +161,10 @@ public class imageCache {
     }
 
     //从磁盘缓存获取bitmap
-    public Bitmap getBitmapFromDisk(String url){
+    public Bitmap getBitmapFromDisk(String url) {
         String key = hashKeyForDisk(url);
 //        Log.e("get",url);
-        Bitmap bitmap=null;
+        Bitmap bitmap = null;
         try {
             DiskLruCache.Snapshot snapShot = mDiskLruCache.get(key);
             if (snapShot != null) {
@@ -185,7 +180,7 @@ public class imageCache {
     }
 
     //移除磁盘缓存
-    public void removeBitmapFromDisk(String url){
+    public void removeBitmapFromDisk(String url) {
         String key = hashKeyForDisk(url);
         try {
             mDiskLruCache.remove(key);
@@ -194,7 +189,7 @@ public class imageCache {
         }
     }
 
-    public void closeDiskLruCache(){
+    public void closeDiskLruCache() {
         try {
             mDiskLruCache.close();
         } catch (IOException e) {

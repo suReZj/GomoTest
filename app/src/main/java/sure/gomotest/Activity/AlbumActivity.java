@@ -109,12 +109,13 @@ public class AlbumActivity extends AppCompatActivity {
 
             @Override
             public void onLoadmore() {
-                int start=position;
-                int end=position+15;
+//                int start=position;
+//                int end=position+15;
+                int start=pageData.size();
+                int end=start+15;
                 for(int i=start;i<end&&i<data.size();i++){
                     pageData.add(data.get(i));
                     adapter.notifyItemInserted(i);
-                    position++;
                 }
                 springView.onFinishFreshAndLoad();
             }

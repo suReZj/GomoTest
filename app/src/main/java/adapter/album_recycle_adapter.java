@@ -63,25 +63,25 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-//        Glide.with(context).load(list.get(position).getLocalPath()).into(holder.imageView);
-
         holder.imageView.setImageResource(R.mipmap.ic_launcher);
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
+        Glide.with(context).load(list.get(position).getLocalPath()).into(holder.imageView);
 
-        int inSampleSize = 1;
-        if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
-            int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
-            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
-            inSampleSize = Math.min(widthRatio, heightRatio);
-        }
-        options.inSampleSize = inSampleSize;
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
+//
+//        int inSampleSize = 1;
+//        if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
+//            int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
+//            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
+//            inSampleSize = Math.min(widthRatio, heightRatio);
+//        }
+//        options.inSampleSize = inSampleSize;
 
-        options.inJustDecodeBounds = false;
+//        options.inJustDecodeBounds = false;
 //        options.inPreferredConfig = Bitmap.Config.RGB_565;
 
-        bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
+//        bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
 
 
 //        if (bitmap != null && bitmap.getWidth() != 0) {
@@ -103,7 +103,7 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
 //        } else {
 //        }
 
-        holder.imageView.setImageBitmap(bitmap);
+//        holder.imageView.setImageBitmap(bitmap);
 
         if (mOnItemClickLitener != null) {
             holder.imageView.setOnClickListener(new View.OnClickListener() {

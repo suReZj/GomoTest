@@ -29,6 +29,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import sure.gomotest.R;
 
+import static util.Contants.bigImage;
+
 
 /**
  * Created by dell88 on 2018/1/23 0023.
@@ -54,8 +56,8 @@ public class ShowDialog {
 
 
                     imageView.setImageBitmap(bitmap);
-                    imageCache.addToDiskLruCache(url, bitmap);
-                    imageCache.addBitmapToCache(url, bitmap);
+                    imageCache.addToDiskLruCache(url+bigImage, bitmap);
+                    imageCache.addBitmapToCache(url+bigImage, bitmap);
 
 
                     bottomDialog.setContentView(contentView);
@@ -88,17 +90,17 @@ public class ShowDialog {
 
         int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
 
-        if (imageCache.getBitmapFromCache(path) != null) {
+        if (imageCache.getBitmapFromCache(path+bigImage) != null) {
             Message msg = handler.obtainMessage();
             msg.what = 1;
             Bundle bundle = new Bundle();
-            bundle.putParcelable("bitmap", imageCache.getBitmapFromCache(path));
+            bundle.putParcelable("bitmap", imageCache.getBitmapFromCache(path+bigImage));
             msg.setData(bundle);
             handler.sendMessage(msg);
         } else {
-            Bitmap bitmap = imageCache.getBitmapFromDisk(path);
+            Bitmap bitmap = imageCache.getBitmapFromDisk(path+bigImage);
             if (bitmap != null) {
-                imageCache.addBitmapToCache(path, bitmap);
+                imageCache.addBitmapToCache(path+bigImage, bitmap);
                 Message msg = handler.obtainMessage();
                 msg.what = 1;
                 Bundle bundle = new Bundle();

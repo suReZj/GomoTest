@@ -9,4 +9,5 @@ public class Contants {
     public static final String width="?imageView2/0/w/200";
     public static final String head="(";
     public static final String foot=")";
+    public static final String bigImage="bigImage";
 }

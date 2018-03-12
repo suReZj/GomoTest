@@ -187,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
-                Intent intent = new Intent(this, SelectActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(this, SelectActivity.class);
+//                startActivity(intent);
                 break;
             case R.id.photograph:
 //                applyWritePermission();
