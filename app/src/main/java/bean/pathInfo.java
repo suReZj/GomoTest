@@ -1,10 +1,10 @@
 package bean;
 
-import android.annotation.SuppressLint;
 import android.graphics.Rect;
 import android.os.Parcel;
 
 import com.previewlibrary.enitity.IThumbViewInfo;
+
 
 /**
  * Created by zhangzijian on 2018/03/08.

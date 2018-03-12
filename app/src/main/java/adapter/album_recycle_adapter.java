@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import bean.MediaBean;
@@ -76,7 +78,27 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
 
-//        Bitmap bitmap = BitmapFactory.decodeFile(file_path, options);
+        Bitmap bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
+        if (bitmap != null && bitmap.getWidth() != 0) {
+            //缩放法压缩
+            Matrix matrix = new Matrix();
+            matrix.setScale(0.5f, 0.5f);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        }else {
+        }
+
+
+        if (bitmap != null && bitmap.getWidth() != 0) {
+            //质量压缩
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+            byte[] bytes = baos.toByteArray();
+
+            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } else {
+        }
+
+
 
         if (mOnItemClickLitener != null) {
             holder.imageView.setOnClickListener(new View.OnClickListener() {
