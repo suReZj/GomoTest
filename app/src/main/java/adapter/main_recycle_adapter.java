@@ -40,7 +40,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private List<String> list;
     private Context context;
     private imageCache imageCache;
-    private List<Integer> Livelist = new ArrayList<>();
 
     Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -150,75 +149,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         });
     }
 
-    //第二次进行网络连接获取图片
-
-    public void getImageBitmapDouble(final String url, final int inSampleSize, final ViewHolder holder) {
-
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .get()
-                .url(url)
-                .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inJustDecodeBounds = false;
-
-                //采样率压缩
-                options.inSampleSize = inSampleSize;
-
-                //RGB_565法
-                options.inPreferredConfig = Bitmap.Config.RGB_565;
-
-
-                Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, options);
-
-                if (bitmap == null) {
-
-                }
-
-
-                if (bitmap != null && bitmap.getWidth() != 0) {
-                    //缩放法压缩
-                    Matrix matrix = new Matrix();
-                    matrix.setScale(0.5f, 0.5f);
-                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-                }
-//                Log.e("url", url);
-
-
-                if (bitmap != null && bitmap.getWidth() != 0) {
-                    //质量压缩
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
-                    byte[] bytes = baos.toByteArray();
-
-                    bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    baos.close();
-                    response.body().byteStream().close();
-                } else {
-//                    Log.e("url",url);
-                }
-
-
-                Message msg = handler.obtainMessage();
-                msg.what = 1;
-                msg.obj = holder;
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("bitmap", bitmap);
-                bundle.putString("url", url);
-                msg.setData(bundle);
-                handler.sendMessage(msg);
-                call.cancel();
-            }
-        });
-    }
 
     @Override
     public int getItemCount() {

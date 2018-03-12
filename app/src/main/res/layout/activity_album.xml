@@ -25,8 +25,13 @@
             android:id="@+id/activity_album_textView"
             />
     </android.support.v7.widget.Toolbar>
+    <com.liaoinstan.springview.widget.SpringView
+        android:id="@+id/activity_album_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/activity_album_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    </com.liaoinstan.springview.widget.SpringView>
 </LinearLayout>

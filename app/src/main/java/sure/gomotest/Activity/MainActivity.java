@@ -58,9 +58,10 @@ public class MainActivity extends AppCompatActivity {
     private main_recycle_adapter adapter;
     private int page = 1;
     private List<String> list = new ArrayList<>();
-    private List <pathInfo> pathInfolist=new ArrayList<>();
+    private List<pathInfo> pathInfolist = new ArrayList<>();
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
+    private boolean flag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
         recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
-        layoutManager=new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new main_recycle_adapter(list,MainActivity.this);
+        adapter = new main_recycle_adapter(list, MainActivity.this);
         recyclerView.setAdapter(adapter);
         setImage(page);
-        springView=(SpringView)findViewById(R.id.activity_main_frame);
+        springView = (SpringView) findViewById(R.id.activity_main_frame);
         springView.setFooter(new DefaultFooter(MainActivity.this));
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
     }
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
             }
+
             @Override
             public void onLoadmore() {
                 setImage(++page);
@@ -106,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
 //                        .setDrag(false)//是否禁用图片拖拽返回
 //                        .start();//启动
 
-                showImageDialog(MainActivity.this,list.get(position));
+                showImageDialog(MainActivity.this, list.get(position));
+                flag = true;
             }
 
             @Override
@@ -184,8 +187,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
-//                Intent intent=new Intent(this,SelectActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(this, SelectActivity.class);
+                startActivity(intent);
                 break;
             case R.id.photograph:
 //                applyWritePermission();
@@ -195,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        Retrofit retrofit = RetrofitUtil.getRetrofit(url+width);
+        Retrofit retrofit = RetrofitUtil.getRetrofit(url + width);
         getData getData = retrofit.create(getData.class);
         getData.getWelfare("12", page)
                 .subscribeOn(Schedulers.io())
@@ -216,12 +219,12 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < results.size(); i++) {
                             list.add(results.get(i).getUrl());
                             adapter.notifyItemInserted(end);
-                            pathInfo pathInfo=new pathInfo(results.get(i).getUrl());
+                            pathInfo pathInfo = new pathInfo(results.get(i).getUrl());
                             pathInfolist.add(pathInfo);
                             end++;
                         }
 //                        adapter.notifyItemRangeChanged(start,end);
-                        if(page!=1){
+                        if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
                     }
@@ -241,14 +244,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         adapter.closeDisk();
-        closeDisk();
+        if (flag) {
+            closeDisk();
+        }
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
         adapter.fluchCache();
-        fluchCache();
+        if (flag) {
+            fluchCache();
+        }
         super.onPause();
     }
 }

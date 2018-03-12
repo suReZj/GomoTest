@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.liaoinstan.springview.container.DefaultFooter;
+import com.liaoinstan.springview.widget.SpringView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +37,9 @@ public class AlbumActivity extends AppCompatActivity {
     private List<MediaBean> data;
     private String albumName;
     private Intent intent;
+    private SpringView springView;
+    private List<MediaBean> pageData=new ArrayList<>();
+    private int position=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +69,24 @@ public class AlbumActivity extends AppCompatActivity {
         albumName=albumName.substring(position+1,albumName.length());
         textView.setText(albumName);
 
-        adapter=new album_recycle_adapter(data);
+        if(data.size()>=15){
+            int start=position;
+            int end=position+15;
+            for(int i=start;i<end&&i<data.size();i++){
+                pageData.add(data.get(i));
+                position++;
+            }
+            adapter=new album_recycle_adapter(pageData);
+        }else {
+            adapter=new album_recycle_adapter(data);
+        }
 //        GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
 //        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
+
+        springView=(SpringView) findViewById(R.id.activity_album_frame);
+        springView.setFooter(new DefaultFooter(AlbumActivity.this));
     }
 
     public void setListener() {
@@ -80,6 +99,24 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onItemLongClick(View view, int position) {
 
+            }
+        });
+        springView.setListener(new SpringView.OnFreshListener() {
+            @Override
+            public void onRefresh() {
+
+            }
+
+            @Override
+            public void onLoadmore() {
+                int start=position;
+                int end=position+15;
+                for(int i=start;i<end&&i<data.size();i++){
+                    pageData.add(data.get(i));
+                    adapter.notifyItemInserted(i);
+                    position++;
+                }
+                springView.onFinishFreshAndLoad();
             }
         });
     }

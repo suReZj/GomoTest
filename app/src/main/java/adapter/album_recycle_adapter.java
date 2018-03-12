@@ -29,24 +29,26 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
     private Context context;
     private List<MediaBean> list;
     private imageCache imageCache;
+    private Bitmap bitmap;
 
-    static class ViewHolder extends RecyclerView.ViewHolder{
+    static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView;
+
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView=itemView.findViewById(R.id.item_album_image);
+            imageView = itemView.findViewById(R.id.item_album_image);
             int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
             params.width = width / 3;
-            params.height=width / 3;
+            params.height = width / 3;
             imageView.setLayoutParams(params);
         }
     }
 
     public album_recycle_adapter(List<MediaBean> list) {
         this.list = list;
-        this.imageCache = new imageCache(context);
+//        this.imageCache = new imageCache(context);
     }
 
     @Override
@@ -61,8 +63,9 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        Glide.with(context).load(list.get(position).getLocalPath()).into(holder.imageView);
+//        Glide.with(context).load(list.get(position).getLocalPath()).into(holder.imageView);
 
+        holder.imageView.setImageResource(R.mipmap.ic_launcher);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
@@ -76,29 +79,31 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
         options.inSampleSize = inSampleSize;
 
         options.inJustDecodeBounds = false;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
+//        options.inPreferredConfig = Bitmap.Config.RGB_565;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
-        if (bitmap != null && bitmap.getWidth() != 0) {
-            //缩放法压缩
-            Matrix matrix = new Matrix();
-            matrix.setScale(0.5f, 0.5f);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        }else {
-        }
+        bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
 
 
-        if (bitmap != null && bitmap.getWidth() != 0) {
-            //质量压缩
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
-            byte[] bytes = baos.toByteArray();
+//        if (bitmap != null && bitmap.getWidth() != 0) {
+//            //缩放法压缩
+//            Matrix matrix = new Matrix();
+//            matrix.setScale(0.5f, 0.5f);
+//            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+//        } else {
+//        }
+//
+//
+//        if (bitmap != null && bitmap.getWidth() != 0) {
+//            //质量压缩
+//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+//            byte[] bytes = baos.toByteArray();
+//
+//            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//        } else {
+//        }
 
-            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-        } else {
-        }
-
-
+        holder.imageView.setImageBitmap(bitmap);
 
         if (mOnItemClickLitener != null) {
             holder.imageView.setOnClickListener(new View.OnClickListener() {
