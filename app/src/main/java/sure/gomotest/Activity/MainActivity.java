@@ -1,6 +1,7 @@
 package sure.gomotest.Activity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -45,6 +46,7 @@ import util.RetrofitUtil;
 
 import static util.Contants.url;
 import static util.Contants.width;
+import static util.ShowDialog.showImageDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -95,12 +97,14 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                GPreviewBuilder.from(MainActivity.this)//activity实例必须
-                        .setData(pathInfolist)//集合
-                        .setCurrentIndex(position)
-                        .setSingleFling(false)//是否在黑屏区域点击返回
-                        .setDrag(false)//是否禁用图片拖拽返回
-                        .start();//启动
+//                GPreviewBuilder.from(MainActivity.this)//activity实例必须
+//                        .setData(pathInfolist)//集合
+//                        .setCurrentIndex(position)
+//                        .setSingleFling(false)//是否在黑屏区域点击返回
+//                        .setDrag(false)//是否禁用图片拖拽返回
+//                        .start();//启动
+
+                showImageDialog(MainActivity.this,"");
             }
 
             @Override

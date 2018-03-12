@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/shape_dialog"
+    android:orientation="vertical">
+        <TextView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/QR_image"
+            android:layout_alignRight="@id/QR_image"
+            android:background="@color/toolbarBackground"
+            android:text="商家二维码"
+            android:id="@+id/QR_text"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:gravity="center"/>
+        <ImageView
+            android:layout_below="@id/QR_text"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:id="@+id/QR_image"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            />
+</RelativeLayout>
