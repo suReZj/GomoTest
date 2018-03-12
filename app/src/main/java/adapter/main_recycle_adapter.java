@@ -124,7 +124,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     }
 
 
-//第一次连接获取图片大小计算缩放比例
+//第一次连接将图片保存为文件
 
     public void getImageBitmap(final String url, final ViewHolder holder) {
         OkHttpClient client = new OkHttpClient();
@@ -141,27 +141,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 try {
-                    //获得图片尺寸进行压缩
-//                    BitmapFactory.Options options = new BitmapFactory.Options();
-//                    options.inJustDecodeBounds = true;
-
-//                    if(response.body().byteStream()==null){
-//                        Log.e("url",url);
-//                        Log.e("response",response.toString());
-//                    }
-
-
-//                    BitmapFactory.decodeStream(response.body().byteStream(), null, options);
-//
-//
-//                    int inSampleSize = 1;
-//                    if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
-//                        int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
-//                        int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
-//                        inSampleSize = Math.min(widthRatio, heightRatio);
-//                    }
-//                    getImageBitmapDouble(url, inSampleSize, holder);
-
                     catchStreamToFile(response.body().byteStream(), holder, url);
                     call.cancel();
                 } catch (Exception e) {

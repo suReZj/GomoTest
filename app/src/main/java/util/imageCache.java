@@ -74,6 +74,7 @@ public class imageCache {
      */
     public void addBitmapToCache(String url, Bitmap bitmap) {
             mCache.put(url, bitmap);
+//        Log.e("add",url);
     }
 
     /**

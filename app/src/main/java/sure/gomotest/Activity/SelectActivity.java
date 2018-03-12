@@ -123,7 +123,6 @@ public class SelectActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("1111","1111111");
                         adapter=new select_recycle_adapter(allPhotosTemp,albumName);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));

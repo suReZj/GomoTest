@@ -46,6 +46,8 @@ import util.RetrofitUtil;
 
 import static util.Contants.url;
 import static util.Contants.width;
+import static util.ShowDialog.closeDisk;
+import static util.ShowDialog.fluchCache;
 import static util.ShowDialog.showImageDialog;
 
 
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 //                        .setDrag(false)//是否禁用图片拖拽返回
 //                        .start();//启动
 
-                showImageDialog(MainActivity.this,"");
+                showImageDialog(MainActivity.this,list.get(position));
             }
 
             @Override
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
     public void setImage(final int page) {
         Retrofit retrofit = RetrofitUtil.getRetrofit(url+width);
         getData getData = retrofit.create(getData.class);
-        getData.getWelfare("10", page)
+        getData.getWelfare("12", page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<gson_welfare>() {
@@ -239,12 +241,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         adapter.closeDisk();
+        closeDisk();
         super.onDestroy();
     }
 
     @Override
     protected void onPause() {
         adapter.fluchCache();
+        fluchCache();
         super.onPause();
     }
 }
