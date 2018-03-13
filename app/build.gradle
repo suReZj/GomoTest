@@ -38,6 +38,7 @@ dependencies {
     compile 'com.ycjiang:ImagePreview:2.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.jakewharton:disklrucache:2.0.2'
+    compile project(path: ':androidlibmagick')
 }
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

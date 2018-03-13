@@ -16,16 +16,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
+import magick.ColorspaceType;
+import magick.ImageInfo;
+import magick.MagickException;
+import magick.MagickImage;
+import magick.util.MagickBitmap;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import sure.gomotest.R;
@@ -220,12 +222,25 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
         Bitmap bitmap = BitmapFactory.decodeFile(file_path, options);
 
+        if (bitmap == null) {
+            ImageInfo info = null;
+            try {
+                info = new ImageInfo(file_path);
+                MagickImage magickImage = new MagickImage(info);
+                magickImage.transformRgbImage(ColorspaceType.RGBColorspace);
+                bitmap = MagickBitmap.ToBitmap(magickImage);
+                magickImage.destroyImages();
+            } catch (MagickException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (bitmap != null && bitmap.getWidth() != 0) {
             //缩放法压缩
             Matrix matrix = new Matrix();
             matrix.setScale(0.5f, 0.5f);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        }else {
+        } else {
         }
 
 
