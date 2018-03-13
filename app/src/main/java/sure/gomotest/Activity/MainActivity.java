@@ -24,12 +24,15 @@ import android.widget.Toast;
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
 
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.main_recycle_adapter;
-import bean.pathInfo;
+import bean.AlbumBean;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -55,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     private main_recycle_adapter adapter;
     private int page = 1;
     private List<String> list = new ArrayList<>();
-    private List<pathInfo> pathInfolist = new ArrayList<>();
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
@@ -98,13 +100,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-//                GPreviewBuilder.from(MainActivity.this)//activity实例必须
-//                        .setData(pathInfolist)//集合
-//                        .setCurrentIndex(position)
-//                        .setSingleFling(false)//是否在黑屏区域点击返回
-//                        .setDrag(false)//是否禁用图片拖拽返回
-//                        .start();//启动
-
                 showImageDialog(MainActivity.this, list.get(position));
                 flag = true;
             }
@@ -184,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.album:
-//                Intent intent = new Intent(this, SelectActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(this, SelectActivity.class);
+                startActivity(intent);
                 break;
             case R.id.photograph:
 //                applyWritePermission();
@@ -216,8 +211,6 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < results.size(); i++) {
                             list.add(results.get(i).getUrl());
                             adapter.notifyItemInserted(end);
-                            pathInfo pathInfo = new pathInfo(results.get(i).getUrl());
-                            pathInfolist.add(pathInfo);
                             end++;
                         }
 //                        adapter.notifyItemRangeChanged(start,end);
@@ -244,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
         if (flag) {
             closeDisk();
         }
+//        DataSupport.deleteAll(AlbumBean.class);
+//        LitePal.deleteDatabase("sure");
         super.onDestroy();
     }
 

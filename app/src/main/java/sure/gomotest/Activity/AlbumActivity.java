@@ -2,6 +2,7 @@ package sure.gomotest.Activity;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -20,12 +21,16 @@ import android.widget.TextView;
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
 
+import org.litepal.LitePal;
+import org.litepal.crud.DataSupport;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import adapter.album_recycle_adapter;
+import bean.AlbumBean;
 import bean.MediaBean;
 import sure.gomotest.R;
 
@@ -34,12 +39,12 @@ public class AlbumActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView textView;
     private album_recycle_adapter adapter;
-    private List<MediaBean> data;
     private String albumName;
     private Intent intent;
     private SpringView springView;
-    private List<MediaBean> pageData=new ArrayList<>();
-    private int position=0;
+    private List<AlbumBean> list;
+    private List<AlbumBean> pageData=new ArrayList<>();
+    private int index=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +56,9 @@ public class AlbumActivity extends AppCompatActivity {
 
     public void initView() {
         intent=getIntent();
-        data=(ArrayList<MediaBean>)intent.getSerializableExtra("data");
         albumName=intent.getStringExtra("name");
+        list= DataSupport.where("albumName=?",albumName).find(AlbumBean.class);
+        Log.e("list",list.size()+"");
 
         toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
         toolbar.setTitle("");
@@ -69,19 +75,19 @@ public class AlbumActivity extends AppCompatActivity {
         albumName=albumName.substring(position+1,albumName.length());
         textView.setText(albumName);
 
-        if(data.size()>=15){
-            int start=position;
-            int end=position+15;
-            for(int i=start;i<end&&i<data.size();i++){
-                pageData.add(data.get(i));
-                position++;
+        if(list.size()>=15){
+            int start=index;
+            int end=index+15;
+            for(int i=start;i<end&&i<list.size();i++){
+                pageData.add(list.get(i));
+                index++;
             }
             adapter=new album_recycle_adapter(pageData);
         }else {
-            adapter=new album_recycle_adapter(data);
+            adapter=new album_recycle_adapter(list);
         }
-//        GridLayoutManager layoutManager = new GridLayoutManager(this, 4);
-//        recyclerView.setLayoutManager(layoutManager);
+
+
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
 
@@ -109,13 +115,13 @@ public class AlbumActivity extends AppCompatActivity {
 
             @Override
             public void onLoadmore() {
-//                int start=position;
-//                int end=position+15;
-                int start=pageData.size();
+
+                int start=index;
                 int end=start+15;
-                for(int i=start;i<end&&i<data.size();i++){
-                    pageData.add(data.get(i));
+                for(int i=start;i<end&&i<list.size();i++){
+                    pageData.add(list.get(i));
                     adapter.notifyItemInserted(i);
+                    index++;
                 }
                 springView.onFinishFreshAndLoad();
             }
@@ -137,6 +143,7 @@ public class AlbumActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 
 
 

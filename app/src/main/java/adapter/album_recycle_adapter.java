@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
+import bean.AlbumBean;
 import bean.MediaBean;
 import sure.gomotest.R;
 import util.imageCache;
@@ -27,7 +28,7 @@ import util.imageCache;
 
 public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_adapter.ViewHolder> {
     private Context context;
-    private List<MediaBean> list;
+    private List<AlbumBean> list;
     private imageCache imageCache;
     private Bitmap bitmap;
 
@@ -46,7 +47,7 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
         }
     }
 
-    public album_recycle_adapter(List<MediaBean> list) {
+    public album_recycle_adapter(List<AlbumBean> list) {
         this.list = list;
 //        this.imageCache = new imageCache(context);
     }
@@ -64,7 +65,7 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.imageView.setImageResource(R.mipmap.ic_launcher);
-        Glide.with(context).load(list.get(position).getLocalPath()).into(holder.imageView);
+        Glide.with(context).load(list.get(position).getPath()).into(holder.imageView);
 
 //        BitmapFactory.Options options = new BitmapFactory.Options();
 //        options.inJustDecodeBounds = true;

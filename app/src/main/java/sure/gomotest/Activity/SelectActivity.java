@@ -3,7 +3,6 @@ package sure.gomotest.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,11 +10,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.io.Serializable;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import adapter.select_recycle_adapter;
+import bean.AlbumBean;
 import bean.MediaBean;
 import sure.gomotest.R;
 import util.MyDecoration;
@@ -81,6 +83,7 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     public void getData(){
+        final List<AlbumBean> list=new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -106,15 +109,38 @@ public class SelectActivity extends AppCompatActivity {
                         // 获取该图片的父路径名
                         String dirPath = new File(path).getParentFile().getAbsolutePath();
                         //存储对应关系
+
+                        AlbumBean bean=new AlbumBean();
+                        List<AlbumBean> search=DataSupport.where("path=?",path).find(AlbumBean.class);
+
                         if (allPhotosTemp.containsKey(dirPath)) {
                             List<MediaBean> data = allPhotosTemp.get(dirPath);
                             data.add(new MediaBean(path,size,displayName));
+
+                            if(search.size()==0){
+                                bean.setAlbumName(dirPath);
+                                bean.setPath(path);
+                                bean.save();
+                            }
+//                            bean.setAlbumName(dirPath);
+//                            bean.setPath(path);
+//                            list.add(bean);
+
                             continue;
                         } else {
                             albumName.add(dirPath);
                             List<MediaBean> data = new ArrayList<>();
                             data.add(new MediaBean(path,size,displayName));
                             allPhotosTemp.put(dirPath,data);
+
+                            if(search.size()==0){
+                                bean.setAlbumName(dirPath);
+                                bean.setPath(path);
+                                bean.save();
+                            }
+//                            bean.setAlbumName(dirPath);
+//                            bean.setPath(path);
+//                            list.add(bean);
                         }
                     }
                     mCursor.close();
@@ -126,14 +152,16 @@ public class SelectActivity extends AppCompatActivity {
                         adapter=new select_recycle_adapter(allPhotosTemp,albumName);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));
+
+//                        DataSupport.deleteAll(AlbumBean.class);
+//                        DataSupport.saveAll(list);
+
                         adapter.setOnItemClickLitener(new select_recycle_adapter.OnItemClickLitener() {
                             @Override
                             public void onItemClick(View view, int position) {
                                 Intent intent=new Intent(SelectActivity.this,AlbumActivity.class);
                                 String name=albumName.get(position);
-                                List<MediaBean> data = allPhotosTemp.get(name);
                                 intent.putExtra("name",name);
-                                intent.putExtra("data", (Serializable) data);
                                 startActivity(intent);
                             }
 

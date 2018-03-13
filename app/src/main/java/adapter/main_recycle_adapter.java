@@ -43,24 +43,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private Context context;
     private imageCache imageCache;
 
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    ViewHolder holder = (ViewHolder) msg.obj;
-                    Bitmap bitmap = (Bitmap) msg.getData().get("bitmap");
-                    if (bitmap != null) {
-                        String url = (String) msg.getData().get("url");
-                        imageCache.addToDiskLruCache(url, bitmap);
-
-                        imageCache.addBitmapToCache(url, bitmap);
-                        holder.imageView.setImageBitmap(bitmap);
-                    }
-            }
-            return true;
-        }
-    });
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
@@ -204,6 +186,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         getFitSampleBitmap(tempPath, holder, url);
     }
 
+
     public void getFitSampleBitmap(String file_path, ViewHolder holder, String url) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -254,18 +237,19 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         } else {
         }
 
-        Message msg = handler.obtainMessage();
-        msg.what = 1;
-        msg.obj = holder;
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("bitmap", bitmap);
-        bundle.putString("url", url);
-        msg.setData(bundle);
-        handler.sendMessage(msg);
+        setImage(holder,bitmap,url);
 
         File tempFile = new File(file_path);
         if (tempFile.exists()) {
             tempFile.delete();
+        }
+    }
+
+    public void setImage(ViewHolder holder,Bitmap bitmap,String url){
+        if (bitmap != null) {
+            imageCache.addToDiskLruCache(url, bitmap);
+            imageCache.addBitmapToCache(url, bitmap);
+            holder.imageView.setImageBitmap(bitmap);
         }
     }
 }

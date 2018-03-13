@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,17 +18,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
+import magick.ColorspaceType;
+import magick.ImageInfo;
+import magick.MagickException;
+import magick.MagickImage;
+import magick.util.MagickBitmap;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import sure.gomotest.Activity.MainActivity;
 import sure.gomotest.R;
+import tyrantgit.widget.HeartLayout;
 
 import static util.Contants.bigImage;
 
@@ -37,42 +44,7 @@ import static util.Contants.bigImage;
  */
 
 public class ShowDialog {
-    static Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    View contentView = LayoutInflater.from(mContext).inflate(R.layout.show_image_dialog, null);
-                    ImageView imageView = (ImageView) contentView.findViewById(R.id.show_image);
-                    Bitmap bitmap = (Bitmap) msg.getData().get("bitmap");
-                    if (bitmap == null) {
-                        Log.e("null", "null");
-                    }
-
-                    int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
-                    ViewGroup.LayoutParams param = imageView.getLayoutParams();
-                    param.width = width;
-                    imageView.setLayoutParams(param);
-
-
-                    imageView.setImageBitmap(bitmap);
-                    imageCache.addToDiskLruCache(url+bigImage, bitmap);
-                    imageCache.addBitmapToCache(url+bigImage, bitmap);
-
-
-                    bottomDialog.setContentView(contentView);
-                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) contentView.getLayoutParams();
-                    params.width = mContext.getResources().getDisplayMetrics().widthPixels;
-                    params.bottomMargin = DensityUtil.dp2px(mContext, 8f);
-                    contentView.setLayoutParams(params);
-                    bottomDialog.setCanceledOnTouchOutside(true);
-                    bottomDialog.getWindow().setGravity(Gravity.CENTER);
-                    bottomDialog.getWindow().setWindowAnimations(R.style.BottomDialog_Animation);
-                    bottomDialog.show();
-            }
-            return false;
-        }
-    });
+    static Random mRandom = new Random();
     static Dialog bottomDialog;
     static Context mContext;
     static imageCache imageCache;
@@ -81,7 +53,7 @@ public class ShowDialog {
     public static void showImageDialog(Context context, String path) {
         imageCache = new imageCache(context);
         mContext = context;
-        url=path;
+        url = path;
         View contentView = LayoutInflater.from(context).inflate(R.layout.show_image_dialog, null);
         bottomDialog = new Dialog(context, R.style.BottomDialog);
         ImageView imageView = contentView.findViewById(R.id.show_image);
@@ -90,29 +62,17 @@ public class ShowDialog {
 
         int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
 
-        if (imageCache.getBitmapFromCache(path+bigImage) != null) {
-            Message msg = handler.obtainMessage();
-            msg.what = 1;
-            Bundle bundle = new Bundle();
-            bundle.putParcelable("bitmap", imageCache.getBitmapFromCache(path+bigImage));
-            msg.setData(bundle);
-            handler.sendMessage(msg);
+        if (imageCache.getBitmapFromCache(path + bigImage) != null) {
+            setImage(imageCache.getBitmapFromCache(path + bigImage));
         } else {
-            Bitmap bitmap = imageCache.getBitmapFromDisk(path+bigImage);
+            Bitmap bitmap = imageCache.getBitmapFromDisk(path + bigImage);
             if (bitmap != null) {
-                imageCache.addBitmapToCache(path+bigImage, bitmap);
-                Message msg = handler.obtainMessage();
-                msg.what = 1;
-                Bundle bundle = new Bundle();
-                bundle.putParcelable("bitmap", bitmap);
-                msg.setData(bundle);
-                handler.sendMessage(msg);
+                imageCache.addBitmapToCache(path + bigImage, bitmap);
+                setImage(imageCache.getBitmapFromCache(path + bigImage));
             } else {
                 getImageBitmap(path, context, imageView, width);
             }
         }
-
-
 
 
     }
@@ -194,15 +154,24 @@ public class ShowDialog {
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
 
+
+
         Bitmap bitmap = BitmapFactory.decodeFile(file_path, options);
 
+        if (bitmap == null) {
+            ImageInfo info = null;
+            try {
+                info = new ImageInfo(file_path);
+                MagickImage magickImage = new MagickImage(info);
+                magickImage.transformRgbImage(ColorspaceType.RGBColorspace);
+                bitmap = MagickBitmap.ToBitmap(magickImage);
+                magickImage.destroyImages();
+            } catch (MagickException e) {
+                e.printStackTrace();
+            }
+        }
 
-        Message msg = handler.obtainMessage();
-        msg.what = 1;
-        Bundle bundle = new Bundle();
-        bundle.putParcelable("bitmap", bitmap);
-        msg.setData(bundle);
-        handler.sendMessage(msg);
+        setImage(bitmap);
 
         File tempFile = new File(file_path);
         if (tempFile.exists()) {
@@ -217,5 +186,59 @@ public class ShowDialog {
 
     public static void fluchCache() {
         imageCache.fluchCache();
+    }
+
+    public static void setImage(Bitmap bitmap){
+        final View contentView = LayoutInflater.from(mContext).inflate(R.layout.show_image_dialog, null);
+        ImageView imageView = (ImageView) contentView.findViewById(R.id.show_image);
+        final HeartLayout layout = contentView.findViewById(R.id.periscope);
+
+        if (bitmap == null) {
+            Log.e("null", "null");
+        }
+
+        int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
+        ViewGroup.LayoutParams param = imageView.getLayoutParams();
+        param.width = width;
+        imageView.setLayoutParams(param);
+
+
+        imageView.setImageBitmap(bitmap);
+        imageCache.addToDiskLruCache(url + bigImage, bitmap);
+        imageCache.addBitmapToCache(url + bigImage, bitmap);
+
+
+//                    imageView.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
+//                        @Override
+//                        public void onDoubleClick() {
+//                                                        layout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+//                        }
+//                    }));
+
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                layout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+            }
+        });
+
+        bottomDialog.setContentView(contentView);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) contentView.getLayoutParams();
+        params.width = mContext.getResources().getDisplayMetrics().widthPixels;
+        params.bottomMargin = DensityUtil.dp2px(mContext, 8f);
+        contentView.setLayoutParams(params);
+        bottomDialog.setCanceledOnTouchOutside(true);
+        bottomDialog.getWindow().setGravity(Gravity.CENTER);
+        bottomDialog.getWindow().setWindowAnimations(R.style.BottomDialog_Animation);
+
+        ((MainActivity) mContext).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //此时已在主线程中，可以更新UI了
+                bottomDialog.show();
+            }
+        });
+
     }
 }

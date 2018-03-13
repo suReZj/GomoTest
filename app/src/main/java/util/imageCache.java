@@ -56,7 +56,7 @@ public class imageCache {
             if (!cacheDir.exists()) {
                 cacheDir.mkdirs();
             }
-            mDiskLruCache = DiskLruCache.open(cacheDir, getAppVersion(context), 1, 10 * 1024 * 1024);
+            mDiskLruCache = DiskLruCache.open(cacheDir, getAppVersion(context), 1, 20 * 1024 * 1024);
         } catch (IOException e) {
             e.printStackTrace();
         }

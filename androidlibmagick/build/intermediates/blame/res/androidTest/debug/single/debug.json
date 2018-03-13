@@ -1,6 +1,10 @@
 [
     {
-        "merged": "/Users/mac/StudioProjects/GomoTest/androidlibmagick/build/intermediates/res/merged/androidTest/debug/layout_main.xml.flat",
-        "source": "/Users/mac/StudioProjects/GomoTest/androidlibmagick/build/intermediates/bundles/debug/res/layout/main.xml"
+        "merged": "C:\\Users\\mac\\StudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout_main.xml.flat",
+        "source": "C:\\Users\\mac\\StudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\bundles\\debug\\res\\layout\\main.xml"
+    },
+    {
+        "merged": "C:\\Users\\zhangzijian\\AndroidStudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\res\\merged\\androidTest\\debug\\layout_main.xml.flat",
+        "source": "C:\\Users\\zhangzijian\\AndroidStudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\bundles\\debug\\res\\layout\\main.xml"
     }
 ]

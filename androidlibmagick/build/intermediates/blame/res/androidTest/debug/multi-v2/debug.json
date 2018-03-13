@@ -1,10 +1,25 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/mac/StudioProjects/GomoTest/androidlibmagick/build/intermediates/res/merged/androidTest/debug/values_values.arsc.flat",
+            "outputFile": "C:\\Users\\mac\\StudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\res\\merged\\androidTest\\debug\\values_values.arsc.flat",
             "map": [
                 {
-                    "source": "/Users/mac/StudioProjects/GomoTest/androidlibmagick/build/intermediates/bundles/debug/res/values/values.xml",
+                    "source": "C:\\Users\\mac\\StudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\bundles\\debug\\res\\values\\values.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,101",
+                        "endColumns": "45,64",
+                        "endOffsets": "96,161"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "C:\\Users\\zhangzijian\\AndroidStudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\res\\merged\\androidTest\\debug\\values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "C:\\Users\\zhangzijian\\AndroidStudioProjects\\GomoTest\\androidlibmagick\\build\\intermediates\\bundles\\debug\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
