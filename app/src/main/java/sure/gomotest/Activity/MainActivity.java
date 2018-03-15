@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         springView = (SpringView) findViewById(R.id.activity_main_frame);
         springView.setFooter(new DefaultFooter(MainActivity.this));
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
+//        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
     }
 
     private void setListener() {
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 showImageDialog(MainActivity.this, list.get(position));
+                Log.e("list",list.get(position));
                 flag = true;
             }
 
@@ -184,13 +186,15 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.photograph:
 //                applyWritePermission();
+//                intent=new Intent(MainActivity.this,EditActivity.class);
+//                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void setImage(final int page) {
-        Retrofit retrofit = RetrofitUtil.getRetrofit(url + width);
+        Retrofit retrofit = RetrofitUtil.getRetrofit(url);
         getData getData = retrofit.create(getData.class);
         getData.getWelfare("12", page)
                 .subscribeOn(Schedulers.io())
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
+                        adapter.notifyDataSetChanged();
                     }
 
                     @Override

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.callback.SaveCallback;
 
 import java.io.File;
 import java.io.Serializable;
@@ -120,11 +122,8 @@ public class SelectActivity extends AppCompatActivity {
                             if(search.size()==0){
                                 bean.setAlbumName(dirPath);
                                 bean.setPath(path);
-                                bean.save();
+                                list.add(bean);
                             }
-//                            bean.setAlbumName(dirPath);
-//                            bean.setPath(path);
-//                            list.add(bean);
 
                             continue;
                         } else {
@@ -136,11 +135,8 @@ public class SelectActivity extends AppCompatActivity {
                             if(search.size()==0){
                                 bean.setAlbumName(dirPath);
                                 bean.setPath(path);
-                                bean.save();
+                                list.add(bean);
                             }
-//                            bean.setAlbumName(dirPath);
-//                            bean.setPath(path);
-//                            list.add(bean);
                         }
                     }
                     mCursor.close();
@@ -155,6 +151,13 @@ public class SelectActivity extends AppCompatActivity {
 
 //                        DataSupport.deleteAll(AlbumBean.class);
 //                        DataSupport.saveAll(list);
+
+                        DataSupport.saveAllAsync(list).listen(new SaveCallback() {
+                            @Override
+                            public void onFinish(boolean success) {
+                                Log.e("save","save");
+                            }
+                        });
 
                         adapter.setOnItemClickLitener(new select_recycle_adapter.OnItemClickLitener() {
                             @Override

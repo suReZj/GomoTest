@@ -3,8 +3,8 @@
     package="teste.ndk.test" >
 
     <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="8" />
+        android:minSdkVersion="18"
+        android:targetSdkVersion="18" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"

@@ -33,6 +33,8 @@ import okhttp3.Request;
 import sure.gomotest.R;
 import util.imageCache;
 
+import static util.Contants.width;
+
 
 /**
  * Created by dell88 on 2018/3/6 0006.

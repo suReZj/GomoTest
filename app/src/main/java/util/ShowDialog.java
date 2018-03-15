@@ -134,22 +134,25 @@ public class ShowDialog {
 
     //本地加载图片并进行比例缩放
     public static void getFitSampleBitmap(String file_path, String url, Context context, ImageView imageView, int width) {
+        int flag=0;
+        float size=0;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file_path, options);
 
-//        Log.e("options.outWidth", options.outWidth + "");
-//        Log.e("imageView.getWidth()", imageView.getWidth() + "");
 
         int inSampleSize = 1;
-        if (options.outWidth > width || options.outHeight > imageView.getHeight()) {
+        if (options.outWidth > width) {
             int widthRatio = Math.round((float) options.outWidth / (float) width);
-//            int heightRatio = Math.round((float) options.outHeight / (float) imageView.getHeight());
-//            inSampleSize = Math.min(widthRatio, heightRatio);
             inSampleSize = widthRatio;
+            flag=1;
+        }else {
+            size = Math.round((float) (float) width / options.outWidth);
+            flag=2;
         }
+
+
         options.inSampleSize = inSampleSize;
-//        Log.e("inSampleSize", inSampleSize + "");
 
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
@@ -169,6 +172,13 @@ public class ShowDialog {
             } catch (MagickException e) {
                 e.printStackTrace();
             }
+        }
+
+        //如果图片过小不能放大，将图片进行拉伸
+        if(flag==2){
+            Matrix matrix = new Matrix();
+            matrix.postScale(size,size);  //长和宽放大缩小的比例
+            bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
         }
 
         setImage(bitmap);

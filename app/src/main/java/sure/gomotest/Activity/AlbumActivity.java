@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
@@ -33,6 +34,7 @@ import adapter.album_recycle_adapter;
 import bean.AlbumBean;
 import bean.MediaBean;
 import sure.gomotest.R;
+import util.FileUtils;
 
 public class AlbumActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -75,17 +77,18 @@ public class AlbumActivity extends AppCompatActivity {
         albumName=albumName.substring(position+1,albumName.length());
         textView.setText(albumName);
 
-        if(list.size()>=15){
-            int start=index;
-            int end=index+15;
-            for(int i=start;i<end&&i<list.size();i++){
-                pageData.add(list.get(i));
-                index++;
-            }
-            adapter=new album_recycle_adapter(pageData);
-        }else {
-            adapter=new album_recycle_adapter(list);
-        }
+//        if(list.size()>=15){
+//            int start=index;
+//            int end=index+15;
+//            for(int i=start;i<end&&i<list.size();i++){
+//                pageData.add(list.get(i));
+//                index++;
+//            }
+//            adapter=new album_recycle_adapter(pageData);
+//        }else {
+//            adapter=new album_recycle_adapter(list);
+//        }
+        adapter=new album_recycle_adapter(list);
 
 
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
@@ -99,7 +102,10 @@ public class AlbumActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
+                File outputFile = FileUtils.genEditFile();
+                EditImageActivity.start(AlbumActivity.this,list.get(position).getPath(),outputFile.getAbsolutePath(),9);
 
+                Log.e("url",list.get(position).getPath());
             }
 
             @Override
