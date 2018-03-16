@@ -26,7 +26,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     compile 'com.google.code.gson:gson:2.8.2'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
@@ -41,6 +40,7 @@ dependencies {
     compile 'tyrant:heartlayout:1.0.1'
     compile 'org.litepal.android:core:1.6.1'
     implementation project(':imageeditlibrary')
+    compile 'com.ycjiang:ImagePreview:2.1.2'
 }
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

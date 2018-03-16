@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/edit"
+        android:title="@string/edit"
+        android:icon="@drawable/ic_edit_white_24dp"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/download"
+        android:title="@string/downLoad"
+        android:icon="@drawable/ic_file_download_white_24dp"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/like"
+        android:title="@string/like"
+        android:icon="@drawable/ic_favorite_white_24dp"
+        app:showAsAction="always"
+        />
+
+</menu>

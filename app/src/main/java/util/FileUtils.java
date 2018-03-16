@@ -17,7 +17,7 @@ import java.io.IOException;
  * 
  */
 public class FileUtils {
-	public static final String FOLDER_NAME = "xinlanedit";
+	public static final String FOLDER_NAME = "GomoTest";
 
 	/**
 	 * 获取存贮文件的文件夹路径

@@ -34,6 +34,7 @@ import sure.gomotest.R;
 import util.imageCache;
 
 import static util.Contants.width;
+import static util.GankImageLoader.getBitmap;
 
 
 /**
@@ -46,9 +47,9 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private imageCache imageCache;
 
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView cardView;
-        private ImageView imageView;
+        public ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -78,6 +79,33 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     }
 
     @Override
+    public int getItemCount() {
+        return list.size();
+    }
+
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
+
+    public void closeDisk() {
+        this.imageCache.closeDiskLruCache();
+    }
+
+    public void fluchCache() {
+        this.imageCache.fluchCache();
+    }
+
+
+    @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 //        Glide.with(context).load(list.get(position)).into(holder.imageView);
         holder.imageView.setTag(list.get(position));
@@ -93,6 +121,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 holder.imageView.setImageBitmap(bitmap);
             } else {
                 getImageBitmap(list.get(position), holder);
+//                getBitmap(list.get(position),holder,holder.imageView.getWidth(),holder.imageView.getHeight());
             }
         }
 
@@ -133,33 +162,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 }
             }
         });
-    }
-
-
-    @Override
-    public int getItemCount() {
-        return list.size();
-    }
-
-
-    public interface OnItemClickLitener {
-        void onItemClick(View view, int position);
-
-        void onItemLongClick(View view, int position);
-    }
-
-    private OnItemClickLitener mOnItemClickLitener;
-
-    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-
-    public void closeDisk() {
-        this.imageCache.closeDiskLruCache();
-    }
-
-    public void fluchCache() {
-        this.imageCache.fluchCache();
     }
 
     public void catchStreamToFile(InputStream inStream, ViewHolder holder, String url) throws IOException {

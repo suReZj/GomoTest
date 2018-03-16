@@ -1,14 +1,9 @@
 package sure.gomotest.Activity;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -20,21 +15,20 @@ import android.widget.TextView;
 
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
-import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
+import com.previewlibrary.GPreviewBuilder;
 
-import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
-import bean.MediaBean;
+import bean.UserViewInfo;
 import sure.gomotest.R;
-import util.FileUtils;
+
+import static util.Contants.albumPath;
 
 public class AlbumActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -102,10 +96,17 @@ public class AlbumActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                File outputFile = FileUtils.genEditFile();
-                EditImageActivity.start(AlbumActivity.this,list.get(position).getPath(),outputFile.getAbsolutePath(),9);
-
-                Log.e("url",list.get(position).getPath());
+                albumPath=list.get(position).getPath();
+                UserViewInfo bean=new UserViewInfo(list.get(position).getPath());
+                GPreviewBuilder.from(AlbumActivity.this)
+                        .to(AlbumDetailActivity.class)
+//                        .setData(showImageList)
+                        .setSingleData(bean)
+                        .setCurrentIndex(0)
+                        .setSingleShowType(false)
+                        .start();
+//                File outputFile = FileUtils.genEditFile();
+//                EditImageActivity.start(AlbumActivity.this,list.get(position).getPath(),outputFile.getAbsolutePath(),9);
             }
 
             @Override

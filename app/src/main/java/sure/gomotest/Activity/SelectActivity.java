@@ -119,12 +119,11 @@ public class SelectActivity extends AppCompatActivity {
                             List<MediaBean> data = allPhotosTemp.get(dirPath);
                             data.add(new MediaBean(path,size,displayName));
 
-                            if(search.size()==0){
+//                            if(search.size()==0){
                                 bean.setAlbumName(dirPath);
                                 bean.setPath(path);
                                 list.add(bean);
-                            }
-
+//                            }
                             continue;
                         } else {
                             albumName.add(dirPath);
@@ -132,11 +131,11 @@ public class SelectActivity extends AppCompatActivity {
                             data.add(new MediaBean(path,size,displayName));
                             allPhotosTemp.put(dirPath,data);
 
-                            if(search.size()==0){
+//                            if(search.size()==0){
                                 bean.setAlbumName(dirPath);
                                 bean.setPath(path);
                                 list.add(bean);
-                            }
+//                            }
                         }
                     }
                     mCursor.close();
@@ -149,9 +148,8 @@ public class SelectActivity extends AppCompatActivity {
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));
 
-//                        DataSupport.deleteAll(AlbumBean.class);
+                        DataSupport.deleteAll(AlbumBean.class);
 //                        DataSupport.saveAll(list);
-
                         DataSupport.saveAllAsync(list).listen(new SaveCallback() {
                             @Override
                             public void onFinish(boolean success) {

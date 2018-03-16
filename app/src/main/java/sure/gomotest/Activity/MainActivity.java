@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
+import com.previewlibrary.GPreviewBuilder;
 
 import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import adapter.main_recycle_adapter;
 import bean.AlbumBean;
+import bean.UserViewInfo;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -45,10 +47,9 @@ import sure.gomotest.R;
 import util.RetrofitUtil;
 
 import static util.Contants.url;
-import static util.Contants.width;
+import static util.Contants.imageUrl;
 import static util.ShowDialog.closeDisk;
 import static util.ShowDialog.fluchCache;
-import static util.ShowDialog.showImageDialog;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
+    private List<UserViewInfo> showImageList=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,9 +103,22 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                showImageDialog(MainActivity.this, list.get(position));
-                Log.e("list",list.get(position));
-                flag = true;
+//                showImageDialog(MainActivity.this, list.get(position));
+//                Log.e("list",list.get(position));
+//                flag = true;
+
+
+                imageUrl=list.get(position);
+                showImageList=new ArrayList<>();
+                UserViewInfo bean=new UserViewInfo(list.get(position));
+                showImageList.add(bean);
+                GPreviewBuilder.from(MainActivity.this)
+                        .to(ShowActivity.class)
+//                        .setData(showImageList)
+                        .setSingleData(bean)
+                        .setCurrentIndex(0)
+                        .setSingleShowType(false)
+                        .start();
             }
 
             @Override
@@ -118,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     private void useCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/test/" + System.currentTimeMillis() + ".jpg");
+                + "/beauty/" + System.currentTimeMillis() + ".jpg");
         file.getParentFile().mkdirs();
 
         //改变Uri  com.xykj.customview.fileprovider注意和xml中的一致
@@ -186,8 +201,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.photograph:
 //                applyWritePermission();
-//                intent=new Intent(MainActivity.this,EditActivity.class);
-//                startActivity(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -214,10 +227,11 @@ public class MainActivity extends AppCompatActivity {
                         int end = start;
                         for (int i = 0; i < results.size(); i++) {
                             list.add(results.get(i).getUrl());
+                            UserViewInfo bean=new UserViewInfo(results.get(i).getUrl());
+                            showImageList.add(bean);
                             adapter.notifyItemInserted(end);
                             end++;
                         }
-//                        adapter.notifyItemRangeChanged(start,end);
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }

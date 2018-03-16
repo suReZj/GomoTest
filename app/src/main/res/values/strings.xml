@@ -4,4 +4,7 @@
     <string name="Photograph">拍照</string>
     <string name="selectAlbum">选择相册</string>
     <string name="cancel">取消</string>
+    <string name="downLoad">下载</string>
+    <string name="edit">编辑</string>
+    <string name="like">喜欢</string>
 </resources>

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="org.litepal.LitePalApplication"
+        android:name=".Activity.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/my_app_name"
@@ -36,7 +36,8 @@
         </activity>
         <activity android:name=".Activity.AlbumActivity" />
         <activity android:name=".Activity.SelectActivity" />
-        <activity android:name=".Activity.EditActivity"></activity>
+        <activity android:name=".Activity.ShowActivity" />
+        <activity android:name=".Activity.AlbumDetailActivity"></activity>
     </application>
 
 </manifest>

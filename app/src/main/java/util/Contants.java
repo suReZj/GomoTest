@@ -10,4 +10,7 @@ public class Contants {
     public static final String head="(";
     public static final String foot=")";
     public static final String bigImage="showDialogBigImage";
+    public static final String showImage="高清大图";
+    public static String imageUrl="";
+    public static String albumPath="";
 }
