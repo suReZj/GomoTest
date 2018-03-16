@@ -142,4 +142,12 @@ public class GankImageLoader {
 //        }
 //        return bitmap;
 //    }
+
+    //                    case R.id.edit:
+//                        getImageBitmap(imageUrl, ShowActivity.this,editImage);
+//                        break;
+
+    //                    case R.id.detail_edit:
+//                        File outputFile = FileUtils.genEditFile();
+//                        EditImageActivity.start(AlbumDetailActivity.this,albumPath,outputFile.getAbsolutePath(),9);
 }

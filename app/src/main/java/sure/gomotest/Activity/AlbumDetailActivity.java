@@ -38,9 +38,7 @@ public class AlbumDetailActivity extends GPreviewActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-//                    case R.id.detail_edit:
-//                        File outputFile = FileUtils.genEditFile();
-//                        EditImageActivity.start(AlbumDetailActivity.this,albumPath,outputFile.getAbsolutePath(),9);
+
                 }
                 return false;
             }
