@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -155,39 +157,38 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 try {
-                    catchStreamToFile(response.body().byteStream(), holder, url);
-                    call.cancel();
+//                    catchStreamToFile(response.body().byteStream(), holder, url);
+                    String path = url;
+                    int position = url.lastIndexOf("/");
+                    path = path.substring(position, url.length());
+                    String tempPath = Environment.getExternalStorageDirectory() + path;
+                    File tempFile = new File(tempPath);
+                    try {
+                        if (tempFile.exists()) {
+                            tempFile.delete();
+                        }
+                        tempFile.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+                    byte[] buffer = new byte[1024];
+                    int len = 0;
+                    while ((len = response.body().byteStream().read(buffer)) != -1) {
+                        fileOutputStream.write(buffer, 0, len);
+                    }
+                    fileOutputStream.close();
+                    getFitSampleBitmap(tempPath, holder, url);
+
                 } catch (Exception e) {
                     e.printStackTrace();
+                }finally {
+                    response.body().byteStream().close();
+                    call.cancel();
                 }
             }
         });
-    }
-
-    public void catchStreamToFile(InputStream inStream, ViewHolder holder, String url) throws IOException {
-        String path = url;
-        int position = url.lastIndexOf("/");
-        path = path.substring(position, url.length());
-        String tempPath = Environment.getExternalStorageDirectory() + path;
-        File tempFile = new File(tempPath);
-        try {
-            if (tempFile.exists()) {
-                tempFile.delete();
-            }
-            tempFile.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
-        byte[] buffer = new byte[1024];
-        int len = 0;
-        while ((len = inStream.read(buffer)) != -1) {
-            fileOutputStream.write(buffer, 0, len);
-        }
-        inStream.close();
-        fileOutputStream.close();
-        getFitSampleBitmap(tempPath, holder, url);
     }
 
 
@@ -241,19 +242,19 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         } else {
         }
 
-        setImage(holder,bitmap,url);
-
-        File tempFile = new File(file_path);
-        if (tempFile.exists()) {
-            tempFile.delete();
-        }
+        setImage(holder,bitmap,url,file_path);
     }
 
-    public void setImage(ViewHolder holder,Bitmap bitmap,String url){
+    public void setImage(ViewHolder holder,Bitmap bitmap,String url,String path){
         if (bitmap != null) {
             imageCache.addToDiskLruCache(url, bitmap);
             imageCache.addBitmapToCache(url, bitmap);
             holder.imageView.setImageBitmap(bitmap);
+            bitmap=null;
+        }
+        File tempFile = new File(path);
+        if (tempFile.exists()) {
+            tempFile.delete();
         }
     }
 }

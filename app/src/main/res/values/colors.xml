@@ -6,4 +6,5 @@
     <color name="toolbarBackground">#40aefc</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="fill">#d4237a</color>
 </resources>

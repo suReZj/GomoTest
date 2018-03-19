@@ -17,6 +17,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.callback.SaveCallback;
 
@@ -29,6 +32,7 @@ import java.util.List;
 import adapter.select_recycle_adapter;
 import bean.AlbumBean;
 import bean.MediaBean;
+import event.saveImageEvent;
 import sure.gomotest.R;
 import util.MyDecoration;
 
@@ -46,6 +50,7 @@ public class SelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
+        EventBus.getDefault().register(this);
         initView();
         setListener();
         getData();
@@ -177,4 +182,36 @@ public class SelectActivity extends AppCompatActivity {
         }).start();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshData(saveImageEvent messageEvent) {
+        String path=messageEvent.getPath();
+        // 获取该图片的父路径名
+        String dirPath = new File(path).getParentFile().getAbsolutePath();
+        AlbumBean bean=new AlbumBean();
+        bean.setPath(path);
+        bean.setAlbumName(dirPath);
+        if (allPhotosTemp.containsKey(dirPath)) {
+            List<MediaBean> data = allPhotosTemp.get(dirPath);
+            data.add(new MediaBean(path,0,""));
+        }else {
+            albumName.add(dirPath);
+            List<MediaBean> data = new ArrayList<>();
+            data.add(new MediaBean(path,0,""));
+            allPhotosTemp.put(dirPath,data);
+        }
+        bean.saveAsync().listen(new SaveCallback() {
+            @Override
+            public void onFinish(boolean success) {
+                Log.e("success","success");
+            }
+        });
+        adapter.notifyDataSetChanged();
+    }
 }

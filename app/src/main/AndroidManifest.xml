@@ -27,7 +27,7 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".Activity.LoadingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +37,8 @@
         <activity android:name=".Activity.AlbumActivity" />
         <activity android:name=".Activity.SelectActivity" />
         <activity android:name=".Activity.ShowActivity" />
-        <activity android:name=".Activity.AlbumDetailActivity"></activity>
+        <activity android:name=".Activity.AlbumDetailActivity" />
+        <activity android:name=".Activity.MainActivity"></activity>
     </application>
 
 </manifest>

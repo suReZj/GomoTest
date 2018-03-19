@@ -87,6 +87,9 @@ public class ShowActivity extends GPreviewActivity {
                     case R.id.like:
                         heartLayout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                         break;
+                    case R.id.edit:
+                        getImageBitmap(imageUrl, ShowActivity.this, editImage);
+                        break;
                 }
                 return false;
             }

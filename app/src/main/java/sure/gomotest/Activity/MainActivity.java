@@ -45,6 +45,7 @@ import retrofit.getData;
 import retrofit2.Retrofit;
 import sure.gomotest.R;
 import util.RetrofitUtil;
+import yanzhikai.textpath.AsyncTextPathView;
 
 import static util.Contants.url;
 import static util.Contants.imageUrl;
