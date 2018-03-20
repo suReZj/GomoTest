@@ -3,7 +3,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
 <android.support.v7.widget.Toolbar
     android:id="@+id/activity_show_toolbar"
     android:layout_width="match_parent"
@@ -11,13 +12,14 @@
     android:background="@color/black"
     app:titleTextColor="@color/white"
     android:theme="@style/toolBar"
-    app:navigationIcon="@drawable/ic_arrow_back_white_24dp"/>
-    <tyrantgit.widget.HeartLayout android:layout_width="match_parent"
+    app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+    />
+    <tyrantgit.widget.HeartLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/activity_show_heart"
         xmlns:android="http://schemas.android.com/apk/res/android"
         >
 <include layout="@layout/activity_image_preview_photo"/>
-</tyrantgit.widget.HeartLayout>
+    </tyrantgit.widget.HeartLayout>
     </LinearLayout>
 

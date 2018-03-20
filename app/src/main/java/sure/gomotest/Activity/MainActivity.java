@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
     private List<UserViewInfo> showImageList=new ArrayList<>();
+    private String error="https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.photograph:
-//                applyWritePermission();
+                applyWritePermission();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -210,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
     public void setImage(final int page) {
         Retrofit retrofit = RetrofitUtil.getRetrofit(url);
         getData getData = retrofit.create(getData.class);
-        getData.getWelfare("12", page)
+        getData.getWelfare("9", page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<gson_welfare>() {
@@ -223,20 +224,28 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(gson_welfare value) {
+//                        if(list.size()%54==0){
+//                            System.gc();
+//                        }
                         List<gson_result> results = value.getResults();
                         int start = list.size();
                         int end = start;
                         for (int i = 0; i < results.size(); i++) {
-                            list.add(results.get(i).getUrl());
+                            if(error.equals(results.get(i).getUrl())){
+                                list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
+                            }else {
+                                list.add(results.get(i).getUrl());
+                            }
                             UserViewInfo bean=new UserViewInfo(results.get(i).getUrl());
                             showImageList.add(bean);
                             adapter.notifyItemInserted(end);
                             end++;
                         }
+                        adapter.notifyDataSetChanged();
+                        System.gc();
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
-                        adapter.notifyDataSetChanged();
                     }
 
                     @Override

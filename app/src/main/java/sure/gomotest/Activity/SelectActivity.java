@@ -33,6 +33,7 @@ import adapter.select_recycle_adapter;
 import bean.AlbumBean;
 import bean.MediaBean;
 import event.saveImageEvent;
+import event.updateAlbumEvent;
 import sure.gomotest.R;
 import util.MyDecoration;
 
@@ -42,9 +43,11 @@ public class SelectActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private select_recycle_adapter adapter;
     List<MediaBean> mediaBeen = new ArrayList<>();
-    HashMap<String,List<MediaBean>> allPhotosTemp = new HashMap<>();//所有照片
+    HashMap<String,List<MediaBean>> allPhotosTemp ;//所有照片
     Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    List<String> albumName=new ArrayList<>();
+    List<String> albumName;
+    boolean flag=false;
+    updateAlbumEvent event=new updateAlbumEvent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,8 @@ public class SelectActivity extends AppCompatActivity {
 
     public void getData(){
         final List<AlbumBean> list=new ArrayList<>();
+        allPhotosTemp = new HashMap<>();
+        albumName=new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -159,6 +164,10 @@ public class SelectActivity extends AppCompatActivity {
                             @Override
                             public void onFinish(boolean success) {
                                 Log.e("save","save");
+                                if(flag){
+                                    EventBus.getDefault().post(event);
+                                    flag=false;
+                                }
                             }
                         });
 
@@ -192,26 +201,9 @@ public class SelectActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(saveImageEvent messageEvent) {
         String path=messageEvent.getPath();
-        // 获取该图片的父路径名
         String dirPath = new File(path).getParentFile().getAbsolutePath();
-        AlbumBean bean=new AlbumBean();
-        bean.setPath(path);
-        bean.setAlbumName(dirPath);
-        if (allPhotosTemp.containsKey(dirPath)) {
-            List<MediaBean> data = allPhotosTemp.get(dirPath);
-            data.add(new MediaBean(path,0,""));
-        }else {
-            albumName.add(dirPath);
-            List<MediaBean> data = new ArrayList<>();
-            data.add(new MediaBean(path,0,""));
-            allPhotosTemp.put(dirPath,data);
-        }
-        bean.saveAsync().listen(new SaveCallback() {
-            @Override
-            public void onFinish(boolean success) {
-                Log.e("success","success");
-            }
-        });
-        adapter.notifyDataSetChanged();
+        event.setAlbumName(dirPath);
+        getData();
+        flag=true;
     }
 }

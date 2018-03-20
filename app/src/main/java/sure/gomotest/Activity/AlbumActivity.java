@@ -17,15 +17,20 @@ import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
 import com.previewlibrary.GPreviewBuilder;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
 import bean.UserViewInfo;
+import event.updateAlbumEvent;
 import sure.gomotest.R;
 
 import static util.Contants.albumPath;
@@ -39,22 +44,21 @@ public class AlbumActivity extends AppCompatActivity {
     private Intent intent;
     private SpringView springView;
     private List<AlbumBean> list;
-    private List<AlbumBean> pageData=new ArrayList<>();
-    private int index=0;
+    private List<AlbumBean> pageData = new ArrayList<>();
+    private int index = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_album);
         initView();
         setListener();
     }
 
     public void initView() {
-        intent=getIntent();
-        albumName=intent.getStringExtra("name");
-        list= DataSupport.where("albumName=?",albumName).find(AlbumBean.class);
-        Log.e("list",list.size()+"");
+        intent = getIntent();
+        albumName = intent.getStringExtra("name");
 
         toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
         toolbar.setTitle("");
@@ -64,40 +68,30 @@ public class AlbumActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView=(RecyclerView) findViewById(R.id.activity_album_recyclerView);
-        textView=(TextView) findViewById(R.id.activity_album_textView);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_album_recyclerView);
+        textView = (TextView) findViewById(R.id.activity_album_textView);
 
-        int position=albumName.lastIndexOf("/");
-        albumName=albumName.substring(position+1,albumName.length());
-        textView.setText(albumName);
-
-//        if(list.size()>=15){
-//            int start=index;
-//            int end=index+15;
-//            for(int i=start;i<end&&i<list.size();i++){
-//                pageData.add(list.get(i));
-//                index++;
-//            }
-//            adapter=new album_recycle_adapter(pageData);
-//        }else {
-//            adapter=new album_recycle_adapter(list);
-//        }
-        adapter=new album_recycle_adapter(list);
-
-
+        list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+        adapter = new album_recycle_adapter(list);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
 
-        springView=(SpringView) findViewById(R.id.activity_album_frame);
+        int position = albumName.lastIndexOf("/");
+        albumName = albumName.substring(position + 1, albumName.length());
+        textView.setText(albumName);
+
+
+        springView = (SpringView) findViewById(R.id.activity_album_frame);
         springView.setFooter(new DefaultFooter(AlbumActivity.this));
+//        getData();
     }
 
     public void setListener() {
         adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                albumPath=list.get(position).getPath();
-                UserViewInfo bean=new UserViewInfo(list.get(position).getPath());
+                albumPath = list.get(position).getPath();
+                UserViewInfo bean = new UserViewInfo(list.get(position).getPath());
                 GPreviewBuilder.from(AlbumActivity.this)
                         .to(AlbumDetailActivity.class)
 //                        .setData(showImageList)
@@ -123,9 +117,9 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onLoadmore() {
 
-                int start=index;
-                int end=start+15;
-                for(int i=start;i<end&&i<list.size();i++){
+                int start = index;
+                int end = start + 15;
+                for (int i = start; i < end && i < list.size(); i++) {
                     pageData.add(list.get(i));
                     adapter.notifyItemInserted(i);
                     index++;
@@ -151,7 +145,28 @@ public class AlbumActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 
+    public void getData() {
+        int index=albumName.lastIndexOf("/");
+        String dirPath=albumName.substring(index+1,albumName.length());
+        if(String.valueOf(textView.getText()).equals(dirPath)){
+            list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+            adapter = new album_recycle_adapter(list);
+            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+            recyclerView.setAdapter(adapter);
+            setListener();
+        }
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshData(updateAlbumEvent messageEvent) {
+        albumName=messageEvent.getAlbumName();
+        getData();
+    }
 
 }

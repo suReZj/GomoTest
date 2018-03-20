@@ -57,7 +57,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image);
             cardView = itemView.findViewById(R.id.item_cardView);
-            int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
+            int width =((Activity)itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
             params.width = width / 3;
@@ -109,10 +109,10 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-//        Glide.with(context).load(list.get(position)).into(holder.imageView);
-        holder.imageView.setTag(list.get(position));
+//        holder.imageView.setTag(list.get(position));
         holder.imageView.setImageResource(R.mipmap.ic_launcher);
 
+//        Glide.with(context).load(list.get(position)).into(holder.imageView);
 
         if (imageCache.getBitmapFromCache(list.get(position)) != null) {
             holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(list.get(position)));
@@ -123,7 +123,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 holder.imageView.setImageBitmap(bitmap);
             } else {
                 getImageBitmap(list.get(position), holder);
-//                getBitmap(list.get(position),holder,holder.imageView.getWidth(),holder.imageView.getHeight());
             }
         }
 
@@ -146,7 +145,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .get()
-                .url(url)
+                .url(url+width)
                 .build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -156,13 +155,14 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                String path = url;
+                int position = url.lastIndexOf("/");
+                path = path.substring(position, url.length());
+                String tempPath = Environment.getExternalStorageDirectory() + path;
+                File tempFile = new File(tempPath);
+                FileOutputStream fileOutputStream = null;
                 try {
 //                    catchStreamToFile(response.body().byteStream(), holder, url);
-                    String path = url;
-                    int position = url.lastIndexOf("/");
-                    path = path.substring(position, url.length());
-                    String tempPath = Environment.getExternalStorageDirectory() + path;
-                    File tempFile = new File(tempPath);
                     try {
                         if (tempFile.exists()) {
                             tempFile.delete();
@@ -172,20 +172,19 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                         e.printStackTrace();
                     }
 
-                    FileOutputStream fileOutputStream = new FileOutputStream(tempFile);
+                    fileOutputStream = new FileOutputStream(tempFile);
                     byte[] buffer = new byte[1024];
                     int len = 0;
                     while ((len = response.body().byteStream().read(buffer)) != -1) {
                         fileOutputStream.write(buffer, 0, len);
                     }
-                    fileOutputStream.close();
                     getFitSampleBitmap(tempPath, holder, url);
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }finally {
                     response.body().byteStream().close();
                     call.cancel();
+                    fileOutputStream.close();
                 }
             }
         });
@@ -235,7 +234,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         if (bitmap != null && bitmap.getWidth() != 0) {
             //质量压缩
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
             byte[] bytes = baos.toByteArray();
 
             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -249,9 +248,13 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         if (bitmap != null) {
             imageCache.addToDiskLruCache(url, bitmap);
             imageCache.addBitmapToCache(url, bitmap);
-            holder.imageView.setImageBitmap(bitmap);
-            bitmap=null;
-        }
+//            holder.imageView.setImageBitmap(bitmap);
+            holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
+//            if(bitmap != null && !bitmap.isRecycled()){
+//                bitmap.recycle(); //此句造成的以上异常
+                bitmap = null;
+            }
+//        }
         File tempFile = new File(path);
         if (tempFile.exists()) {
             tempFile.delete();
