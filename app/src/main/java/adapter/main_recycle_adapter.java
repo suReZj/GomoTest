@@ -36,7 +36,6 @@ import sure.gomotest.R;
 import util.imageCache;
 
 import static util.Contants.width;
-import static util.GankImageLoader.getBitmap;
 
 
 /**
@@ -196,13 +195,15 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file_path, options);
 
-        int inSampleSize = 1;
-        if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
-            int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
-            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
-            inSampleSize = Math.min(widthRatio, heightRatio);
-        }
-        options.inSampleSize = inSampleSize;
+
+        //采样率压缩
+//        int inSampleSize = 1;
+//        if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
+//            int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
+//            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
+//            inSampleSize = Math.min(widthRatio, heightRatio);
+//        }
+        options.inSampleSize = 2;
 
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;
@@ -234,7 +235,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         if (bitmap != null && bitmap.getWidth() != 0) {
             //质量压缩
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
             byte[] bytes = baos.toByteArray();
 
             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

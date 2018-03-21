@@ -16,7 +16,7 @@ import yanzhikai.textpath.PathAnimatorListener;
 
 public class LoadingActivity extends AppCompatActivity {
     private AsyncTextPathView asyncTextPathView;
-//    private AsyncTextPathView sureTextPathView;
+    private AsyncTextPathView sureTextPathView;
     private AnimatedSvgView svgView;
 
     @Override
@@ -36,7 +36,7 @@ public class LoadingActivity extends AppCompatActivity {
     public void initView() {
         asyncTextPathView = (AsyncTextPathView) findViewById(R.id.firstAsyncTextPathView);
         svgView = (AnimatedSvgView) findViewById(R.id.animated_svg_view);
-//        sureTextPathView=(AsyncTextPathView)findViewById(R.id.secondAsyncTextPathView);
+        sureTextPathView=(AsyncTextPathView)findViewById(R.id.secondAsyncTextPathView);
         setSvg(SVG.values()[0]);
     }
 
@@ -64,6 +64,6 @@ public class LoadingActivity extends AppCompatActivity {
 
         //从无到显示
         asyncTextPathView.startAnimation(0,1);
-//        sureTextPathView.startAnimation(0,1);
+        sureTextPathView.startAnimation(0,1);
     }
 }

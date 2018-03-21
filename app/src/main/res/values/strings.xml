@@ -8,7 +8,8 @@
     <string name="edit">编辑</string>
     <string name="like">喜欢</string>
     <string name="beautyAlbum">美女相册</string>
-    <string name="sure">by—Sure</string>
+    <string name="sure">Sure</string>
+    <string name="press_back_again_to_exit">再按一次退出</string>
 
     <color name="google_red">#EA4335</color>
     <color name="google_yellow">#FBBC05</color>

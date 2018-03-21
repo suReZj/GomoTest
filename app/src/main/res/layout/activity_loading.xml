@@ -12,7 +12,7 @@
         android:layout_below="@+id/animated_svg_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:pathStrokeColor="@color/toolbarBackground"
+        app:pathStrokeColor="@color/fill"
         app:duration="1500"
         app:showPainter="false"
         app:text="@string/beautyAlbum"
@@ -37,20 +37,19 @@
         app:animatedSvgTraceTimePerGlyph="1000"
         android:layout_centerHorizontal="true"
         android:layout_centerInParent="true"/>
-    <!--<yanzhikai.textpath.AsyncTextPathView-->
-        <!--android:id="@+id/secondAsyncTextPathView"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:pathStrokeColor="@color/toolbarBackground"-->
-        <!--app:duration="1500"-->
-        <!--app:showPainter="true"-->
-        <!--app:text="@string/sure"-->
-        <!--app:textInCenter="true"-->
-        <!--app:textSize="30sp"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--android:layout_centerInParent="true"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_margin="15dp"-->
-        <!--/>-->
+    <yanzhikai.textpath.AsyncTextPathView
+        android:id="@+id/secondAsyncTextPathView"
+        android:layout_below="@id/firstAsyncTextPathView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:pathStrokeColor="@color/toolbarBackground"
+        app:duration="1500"
+        app:showPainter="true"
+        app:text="@string/sure"
+        app:textInCenter="true"
+        app:textSize="20sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        />
 </RelativeLayout>

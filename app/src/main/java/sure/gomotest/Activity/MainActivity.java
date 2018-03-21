@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean flag = false;
     private List<UserViewInfo> showImageList=new ArrayList<>();
     private String error="https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
+    private long backLastPressedTimestamp = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 + "/beauty/" + System.currentTimeMillis() + ".jpg");
         file.getParentFile().mkdirs();
 
-        //改变Uri  com.xykj.customview.fileprovider注意和xml中的一致
         Uri uri = FileProvider.getUriForFile(this, "包名.fileprovider", file);
-        //添加权限
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -252,6 +251,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onError(Throwable e) {
                         disposable.dispose();
                         Log.e("error", e.toString());
+                        if (page != 1) {
+                            springView.onFinishFreshAndLoad();
+                        }
                     }
 
                     @Override
@@ -278,5 +280,15 @@ public class MainActivity extends AppCompatActivity {
             fluchCache();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - backLastPressedTimestamp > 2 * 1000) {
+            Toast.makeText(MainActivity.this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+            backLastPressedTimestamp = System.currentTimeMillis();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
