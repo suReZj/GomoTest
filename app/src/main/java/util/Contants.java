@@ -13,4 +13,5 @@ public class Contants {
     public static final String showImage="高清大图";
     public static String imageUrl="";
     public static String albumPath="";
+    public static String error="http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
 }

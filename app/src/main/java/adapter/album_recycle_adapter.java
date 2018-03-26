@@ -3,8 +3,6 @@ package adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,11 +12,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import bean.AlbumBean;
-import bean.MediaBean;
 import sure.gomotest.R;
 import util.imageCache;
 
@@ -41,8 +37,9 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
             int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
-            params.width = width / 3;
+            params.width = (width-6) / 3;
             params.height = width / 3;
+            Log.e("params.width",params.width+"");
             imageView.setLayoutParams(params);
         }
     }

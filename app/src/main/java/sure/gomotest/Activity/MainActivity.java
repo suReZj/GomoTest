@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,15 +24,12 @@ import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
 import com.previewlibrary.GPreviewBuilder;
 
-import org.litepal.LitePal;
-import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.main_recycle_adapter;
-import bean.AlbumBean;
 import bean.UserViewInfo;
 import gson.gson_result;
 import gson.gson_welfare;
@@ -45,7 +41,6 @@ import retrofit.getData;
 import retrofit2.Retrofit;
 import sure.gomotest.R;
 import util.RetrofitUtil;
-import yanzhikai.textpath.AsyncTextPathView;
 
 import static util.Contants.url;
 import static util.Contants.imageUrl;
@@ -235,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
                             adapter.notifyItemInserted(end);
                             end++;
                         }
-                        adapter.notifyDataSetChanged();
+//                        adapter.notifyDataSetChanged();
                         System.gc();
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();

@@ -1,6 +1,5 @@
 package sure.gomotest.Activity;
 
-import android.animation.Animator;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import com.jaredrummler.android.widget.AnimatedSvgView;
 import sure.gomotest.R;
 import util.SVG;
 import yanzhikai.textpath.AsyncTextPathView;
-import yanzhikai.textpath.PathAnimatorListener;
 
 public class LoadingActivity extends AppCompatActivity {
     private AsyncTextPathView asyncTextPathView;

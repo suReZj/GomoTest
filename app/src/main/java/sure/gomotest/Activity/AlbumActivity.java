@@ -7,14 +7,11 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.liaoinstan.springview.container.DefaultFooter;
-import com.liaoinstan.springview.widget.SpringView;
 import com.previewlibrary.GPreviewBuilder;
 
 import org.greenrobot.eventbus.EventBus;
@@ -23,7 +20,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +38,6 @@ public class AlbumActivity extends AppCompatActivity {
     private album_recycle_adapter adapter;
     private String albumName;
     private Intent intent;
-    private SpringView springView;
     private List<AlbumBean> list;
     private List<AlbumBean> pageData = new ArrayList<>();
     private int index = 0;
@@ -81,8 +76,6 @@ public class AlbumActivity extends AppCompatActivity {
         textView.setText(albumName);
 
 
-        springView = (SpringView) findViewById(R.id.activity_album_frame);
-        springView.setFooter(new DefaultFooter(AlbumActivity.this));
 //        getData();
     }
 
@@ -104,25 +97,6 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onItemLongClick(View view, int position) {
 
-            }
-        });
-        springView.setListener(new SpringView.OnFreshListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-
-            @Override
-            public void onLoadmore() {
-
-                int start = index;
-                int end = start + 15;
-                for (int i = start; i < end && i < list.size(); i++) {
-                    pageData.add(list.get(i));
-                    adapter.notifyItemInserted(i);
-                    index++;
-                }
-                springView.onFinishFreshAndLoad();
             }
         });
     }

@@ -6,6 +6,7 @@ import com.previewlibrary.ZoomMediaLoader;
 
 import org.litepal.LitePal;
 
+import util.CrashHandler;
 import util.ImageLoader;
 
 /**
@@ -18,5 +19,6 @@ public class MyApplication extends Application {
         super.onCreate();
         LitePal.initialize(this);
         ZoomMediaLoader.getInstance().init(new ImageLoader());
+        CrashHandler.getInstance().init(this);
     }
 }
