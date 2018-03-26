@@ -43,11 +43,11 @@ public class SelectActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private select_recycle_adapter adapter;
     List<MediaBean> mediaBeen = new ArrayList<>();
-    HashMap<String,List<MediaBean>> allPhotosTemp ;//所有照片
+    HashMap<String, List<MediaBean>> allPhotosTemp;//所有照片
     Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     List<String> albumName;
-    boolean flag=false;
-    updateAlbumEvent event=new updateAlbumEvent();
+    boolean flag = false;
+    updateAlbumEvent event = new updateAlbumEvent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class SelectActivity extends AppCompatActivity {
         getData();
     }
 
-    public void initView(){
+    public void initView() {
         toolbar = (Toolbar) findViewById(R.id.activity_select_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -68,12 +68,12 @@ public class SelectActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView=(RecyclerView) findViewById(R.id.activity_select_recyclerView);
-        textView=(TextView) findViewById(R.id.activity_select_textView);
+        recyclerView = (RecyclerView) findViewById(R.id.activity_select_recyclerView);
+        textView = (TextView) findViewById(R.id.activity_select_textView);
         recyclerView.addItemDecoration(new MyDecoration(SelectActivity.this, MyDecoration.VERTICAL_LIST, R.drawable.recyclerview_divider));
     }
 
-    public void setListener(){
+    public void setListener() {
     }
 
     @Override
@@ -92,60 +92,53 @@ public class SelectActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void getData(){
-        final List<AlbumBean> list=new ArrayList<>();
+    public void getData() {
+        final List<AlbumBean> list = new ArrayList<>();
         allPhotosTemp = new HashMap<>();
-        albumName=new ArrayList<>();
+        albumName = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String[] projImage = { MediaStore.Images.Media._ID
+                String[] projImage = {MediaStore.Images.Media._ID
                         , MediaStore.Images.Media.DATA
-                        ,MediaStore.Images.Media.SIZE
-                        ,MediaStore.Images.Media.DISPLAY_NAME};
+                        , MediaStore.Images.Media.SIZE
+                        , MediaStore.Images.Media.DISPLAY_NAME};
                 Cursor mCursor = getContentResolver().query(mImageUri,
                         projImage,
-                        MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or "+
+                        MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=? or " +
                                 MediaStore.Images.Media.MIME_TYPE + "=? or " + MediaStore.Images.Media.MIME_TYPE + "=?",
-                        new String[]{"image/jpeg", "image/png","image/jpg","image/bmp"},
-                        MediaStore.Images.Media.DATE_MODIFIED+" desc");
+                        new String[]{"image/jpeg", "image/png", "image/jpg", "image/bmp"},
+                        MediaStore.Images.Media.DATE_MODIFIED + " desc");
 
-                if(mCursor!=null){
+                if (mCursor != null) {
                     while (mCursor.moveToNext()) {
                         // 获取图片的路径
                         String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                        int size = mCursor.getInt(mCursor.getColumnIndex(MediaStore.Images.Media.SIZE))/1024;
+                        int size = mCursor.getInt(mCursor.getColumnIndex(MediaStore.Images.Media.SIZE)) / 1024;
                         String displayName = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
                         //用于展示相册初始化界面
-                        mediaBeen.add(new MediaBean(path,size,displayName));
+                        mediaBeen.add(new MediaBean(path, size, displayName));
                         // 获取该图片的父路径名
                         String dirPath = new File(path).getParentFile().getAbsolutePath();
                         //存储对应关系
 
-                        AlbumBean bean=new AlbumBean();
-                        List<AlbumBean> search=DataSupport.where("path=?",path).find(AlbumBean.class);
-
+                        AlbumBean bean = new AlbumBean();
                         if (allPhotosTemp.containsKey(dirPath)) {
                             List<MediaBean> data = allPhotosTemp.get(dirPath);
-                            data.add(new MediaBean(path,size,displayName));
+                            data.add(new MediaBean(path, size, displayName));
 
-//                            if(search.size()==0){
-                                bean.setAlbumName(dirPath);
-                                bean.setPath(path);
-                                list.add(bean);
-//                            }
+                            bean.setAlbumName(dirPath);
+                            bean.setPath(path);
+                            list.add(bean);
                             continue;
                         } else {
                             albumName.add(dirPath);
                             List<MediaBean> data = new ArrayList<>();
-                            data.add(new MediaBean(path,size,displayName));
-                            allPhotosTemp.put(dirPath,data);
-
-//                            if(search.size()==0){
-                                bean.setAlbumName(dirPath);
-                                bean.setPath(path);
-                                list.add(bean);
-//                            }
+                            data.add(new MediaBean(path, size, displayName));
+                            allPhotosTemp.put(dirPath, data);
+                            bean.setAlbumName(dirPath);
+                            bean.setPath(path);
+                            list.add(bean);
                         }
                     }
                     mCursor.close();
@@ -154,19 +147,17 @@ public class SelectActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter=new select_recycle_adapter(allPhotosTemp,albumName);
+                        adapter = new select_recycle_adapter(allPhotosTemp, albumName);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));
 
                         DataSupport.deleteAll(AlbumBean.class);
-//                        DataSupport.saveAll(list);
                         DataSupport.saveAllAsync(list).listen(new SaveCallback() {
                             @Override
                             public void onFinish(boolean success) {
-                                Log.e("save","save");
-                                if(flag){
+                                if (flag) {
                                     EventBus.getDefault().post(event);
-                                    flag=false;
+                                    flag = false;
                                 }
                             }
                         });
@@ -174,9 +165,9 @@ public class SelectActivity extends AppCompatActivity {
                         adapter.setOnItemClickLitener(new select_recycle_adapter.OnItemClickLitener() {
                             @Override
                             public void onItemClick(View view, int position) {
-                                Intent intent=new Intent(SelectActivity.this,AlbumActivity.class);
-                                String name=albumName.get(position);
-                                intent.putExtra("name",name);
+                                Intent intent = new Intent(SelectActivity.this, AlbumActivity.class);
+                                String name = albumName.get(position);
+                                intent.putExtra("name", name);
                                 startActivity(intent);
                             }
 
@@ -195,15 +186,16 @@ public class SelectActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        System.gc();
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(saveImageEvent messageEvent) {
-        String path=messageEvent.getPath();
+        String path = messageEvent.getPath();
         String dirPath = new File(path).getParentFile().getAbsolutePath();
         event.setAlbumName(dirPath);
         getData();
-        flag=true;
+        flag = true;
     }
 }

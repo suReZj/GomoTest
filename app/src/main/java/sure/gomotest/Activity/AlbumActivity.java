@@ -99,8 +99,6 @@ public class AlbumActivity extends AppCompatActivity {
                         .setCurrentIndex(0)
                         .setSingleShowType(false)
                         .start();
-//                File outputFile = FileUtils.genEditFile();
-//                EditImageActivity.start(AlbumActivity.this,list.get(position).getPath(),outputFile.getAbsolutePath(),9);
             }
 
             @Override
@@ -149,12 +147,13 @@ public class AlbumActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        System.gc();
     }
 
     public void getData() {
-        int index=albumName.lastIndexOf("/");
-        String dirPath=albumName.substring(index+1,albumName.length());
-        if(String.valueOf(textView.getText()).equals(dirPath)){
+        int index = albumName.lastIndexOf("/");
+        String dirPath = albumName.substring(index + 1, albumName.length());
+        if (String.valueOf(textView.getText()).equals(dirPath)) {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
             adapter = new album_recycle_adapter(list);
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
@@ -165,7 +164,7 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(updateAlbumEvent messageEvent) {
-        albumName=messageEvent.getAlbumName();
+        albumName = messageEvent.getAlbumName();
         getData();
     }
 

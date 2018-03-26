@@ -66,46 +66,6 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.imageView.setImageResource(R.mipmap.ic_launcher);
         Glide.with(context).load(list.get(position).getPath()).into(holder.imageView);
-
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
-//
-//        int inSampleSize = 1;
-//        if (options.outWidth > holder.imageView.getWidth() || options.outHeight > holder.imageView.getHeight()) {
-//            int widthRatio = Math.round((float) options.outWidth / (float) holder.imageView.getWidth());
-//            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
-//            inSampleSize = Math.min(widthRatio, heightRatio);
-//        }
-//        options.inSampleSize = inSampleSize;
-
-//        options.inJustDecodeBounds = false;
-//        options.inPreferredConfig = Bitmap.Config.RGB_565;
-
-//        bitmap = BitmapFactory.decodeFile(list.get(position).getLocalPath(), options);
-
-
-//        if (bitmap != null && bitmap.getWidth() != 0) {
-//            //缩放法压缩
-//            Matrix matrix = new Matrix();
-//            matrix.setScale(0.5f, 0.5f);
-//            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-//        } else {
-//        }
-//
-//
-//        if (bitmap != null && bitmap.getWidth() != 0) {
-//            //质量压缩
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
-//            byte[] bytes = baos.toByteArray();
-//
-//            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//        } else {
-//        }
-
-//        holder.imageView.setImageBitmap(bitmap);
-
         if (mOnItemClickLitener != null) {
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -160,8 +160,8 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 String tempPath = Environment.getExternalStorageDirectory() + path;
                 File tempFile = new File(tempPath);
                 FileOutputStream fileOutputStream = null;
+                byte[] buffer=null;
                 try {
-//                    catchStreamToFile(response.body().byteStream(), holder, url);
                     try {
                         if (tempFile.exists()) {
                             tempFile.delete();
@@ -172,7 +172,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     }
 
                     fileOutputStream = new FileOutputStream(tempFile);
-                    byte[] buffer = new byte[1024];
+                    buffer = new byte[1024];
                     int len = 0;
                     while ((len = response.body().byteStream().read(buffer)) != -1) {
                         fileOutputStream.write(buffer, 0, len);
@@ -184,6 +184,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     response.body().byteStream().close();
                     call.cancel();
                     fileOutputStream.close();
+                    buffer=null;
                 }
             }
         });
@@ -191,10 +192,11 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
     public void getFitSampleBitmap(String file_path, ViewHolder holder, String url) {
+        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+        byte[] bytes;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file_path, options);
-
 
         //采样率压缩
 //        int inSampleSize = 1;
@@ -234,31 +236,36 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
         if (bitmap != null && bitmap.getWidth() != 0) {
             //质量压缩
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-            byte[] bytes = baos.toByteArray();
+            bytes = baos.toByteArray();
 
             bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         } else {
         }
 
         setImage(holder,bitmap,url,file_path);
+        if(baos!=null){
+            try {
+                baos.close();
+                baos=null;
+                bytes=null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void setImage(ViewHolder holder,Bitmap bitmap,String url,String path){
         if (bitmap != null) {
             imageCache.addToDiskLruCache(url, bitmap);
             imageCache.addBitmapToCache(url, bitmap);
-//            holder.imageView.setImageBitmap(bitmap);
             holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
-//            if(bitmap != null && !bitmap.isRecycled()){
-//                bitmap.recycle(); //此句造成的以上异常
                 bitmap = null;
             }
-//        }
         File tempFile = new File(path);
         if (tempFile.exists()) {
             tempFile.delete();
         }
+        System.gc();
     }
 }

@@ -70,7 +70,6 @@ public class AlbumDetailActivity extends GPreviewActivity {
         if(path!=null){
             File file=new File(path);
             if(file.exists()){
-                Log.e("exits","exits");
                 // 获取该图片的父路径名
                 String dirPath = new File(path).getParentFile().getAbsolutePath();
                 AlbumBean bean=new AlbumBean();

@@ -187,6 +187,15 @@ public class ShowActivity extends GPreviewActivity {
                 EditImageActivity.start(ShowActivity.this,savePath,outputFile.getAbsolutePath(),9);
             }
         }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(handler!=null){
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+        }
+    }
 }
 
 

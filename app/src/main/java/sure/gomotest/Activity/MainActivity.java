@@ -106,11 +106,6 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-//                showImageDialog(MainActivity.this, list.get(position));
-//                Log.e("list",list.get(position));
-//                flag = true;
-
-
                 imageUrl=list.get(position);
                 showImageList=new ArrayList<>();
                 UserViewInfo bean=new UserViewInfo(list.get(position));
@@ -223,8 +218,8 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(gson_welfare value) {
-//                        if(list.size()%54==0){
-//                            System.gc();
+//                        if(list.size()%45==0){
+                            System.gc();
 //                        }
                         List<gson_result> results = value.getResults();
                         int start = list.size();
@@ -250,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onError(Throwable e) {
                         disposable.dispose();
-                        Log.e("error", e.toString());
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
@@ -268,8 +262,6 @@ public class MainActivity extends AppCompatActivity {
         if (flag) {
             closeDisk();
         }
-//        DataSupport.deleteAll(AlbumBean.class);
-//        LitePal.deleteDatabase("sure");
         super.onDestroy();
     }
 
