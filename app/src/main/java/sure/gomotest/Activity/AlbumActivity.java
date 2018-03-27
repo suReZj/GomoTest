@@ -1,12 +1,15 @@
 package sure.gomotest.Activity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,7 +42,7 @@ public class AlbumActivity extends AppCompatActivity {
     private String albumName;
     private Intent intent;
     private List<AlbumBean> list;
-    private List<AlbumBean> pageData = new ArrayList<>();
+    private ArrayList<String> urlList = new ArrayList<>();
     private int index = 0;
 
     @Override
@@ -67,6 +70,10 @@ public class AlbumActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.activity_album_textView);
 
         list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+        for(int i=0;i<list.size();i++){
+            urlList.add(list.get(i).getPath());
+        }
+
         adapter = new album_recycle_adapter(list);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         recyclerView.setAdapter(adapter);
@@ -84,19 +91,18 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 albumPath = list.get(position).getPath();
-                UserViewInfo bean = new UserViewInfo(list.get(position).getPath());
-                GPreviewBuilder.from(AlbumActivity.this)
-                        .to(AlbumDetailActivity.class)
-//                        .setData(showImageList)
-                        .setSingleData(bean)
-                        .setCurrentIndex(0)
-                        .setSingleShowType(false)
-                        .start();
+                Intent showItent=new Intent(AlbumActivity.this,AlbumDetailActivity.class);
+                showItent.putStringArrayListExtra("list",urlList);
+                showItent.putExtra("position",position);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
+                }else {
+                    startActivity(showItent);
+                }
             }
 
             @Override
             public void onItemLongClick(View view, int position) {
-
             }
         });
     }
@@ -129,6 +135,9 @@ public class AlbumActivity extends AppCompatActivity {
         String dirPath = albumName.substring(index + 1, albumName.length());
         if (String.valueOf(textView.getText()).equals(dirPath)) {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+            for(int i=0;i<list.size();i++){
+                urlList.add(list.get(i).getPath());
+            }
             adapter = new album_recycle_adapter(list);
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
             recyclerView.setAdapter(adapter);

@@ -39,7 +39,6 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
             //设置图片的相对于屏幕的宽高比
             params.width = (width-6) / 3;
             params.height = width / 3;
-            Log.e("params.width",params.width+"");
             imageView.setLayoutParams(params);
         }
     }

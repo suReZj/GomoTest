@@ -1,1 +1,1 @@
-include ':app', ':androidlibmagick', ':imageeditlibrary'
+include ':app', ':androidlibmagick', ':imageeditlibrary', ':photoview'

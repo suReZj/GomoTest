@@ -10,11 +10,17 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.previewlibrary.GPreviewActivity;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
@@ -23,29 +29,35 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
 
+import adapter.viewPager_adapter;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import sure.gomotest.R;
-import tyrantgit.widget.HeartLayout;
 import util.FileUtils;
+import widght.MyViewPager;
 
-import static util.Contants.imageUrl;
 
-public class ShowActivity extends GPreviewActivity {
+public class ShowActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private HeartLayout heartLayout;
+//    private HeartLayout heartLayout;
+    private ViewPager viewPager;
     private Random mRandom = new Random();
     final int downLoadImage=0;
     final int editImage=1;
+    private ArrayList<String> list;
+    private int position;
+    private viewPager_adapter adapter;
+    private
 
     Handler handler=new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what){
                 case 1:
-                    Toast.makeText(ShowActivity.this, "她已经在你的硬盘里了", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowActivity.this, "该图片已经存在", Toast.LENGTH_SHORT).show();
                     break;
                 case 2:
                     Toast.makeText(ShowActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
@@ -54,42 +66,27 @@ public class ShowActivity extends GPreviewActivity {
         }
     });
 
-
-    @Override
-    public int setContentLayout() {
-        return R.layout.activity_show;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        heartLayout = findViewById(R.id.activity_show_heart);
-        toolbar = findViewById(R.id.activity_show_toolbar);
-//        toolbar.setTitle(showImage);
-        toolbar.inflateMenu(R.menu.activity_show_toolbar_item);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                transformOut();
-            }
-        });
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.download:
-                        getImageBitmap(imageUrl, ShowActivity.this,downLoadImage);
-                        break;
-                    case R.id.like:
-                        heartLayout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
-                        break;
-                    case R.id.edit:
-                        getImageBitmap(imageUrl, ShowActivity.this, editImage);
-                        break;
-                }
-                return false;
-            }
-        });
+        setContentView(R.layout.activity_show);
+//        heartLayout = (HeartLayout) findViewById(R.id.activity_show_heart);
+        toolbar = (Toolbar) findViewById(R.id.activity_show_toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        Intent intent=getIntent();
+        list=intent.getStringArrayListExtra("list");
+        position=intent.getIntExtra("position",0);
+
+        viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
+        adapter=new viewPager_adapter(list);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(position);
     }
 
     public  void getImageBitmap(final String url, final Context context, final int type) {
@@ -191,6 +188,31 @@ public class ShowActivity extends GPreviewActivity {
             handler.removeCallbacksAndMessages(null);
             handler = null;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_show_toolbar_item, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.download:
+                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this,downLoadImage);
+                break;
+            case R.id.like:
+//                heartLayout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
+                break;
+            case R.id.edit:
+                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 

@@ -1,6 +1,7 @@
 package sure.gomotest.Activity;
 
 import android.Manifest;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private main_recycle_adapter adapter;
     private int page = 1;
-    private List<String> list = new ArrayList<>();
+    private ArrayList<String> list = new ArrayList<>();
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
@@ -105,13 +107,14 @@ public class MainActivity extends AppCompatActivity {
                 showImageList=new ArrayList<>();
                 UserViewInfo bean=new UserViewInfo(list.get(position));
                 showImageList.add(bean);
-                GPreviewBuilder.from(MainActivity.this)
-                        .to(ShowActivity.class)
-//                        .setData(showImageList)
-                        .setSingleData(bean)
-                        .setCurrentIndex(0)
-                        .setSingleShowType(false)
-                        .start();
+                Intent intent=new Intent(MainActivity.this,ShowActivity.class);
+                intent.putStringArrayListExtra("list",list);
+                intent.putExtra("position",position);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
+                }else {
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -171,8 +174,17 @@ public class MainActivity extends AppCompatActivity {
             //在手机相册中显示刚拍摄的图片
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri contentUri = Uri.fromFile(file);
+            String uri=contentUri.toString();
+            int index=uri.indexOf("s");
+            uri=uri.substring(index,uri.length());
             mediaScanIntent.setData(contentUri);
             sendBroadcast(mediaScanIntent);
+            Intent intent=new Intent(MainActivity.this,AlbumDetailActivity.class);
+            ArrayList<String> photoList=new ArrayList<>();
+            photoList.add(uri);
+            intent.putStringArrayListExtra("list",photoList);
+            intent.putExtra("position",0);
+            startActivity(intent);
         }
     }
 
