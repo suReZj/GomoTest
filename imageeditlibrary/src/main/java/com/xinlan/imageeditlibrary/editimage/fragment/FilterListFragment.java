@@ -2,6 +2,7 @@ package com.xinlan.imageeditlibrary.editimage.fragment;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -67,14 +68,14 @@ public class FilterListFragment extends BaseEditFragment {
         backBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                backToMain();
+                backToMain(getContext());
             }
         });
         setUpFliters();
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_FILTER;
         activity.mFilterListFragment.setCurrentBitmap(activity.getMainBit());
         activity.mainImage.setImageBitmap(activity.getMainBit());
@@ -87,7 +88,7 @@ public class FilterListFragment extends BaseEditFragment {
      * 返回主菜单
      */
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
         currentBitmap = activity.getMainBit();
         fliterBit = null;
         activity.mainImage.setImageBitmap(activity.getMainBit());// 返回原图
@@ -104,12 +105,12 @@ public class FilterListFragment extends BaseEditFragment {
         // System.out.println("保存滤镜处理后的图片");
         if (currentBitmap == activity.getMainBit()) {// 原始图片
             // System.out.println("原始图片");
-            backToMain();
+            backToMain(getContext());
             return;
         } else {// 经滤镜处理后的图片
             // System.out.println("滤镜图片");
             activity.changeMainBitmap(fliterBit,true);
-            backToMain();
+            backToMain(getContext());
         }// end if
     }
 

@@ -9,6 +9,7 @@ import java.util.List;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -54,7 +55,6 @@ public class CropFragment extends BaseEditFragment {
 		dataList.add(new RatioItem("none", -1f));
 		dataList.add(new RatioItem("1:1", 1f));
 		dataList.add(new RatioItem("1:2", 1 / 2f));
-		dataList.add(new RatioItem("1:3", 1 / 3f));
 		dataList.add(new RatioItem("2:3", 2 / 3f));
 		dataList.add(new RatioItem("3:4", 3 / 4f));
 		dataList.add(new RatioItem("2:1", 2f));
@@ -146,7 +146,7 @@ public class CropFragment extends BaseEditFragment {
 	}
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_CROP;
 
         activity.mCropPanel.setVisibility(View.VISIBLE);
@@ -169,7 +169,7 @@ public class CropFragment extends BaseEditFragment {
 	private final class BackToMenuClick implements OnClickListener {
 		@Override
 		public void onClick(View v) {
-			backToMain();
+			backToMain(getContext());
 		}
 	}// end class
 
@@ -177,7 +177,7 @@ public class CropFragment extends BaseEditFragment {
 	 * 返回主菜单
 	 */
 	@Override
-	public void backToMain() {
+	public void backToMain(Context context) {
 		activity.mode = EditImageActivity.MODE_NONE;
 		mCropPanel.setVisibility(View.GONE);
 		activity.mainImage.setScaleEnabled(true);// 恢复缩放功能
@@ -265,7 +265,7 @@ public class CropFragment extends BaseEditFragment {
 
             activity.changeMainBitmap(result,true);
 			activity.mCropPanel.setCropRect(activity.mainImage.getBitmapRect());
-			backToMain();
+			backToMain(getContext());
 		}
 	}// end inner class
 

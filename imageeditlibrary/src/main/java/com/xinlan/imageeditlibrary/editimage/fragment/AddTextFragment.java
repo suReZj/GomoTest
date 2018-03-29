@@ -154,7 +154,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     private final class BackToMenuClick implements OnClickListener {
         @Override
         public void onClick(View v) {
-            backToMain();
+            backToMain(getContext());
         }
     }// end class
 
@@ -162,7 +162,8 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
      * 返回主菜单
      */
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
+        activity=(EditImageActivity)context;
         hideInput();
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
@@ -172,7 +173,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_TEXT;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.bannerFlipper.showNext();
@@ -226,7 +227,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
             mTextStickerView.resetView();
 
             activity.changeMainBitmap(result , true);
-            backToMain();
+            backToMain(getContext());
         }
     }//end inner class
 

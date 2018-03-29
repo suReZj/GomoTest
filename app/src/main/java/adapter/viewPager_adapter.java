@@ -50,4 +50,9 @@ public class viewPager_adapter extends PagerAdapter {
     public String getUrl(int position){
         return list.get(position);
     }
+
+    @Override
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
+    }
 }

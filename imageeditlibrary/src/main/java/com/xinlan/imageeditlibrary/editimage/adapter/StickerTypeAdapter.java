@@ -22,8 +22,8 @@ public class StickerTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
     public static final int[] typeIcon = {R.drawable.stickers_type_animal,
             R.drawable.stickers_type_motion, R.drawable.stickers_type_cos,
             R.drawable.stickers_type_mark, R.drawable.stickers_type_decoration};
-    public static final String[] stickerPath = {"stickers/type1"};
-    public static final String[] stickerPathName = {"小贴纸"};
+    public static final String[] stickerPath = {"stickers/type1", "stickers/type2", "stickers/type3", "stickers/type4", "stickers/type5", "stickers/type6"};
+    public static final String[] stickerPathName = {"表情1", "表情2", "表情3", "表情4", "表情5", "表情6"};
     private StickerFragment mStickerFragment;
     private ImageClick mImageClick = new ImageClick();
 
@@ -73,7 +73,7 @@ public class StickerTypeAdapter extends RecyclerView.Adapter<ViewHolder> {
         // TODO
         //imageHoler.icon.setImageResource(typeIcon[position]);
         imageHoler.text.setTag(stickerPath[position]);
-        imageHoler.text.setOnClickListener(mImageClick);
+//        imageHoler.text.setOnClickListener(mImageClick);
     }
 
     /**

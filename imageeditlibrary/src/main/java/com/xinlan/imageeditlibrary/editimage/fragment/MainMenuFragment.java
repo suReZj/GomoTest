@@ -1,10 +1,12 @@
 package com.xinlan.imageeditlibrary.editimage.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.xinlan.imageeditlibrary.R;
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 
 
@@ -15,6 +17,7 @@ import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
  */
 public class MainMenuFragment extends BaseEditFragment implements View.OnClickListener {
     public static final int INDEX = ModuleConfig.INDEX_MAIN;
+    private static Context context;
 
     public static final String TAG = MainMenuFragment.class.getName();
     private View mainView;
@@ -27,8 +30,9 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     private View mPaintBtn;//编辑按钮
     private View mBeautyBtn;//美颜按钮
 
-    public static MainMenuFragment newInstance() {
+    public static MainMenuFragment newInstance(Context cont) {
         MainMenuFragment fragment = new MainMenuFragment();
+        context=cont;
         return fragment;
     }
 
@@ -67,31 +71,31 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         // do nothing
     }
 
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
         //do nothing
     }
 
     @Override
     public void onClick(View v) {
         if (v == stickerBtn) {
-            onStickClick();
+            onStickClick(activity);
         } else if (v == fliterBtn) {
-            onFilterClick();
+            onFilterClick(activity);
         } else if (v == cropBtn) {
-            onCropClick();
+            onCropClick(activity);
         } else if (v == rotateBtn) {
-            onRotateClick();
+            onRotateClick(activity);
         } else if (v == mTextBtn) {
-            onAddTextClick();
+            onAddTextClick(activity);
         } else if (v == mPaintBtn) {
-            onPaintClick();
+            onPaintClick(activity);
         }else if(v == mBeautyBtn){
-            onBeautyClick();
+            onBeautyClick(activity);
         }
     }
 
@@ -100,9 +104,9 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
      *
      * @author panyi
      */
-    private void onStickClick() {
+    private void onStickClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(StickerFragment.INDEX);
-        activity.mStickerFragment.onShow();
+        activity.mStickerFragment.onShow(activity);
     }
 
     /**
@@ -110,9 +114,9 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
      *
      * @author panyi
      */
-    private void onFilterClick() {
+    private void onFilterClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(FilterListFragment.INDEX);
-        activity.mFilterListFragment.onShow();
+        activity.mFilterListFragment.onShow(activity);
     }
 
     /**
@@ -120,9 +124,9 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
      *
      * @author panyi
      */
-    private void onCropClick() {
+    private void onCropClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(CropFragment.INDEX);
-        activity.mCropFragment.onShow();
+        activity.mCropFragment.onShow(activity);
     }
 
     /**
@@ -130,9 +134,9 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
      *
      * @author panyi
      */
-    private void onRotateClick() {
+    private void onRotateClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(RotateFragment.INDEX);
-        activity.mRotateFragment.onShow();
+        activity.mRotateFragment.onShow(activity);
     }
 
     /**
@@ -140,22 +144,22 @@ public class MainMenuFragment extends BaseEditFragment implements View.OnClickLi
      *
      * @author panyi
      */
-    private void onAddTextClick() {
+    private void onAddTextClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(AddTextFragment.INDEX);
-        activity.mAddTextFragment.onShow();
+        activity.mAddTextFragment.onShow(activity);
     }
 
     /**
      * 自由绘制模式
      */
-    private void onPaintClick() {
+    private void onPaintClick(EditImageActivity activity) {
         activity.bottomGallery.setCurrentItem(PaintFragment.INDEX);
-        activity.mPaintFragment.onShow();
+        activity.mPaintFragment.onShow(activity);
     }
 
-    private void onBeautyClick(){
+    private void onBeautyClick(EditImageActivity activity){
         activity.bottomGallery.setCurrentItem(BeautyFragment.INDEX);
-        activity.mBeautyFragment.onShow();
+        activity.mBeautyFragment.onShow(activity);
     }
 
 }// end class

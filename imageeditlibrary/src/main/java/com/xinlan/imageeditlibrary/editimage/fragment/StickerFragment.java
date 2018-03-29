@@ -1,15 +1,19 @@
 package com.xinlan.imageeditlibrary.editimage.fragment;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,7 +25,6 @@ import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 import com.xinlan.imageeditlibrary.editimage.adapter.StickerAdapter;
-import com.xinlan.imageeditlibrary.editimage.adapter.StickerTypeAdapter;
 import com.xinlan.imageeditlibrary.editimage.model.StickerBean;
 import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
 import com.xinlan.imageeditlibrary.editimage.view.StickerItem;
@@ -89,14 +92,14 @@ public class StickerFragment extends BaseEditFragment {
 
         //
         backToMenu = mainView.findViewById(R.id.back_to_main);
-        typeList = (RecyclerView) mainView
-                .findViewById(R.id.stickers_type_list);
-        typeList.setHasFixedSize(true);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
-        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        typeList.setLayoutManager(mLayoutManager);
-        typeList.setAdapter(new StickerTypeAdapter(this));
-        backToType = mainView.findViewById(R.id.back_to_type);// back按钮
+//        typeList = (RecyclerView) mainView
+//                .findViewById(R.id.stickers_type_list);
+//        typeList.setHasFixedSize(true);
+//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
+//        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+//        typeList.setLayoutManager(mLayoutManager);
+//        typeList.setAdapter(new StickerTypeAdapter(this));
+//        backToType = mainView.findViewById(R.id.back_to_type);// back按钮
 
         stickerList = (RecyclerView) mainView.findViewById(R.id.stickers_list);
         stickerList.setHasFixedSize(true);
@@ -105,23 +108,29 @@ public class StickerFragment extends BaseEditFragment {
         stickerListLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         stickerList.setLayoutManager(stickerListLayoutManager);
         mStickerAdapter = new StickerAdapter(this);
+        mStickerAdapter.addStickerImages("stickers/type1");
         stickerList.setAdapter(mStickerAdapter);
-
         backToMenu.setOnClickListener(new BackToMenuClick());// 返回主菜单
-        backToType.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {// 返回上一级列表
-                flipper.showPrevious();
-            }
-        });
+        mStickerAdapter.addStickerImages("stickers/type1");
+
+
+
+//        backToType.setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {// 返回上一级列表
+//                flipper.showPrevious();
+//            }
+//        });
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_STICKERS;
+        activity.mStickerFragment.mStickerView=activity.mStickerView;
         activity.mStickerFragment.getmStickerView().setVisibility(
                 View.VISIBLE);
         activity.bannerFlipper.showNext();
+
     }
 
     //导入贴图数据
@@ -243,12 +252,13 @@ public class StickerFragment extends BaseEditFragment {
     private final class BackToMenuClick implements OnClickListener {
         @Override
         public void onClick(View v) {
-            backToMain();
+            backToMain(getContext());
         }
     }// end inner class
 
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
+        activity=(EditImageActivity)context;
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(0);
         mStickerView.setVisibility(View.GONE);
@@ -279,19 +289,49 @@ public class StickerFragment extends BaseEditFragment {
         public void onPostResult(Bitmap result) {
             mStickerView.clear();
             activity.changeMainBitmap(result,true);
-            backToMain();
+            backToMain(getContext());
         }
     }// end inner class
 
     /**
      * 保存贴图层 合成一张图片
      */
-    public void applyStickers() {
+    public void applyStickers(Context context) {
         // System.out.println("保存 合成图片");
         if (mSaveTask != null) {
             mSaveTask.cancel(true);
         }
-        mSaveTask = new SaveStickersTask((EditImageActivity) getActivity());
+        mSaveTask = new SaveStickersTask((EditImageActivity) context);
+        activity=(EditImageActivity) context;
+        if(activity==null){
+            Log.e("null","null");
+        }
         mSaveTask.execute(activity.getMainBit());
     }
+
+
+//    @Override
+//    public void onSaveInstanceState(Bundle outState) {
+//        Log.e("onSaveInstanceState","onSaveInstanceState");
+//        super.onSaveInstanceState(outState);
+//    }
+//
+//    @Override
+//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+//        super.onViewStateRestored(savedInstanceState);
+//        activity=ensureEditActivity();
+//        backToMain();
+//        Log.e("onViewStateRestored","onViewStateRestored");
+//    }
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            backToMain();
+//        } else {
+//            backToMain();
+//        }
+//        super.onConfigurationChanged(newConfig);
+//        Log.e("TAG", "onConfigurationChanged");
+//    }
 }// end class

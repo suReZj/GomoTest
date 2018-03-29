@@ -1,5 +1,6 @@
 package com.xinlan.imageeditlibrary.editimage.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -25,7 +26,7 @@ public abstract class BaseEditFragment extends Fragment {
         ensureEditActivity();
     }
 
-    public abstract void onShow();
+    public abstract void onShow(EditImageActivity activity);
 
-    public abstract void backToMain();
+    public abstract void backToMain(Context context);
 }//end class

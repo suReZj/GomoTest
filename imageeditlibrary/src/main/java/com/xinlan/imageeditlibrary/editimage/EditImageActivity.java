@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -48,9 +49,9 @@ import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
  * 图片编辑 主页面
  *
  * @author panyi
- *         <p>
- *         包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
- *         add new modules
+ * <p>
+ * 包含 1.贴图 2.滤镜 3.剪裁 4.底图旋转 功能
+ * add new modules
  */
 public class EditImageActivity extends BaseActivity {
     public static final String FILE_PATH = "file_path";
@@ -127,11 +128,26 @@ public class EditImageActivity extends BaseActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+
         checkInitImageLoader();
         setContentView(R.layout.activity_image_edit);
         initView();
+//        if (savedInstanceState != null) {
+
+//            mainBitmap = savedInstanceState.getParcelable("bitmap");
+//            mainImage.setImageBitmap(mainBitmap);
+//            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//        } else {
         getData();
+//        }
+//        if (savedInstanceState != null) {
+//            int lastMode=savedInstanceState.getInt("mode");
+//            if(lastMode==MODE_STICKERS){
+//                mPaintFragment.backToMain(EditImageActivity.this);
+//            }
+//        }
+        super.onCreate(savedInstanceState);
     }
 
     private void getData() {
@@ -172,7 +188,7 @@ public class EditImageActivity extends BaseActivity {
         // 底部gallery
         bottomGallery = (CustomViewPager) findViewById(R.id.bottom_gallery);
         //bottomGallery.setOffscreenPageLimit(7);
-        mMainMenuFragment = MainMenuFragment.newInstance();
+        mMainMenuFragment = MainMenuFragment.newInstance(EditImageActivity.this);
         mBottomGalleryAdapter = new BottomGalleryAdapter(
                 this.getSupportFragmentManager());
         mStickerFragment = StickerFragment.newInstance();
@@ -237,7 +253,7 @@ public class EditImageActivity extends BaseActivity {
                 case BeautyFragment.INDEX://美颜
                     return mBeautyFragment;
             }//end switch
-            return MainMenuFragment.newInstance();
+            return MainMenuFragment.newInstance(EditImageActivity.this);
         }
 
         @Override
@@ -279,25 +295,25 @@ public class EditImageActivity extends BaseActivity {
     public void onBackPressed() {
         switch (mode) {
             case MODE_STICKERS:
-                mStickerFragment.backToMain();
+                mStickerFragment.backToMain(EditImageActivity.this);
                 return;
             case MODE_FILTER:// 滤镜编辑状态
-                mFilterListFragment.backToMain();// 保存滤镜贴图
+                mFilterListFragment.backToMain(EditImageActivity.this);// 保存滤镜贴图
                 return;
             case MODE_CROP:// 剪切图片保存
-                mCropFragment.backToMain();
+                mCropFragment.backToMain(EditImageActivity.this);
                 return;
             case MODE_ROTATE:// 旋转图片保存
-                mRotateFragment.backToMain();
+                mRotateFragment.backToMain(EditImageActivity.this);
                 return;
             case MODE_TEXT:
-                mAddTextFragment.backToMain();
+                mAddTextFragment.backToMain(EditImageActivity.this);
                 return;
             case MODE_PAINT:
-                mPaintFragment.backToMain();
+                mPaintFragment.backToMain(EditImageActivity.this);
                 return;
             case MODE_BEAUTY://从美颜模式中返回
-                mBeautyFragment.backToMain();
+                mBeautyFragment.backToMain(EditImageActivity.this);
                 return;
         }// end switch
 
@@ -331,7 +347,7 @@ public class EditImageActivity extends BaseActivity {
         public void onClick(View v) {
             switch (mode) {
                 case MODE_STICKERS:
-                    mStickerFragment.applyStickers();// 保存贴图
+                    mStickerFragment.applyStickers(EditImageActivity.this);// 保存贴图
                     break;
                 case MODE_FILTER:// 滤镜编辑状态
                     mFilterListFragment.applyFilterImage();// 保存滤镜贴图
@@ -346,7 +362,7 @@ public class EditImageActivity extends BaseActivity {
                     mAddTextFragment.applyTextImage();
                     break;
                 case MODE_PAINT://保存涂鸦
-                    mPaintFragment.savePaintImage();
+                    mPaintFragment.savePaintImage(EditImageActivity.this);
                     break;
                 case MODE_BEAUTY://保存美颜后的图片
                     mBeautyFragment.applyBeauty();
@@ -395,7 +411,7 @@ public class EditImageActivity extends BaseActivity {
 
         if (mainBitmap == null || mainBitmap != newBit) {
             if (needPushUndoStack) {
-                mRedoUndoController.switchMainBit(mainBitmap,newBit);
+                mRedoUndoController.switchMainBit(mainBitmap, newBit);
                 increaseOpTimes();
             }
             mainBitmap = newBit;
@@ -494,6 +510,21 @@ public class EditImageActivity extends BaseActivity {
 
     public Bitmap getMainBit() {
         return mainBitmap;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+//        outState.putParcelable("bitmap", mainBitmap);
+//        if (mode == MODE_PAINT) {
+//            mPaintFragment.savePaintImage(EditImageActivity.this);
+//        }
+        outState.putInt("mode",mode);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
 }// end class

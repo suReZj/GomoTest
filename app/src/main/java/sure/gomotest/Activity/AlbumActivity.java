@@ -135,6 +135,7 @@ public class AlbumActivity extends AppCompatActivity {
         String dirPath = albumName.substring(index + 1, albumName.length());
         if (String.valueOf(textView.getText()).equals(dirPath)) {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+            urlList.clear();
             for(int i=0;i<list.size();i++){
                 urlList.add(list.get(i).getPath());
             }
@@ -149,6 +150,7 @@ public class AlbumActivity extends AppCompatActivity {
     public void refreshData(updateAlbumEvent messageEvent) {
         albumName = messageEvent.getAlbumName();
         getData();
+        setListener();
     }
 
 }

@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -31,6 +32,7 @@ public class StickerView extends View {
 
     private Paint rectPaint = new Paint();
     private Paint boxPaint = new Paint();
+    int deleteId = -1;
 
     private LinkedHashMap<Integer, StickerItem> bank = new LinkedHashMap<Integer, StickerItem>();// 存贮每层贴图数据
 
@@ -97,9 +99,10 @@ public class StickerView extends View {
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
 
-                int deleteId = -1;
                 for (Integer id : bank.keySet()) {
                     StickerItem item = bank.get(id);
+
+
                     if (item.detectDeleteRect.contains(x, y)) {// 删除模式
                         // ret = true;
                         deleteId = id;
@@ -125,7 +128,8 @@ public class StickerView extends View {
                         currentStatus = STATUS_MOVE;
                         oldx = x;
                         oldy = y;
-                    }// end if
+                        invalidate();
+                    }
                 }// end for each
 
                 if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
@@ -134,13 +138,10 @@ public class StickerView extends View {
                     invalidate();
                 }
 
-                if (deleteId > 0 && currentStatus == STATUS_DELETE) {// 删除选定贴图
-                    bank.remove(deleteId);
-                    currentStatus = STATUS_IDLE;// 返回空闲状态
-                    invalidate();
-                }// end if
 
                 break;
+
+
             case MotionEvent.ACTION_MOVE:
                 ret = true;
                 if (currentStatus == STATUS_MOVE) {// 移动贴图
@@ -165,12 +166,18 @@ public class StickerView extends View {
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
+
             case MotionEvent.ACTION_UP:
+                if (deleteId > 0) {// 删除选定贴图
+                    bank.remove(deleteId);
+                    currentStatus = STATUS_IDLE;// 返回空闲状态
+                    invalidate();
+                }// end if
+                deleteId = -1;
                 ret = false;
-                currentStatus = STATUS_IDLE;
                 break;
         }// end switch
-        return ret;
+        return true;
     }
 
     public LinkedHashMap<Integer, StickerItem> getBank() {

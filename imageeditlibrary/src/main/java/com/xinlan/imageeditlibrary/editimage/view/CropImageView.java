@@ -270,37 +270,42 @@ public class CropImageView extends View {
 			break;
 		}// end switch
 
-		if (ratio < 0) {// 任意缩放比
-			// 边界条件检测
-			validateCropRect();
-			invalidate();
-		} else {
-			// 更新剪切矩形长宽
-			// 确定不变点
-			switch (selectedControllerCicle) {
-			case 1:// 左上角控制点
-			case 2:// 右上角控制点
-				cropRect.bottom = (cropRect.right - cropRect.left) / this.ratio
-						+ cropRect.top;
-				break;
-			case 3:// 左下角控制点
-			case 4:// 右下角控制点
-				cropRect.top = cropRect.bottom
-						- (cropRect.right - cropRect.left) / this.ratio;
-				break;
-			}// end switch
+//		if (ratio < 0) {// 任意缩放比
+//			// 边界条件检测
+//			validateCropRect();
+//			invalidate();
+//		} else {
+//			// 更新剪切矩形长宽
+//			// 确定不变点
+//			switch (selectedControllerCicle) {
+//			case 1:// 左上角控制点
+//			case 2:// 右上角控制点
+//				cropRect.bottom = (cropRect.right - cropRect.left) / this.ratio
+//						+ cropRect.top;
+//				break;
+//			case 3:// 左下角控制点
+//			case 4:// 右下角控制点
+//				cropRect.top = cropRect.bottom
+//						- (cropRect.right - cropRect.left) / this.ratio;
+//				break;
+//			}// end switch
+//
+//			// validateCropRect();
+//			if (cropRect.left < imageRect.left
+//					|| cropRect.right > imageRect.right
+//					|| cropRect.top < imageRect.top
+//					|| cropRect.bottom > imageRect.bottom
+//					|| cropRect.width() < CIRCLE_WIDTH
+//					|| cropRect.height() < CIRCLE_WIDTH) {
+//				cropRect.set(tempRect);
+//			}
+//			invalidate();
+//		}
 
-			// validateCropRect();
-			if (cropRect.left < imageRect.left
-					|| cropRect.right > imageRect.right
-					|| cropRect.top < imageRect.top
-					|| cropRect.bottom > imageRect.bottom
-					|| cropRect.width() < CIRCLE_WIDTH
-					|| cropRect.height() < CIRCLE_WIDTH) {
-				cropRect.set(tempRect);
-			}
-			invalidate();
-		}// end if
+		validateCropRect();
+		invalidate();
+
+
 	}
 
 	/**

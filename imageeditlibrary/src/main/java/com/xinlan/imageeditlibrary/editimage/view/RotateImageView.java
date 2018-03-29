@@ -10,6 +10,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.utils.PaintUtil;
 
 /**
@@ -53,6 +54,7 @@ public class RotateImageView extends View {
 		dstRect = new RectF();
 		maxRect = new Rect();
 		bottomPaint = PaintUtil.newRotateBottomImagePaint();
+		bottomPaint.setColor(getResources().getColor(R.color.materialcolorpicker__black));
 		originImageRect = new RectF();
 	}
 

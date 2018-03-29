@@ -1,5 +1,7 @@
 package com.xinlan.imageeditlibrary.editimage.fragment;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +121,7 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
     @Override
     public void onClick(View v) {
         if (v == backToMenu) {//back button click
-            backToMain();
+            backToMain(getContext());
         } else if (v == mPaintModeView) {//设置绘制画笔粗细
             setStokeWidth();
         } else if (v == mEraserView) {
@@ -129,7 +132,8 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
     /**
      * 返回主菜单
      */
-    public void backToMain() {
+    @Override
+    public void backToMain(Context context) {
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
@@ -138,11 +142,11 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         this.mPaintView.setVisibility(View.GONE);
     }
 
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_PAINT;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.bannerFlipper.showNext();
-        this.mPaintView.setVisibility(View.VISIBLE);
+        activity.mPaintView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -252,11 +256,12 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
     /**
      * 保存涂鸦
      */
-    public void savePaintImage() {
+    public void savePaintImage(Context context) {
         if (mSavePaintImageTask != null && !mSavePaintImageTask.isCancelled()) {
             mSavePaintImageTask.cancel(true);
         }
 
+        activity=(EditImageActivity)context;
         mSavePaintImageTask = new SaveCustomPaintTask(activity);
         mSavePaintImageTask.execute(activity.getMainBit());
     }
@@ -301,8 +306,19 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         public void onPostResult(Bitmap result) {
             mPaintView.reset();
             activity.changeMainBitmap(result , true);
-            backToMain();
+            backToMain(getContext());
         }
     }//end inner class
+
+//    @Override
+//    public void onConfigurationChanged(Configuration newConfig) {
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+//            backToMain();
+//        } else {
+//            backToMain();
+//        }
+//        super.onConfigurationChanged(newConfig);
+//        Log.e("TAG", "onConfigurationChanged");
+//    }
 
 }// end class

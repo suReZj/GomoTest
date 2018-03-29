@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -72,7 +73,7 @@ public class RotateFragment extends BaseEditFragment {
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_ROTATE;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
@@ -80,7 +81,10 @@ public class RotateFragment extends BaseEditFragment {
 
         activity.mRotatePanel.addBit(activity.getMainBit(),
                 activity.mainImage.getBitmapRect());
-        activity.mRotateFragment.mSeekBar.setProgress(0);
+
+//        activity.mRotateFragment.mSeekBar=this.mSeekBar;
+////        activity.mRotateFragment.mSeekBar.setProgress(0);
+//        this.mSeekBar.setProgress(0);
         activity.mRotatePanel.reset();
         activity.mRotatePanel.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showNext();
@@ -118,7 +122,7 @@ public class RotateFragment extends BaseEditFragment {
     private final class BackToMenuClick implements OnClickListener {
         @Override
         public void onClick(View v) {
-            backToMain();
+            backToMain(getContext());
         }
     }// end class
 
@@ -126,7 +130,7 @@ public class RotateFragment extends BaseEditFragment {
      * 返回主菜单
      */
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(0);
         activity.mainImage.setVisibility(View.VISIBLE);
@@ -140,7 +144,7 @@ public class RotateFragment extends BaseEditFragment {
     public void applyRotateImage() {
         // System.out.println("保存旋转图片");
         if (mSeekBar.getProgress() == 0 || mSeekBar.getProgress() == 360) {// 没有做旋转
-            backToMain();
+            backToMain(getContext());
             return;
         } else {// 保存图片
             SaveRotateImageTask task = new SaveRotateImageTask();
@@ -212,7 +216,7 @@ public class RotateFragment extends BaseEditFragment {
 
             // 切换新底图
             activity.changeMainBitmap(result,true);
-            backToMain();
+            backToMain(getContext());
         }
     }// end inner class
 

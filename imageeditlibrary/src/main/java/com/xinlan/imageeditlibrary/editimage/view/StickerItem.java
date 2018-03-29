@@ -128,6 +128,7 @@ public class StickerItem {
     public void updatePos(final float dx, final float dy) {
         this.matrix.postTranslate(dx, dy);// 记录到矩阵中
 
+
         dstRect.offset(dx, dy);
 
         // 工具按钮随之移动
@@ -137,6 +138,7 @@ public class StickerItem {
 
         this.detectRotateRect.offset(dx, dy);
         this.detectDeleteRect.offset(dx, dy);
+
     }
 
     /**

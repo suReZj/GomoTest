@@ -274,16 +274,13 @@ public class TextStickerView extends View {
                     last_x = x;
                     last_y = y;
                     ret = true;
+                    invalidate();
                 } else {
                     isShowHelpBox = false;
                     invalidate();
                 }// end if
 
-                if (mCurrentMode == DELETE_MODE) {// 删除选定贴图
-                    mCurrentMode = IDLE_MODE;// 返回空闲状态
-                    clearTextContent();
-                    invalidate();
-                }// end if
+
                 break;
             case MotionEvent.ACTION_MOVE:
                 ret = true;
@@ -313,12 +310,17 @@ public class TextStickerView extends View {
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+                if (mCurrentMode == DELETE_MODE) {// 删除选定贴图
+                    mCurrentMode = IDLE_MODE;// 返回空闲状态
+                    clearTextContent();
+                    invalidate();
+                }// end if
                 ret = false;
                 mCurrentMode = IDLE_MODE;
                 break;
         }// end switch
 
-        return ret;
+        return true;
     }
 
     public void clearTextContent() {

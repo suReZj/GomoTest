@@ -2,6 +2,7 @@ package com.xinlan.imageeditlibrary.editimage.fragment;
 
 import android.annotation.TargetApi;
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -112,7 +113,7 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
     private final class BackToMenuClick implements OnClickListener {
         @Override
         public void onClick(View v) {
-            backToMain();
+            backToMain(getContext());
         }
     }// end class
 
@@ -120,7 +121,7 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
      * 返回主菜单
      */
     @Override
-    public void backToMain() {
+    public void backToMain(Context context) {
         this.mSmooth = 0;
         this.mWhiteSkin = 0;
         mSmoothValueBar.setProgress(0);
@@ -136,7 +137,7 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
     }
 
     @Override
-    public void onShow() {
+    public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_BEAUTY;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
@@ -149,7 +150,7 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
             activity.changeMainBitmap(mResultBitmapRef.get(),true);
         }
 
-        backToMain();
+        backToMain(getContext());
     }
 
     /**
