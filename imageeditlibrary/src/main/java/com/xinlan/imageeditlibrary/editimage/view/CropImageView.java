@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -195,7 +196,7 @@ public class CropImageView extends View {
 		oldx = x;
 		oldy = y;
 
-		return ret;
+		return true;
 	}
 
 	/**
@@ -257,8 +258,16 @@ public class CropImageView extends View {
 			cropRect.top = y;
 			break;
 		case 2:// 右上角控制点
-			cropRect.right = x;
-			cropRect.top = y;
+            float f=Math.abs(tempRect.top-y);
+            if(y<tempRect.top){
+                cropRect.top = tempRect.top-f;
+                cropRect.right = tempRect.right+f*this.ratio;
+                cropRect.bottom=tempRect.bottom;
+            }else {
+                cropRect.top = tempRect.top+f;
+                cropRect.right = tempRect.right-f*this.ratio;
+                cropRect.bottom=tempRect.bottom;
+            }
 			break;
 		case 3:// 左下角控制点
 			cropRect.left = x;
@@ -270,27 +279,39 @@ public class CropImageView extends View {
 			break;
 		}// end switch
 
-//		if (ratio < 0) {// 任意缩放比
-//			// 边界条件检测
-//			validateCropRect();
-//			invalidate();
-//		} else {
-//			// 更新剪切矩形长宽
-//			// 确定不变点
-//			switch (selectedControllerCicle) {
-//			case 1:// 左上角控制点
-//			case 2:// 右上角控制点
-//				cropRect.bottom = (cropRect.right - cropRect.left) / this.ratio
-//						+ cropRect.top;
+		if (ratio < 0) {// 任意缩放比
+			// 边界条件检测
+			validateCropRect();
+			invalidate();
+		} else {
+			// 更新剪切矩形长宽
+			// 确定不变点
+			validateCropRect();
+			switch (selectedControllerCicle) {
+			case 1:// 左上角控制点
 //				break;
-//			case 3:// 左下角控制点
-//			case 4:// 右下角控制点
+			case 2:// 右上角控制点
+//				cropRect.bottom = (cropRect.right - cropRect.left) / this.ratio + cropRect.top;
+//				cropRect.top=(cropRect.right-cropRect.left)/this.ratio+cropRect.bottom;
+				Log.e("position","cropRect.top========="+cropRect.top);
+				Log.e("position","Y========="+y);
+//				if(x>tempRect.right){
+//					double f=(double) x/(double) tempRect.right;
+//					cropRect.top=(int)f*cropRect.top;
+//					cropRect.right=cropRect.top*this.ratio;
+//					cropRect.bottom=tempRect.bottom;
+//				}
+//				cropRect.right=(cropRect.top-cropRect.bottom)*this.ratio+cropRect.left;
+
+				break;
+			case 3:// 左下角控制点
+			case 4:// 右下角控制点
 //				cropRect.top = cropRect.bottom
 //						- (cropRect.right - cropRect.left) / this.ratio;
-//				break;
-//			}// end switch
-//
-//			// validateCropRect();
+				break;
+			}// end switch
+
+//			 validateCropRect();
 //			if (cropRect.left < imageRect.left
 //					|| cropRect.right > imageRect.right
 //					|| cropRect.top < imageRect.top
@@ -299,11 +320,11 @@ public class CropImageView extends View {
 //					|| cropRect.height() < CIRCLE_WIDTH) {
 //				cropRect.set(tempRect);
 //			}
-//			invalidate();
-//		}
+			invalidate();
+		}
 
-		validateCropRect();
-		invalidate();
+//		validateCropRect();
+//		invalidate();
 
 
 	}

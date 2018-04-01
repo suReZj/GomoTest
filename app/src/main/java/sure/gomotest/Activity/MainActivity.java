@@ -60,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
-    private List<UserViewInfo> showImageList=new ArrayList<>();
-    private String error="https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
+    private List<UserViewInfo> showImageList = new ArrayList<>();
+    private String error = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
     private long backLastPressedTimestamp = 0;
 
     @Override
@@ -103,16 +103,16 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
-                imageUrl=list.get(position);
-                showImageList=new ArrayList<>();
-                UserViewInfo bean=new UserViewInfo(list.get(position));
+                imageUrl = list.get(position);
+                showImageList = new ArrayList<>();
+                UserViewInfo bean = new UserViewInfo(list.get(position));
                 showImageList.add(bean);
-                Intent intent=new Intent(MainActivity.this,ShowActivity.class);
-                intent.putStringArrayListExtra("list",list);
-                intent.putExtra("position",position);
+                Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                intent.putStringArrayListExtra("list", list);
+                intent.putExtra("position", position);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
-                }else {
+                } else {
                     startActivity(intent);
                 }
             }
@@ -174,16 +174,16 @@ public class MainActivity extends AppCompatActivity {
             //在手机相册中显示刚拍摄的图片
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             Uri contentUri = Uri.fromFile(file);
-            String uri=contentUri.toString();
-            int index=uri.indexOf("s");
-            uri=uri.substring(index,uri.length());
+            String uri = contentUri.toString();
+            int index = uri.indexOf("s");
+            uri = uri.substring(index, uri.length());
             mediaScanIntent.setData(contentUri);
             sendBroadcast(mediaScanIntent);
-            Intent intent=new Intent(MainActivity.this,AlbumDetailActivity.class);
-            ArrayList<String> photoList=new ArrayList<>();
+            Intent intent = new Intent(MainActivity.this, AlbumDetailActivity.class);
+            ArrayList<String> photoList = new ArrayList<>();
             photoList.add(uri);
-            intent.putStringArrayListExtra("list",photoList);
-            intent.putExtra("position",0);
+            intent.putStringArrayListExtra("list", photoList);
+            intent.putExtra("position", 0);
             startActivity(intent);
         }
     }
@@ -225,25 +225,26 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(gson_welfare value) {
-//                        if(list.size()%45==0){
+                        if (list.size() % 18 == 0) {
                             System.gc();
-//                        }
+                        }
                         List<gson_result> results = value.getResults();
                         int start = list.size();
                         int end = start;
                         for (int i = 0; i < results.size(); i++) {
-                            if(error.equals(results.get(i).getUrl())){
+//                            Log.e("position:" + i, results.get(i).getUrl());
+                            if (error.equals(results.get(i).getUrl())) {
                                 list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
-                            }else {
+                            } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
+                                list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
+                            } else {
                                 list.add(results.get(i).getUrl());
                             }
-                            UserViewInfo bean=new UserViewInfo(results.get(i).getUrl());
+                            UserViewInfo bean = new UserViewInfo(results.get(i).getUrl());
                             showImageList.add(bean);
                             adapter.notifyItemInserted(end);
                             end++;
                         }
-//                        adapter.notifyDataSetChanged();
-                        System.gc();
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
@@ -255,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
                         if (page != 1) {
                             springView.onFinishFreshAndLoad();
                         }
+                        Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

@@ -25,6 +25,7 @@ import java.util.List;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import sure.gomotest.Activity.MainActivity;
 import sure.gomotest.R;
 import util.imageCache;
 
@@ -39,16 +40,16 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private List<String> list;
     private Context context;
     private imageCache imageCache;
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            ViewHolder holder = (ViewHolder) msg.obj;
-            String url = msg.getData().getString("url");
-            holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
-            notifyDataSetChanged();
-            return false;
-        }
-    });
+//    Handler handler = new Handler(new Handler.Callback() {
+//        @Override
+//        public boolean handleMessage(Message msg) {
+//            ViewHolder holder = (ViewHolder) msg.obj;
+//            String url = msg.getData().getString("url");
+//            holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
+//            notifyDataSetChanged();
+//            return false;
+//        }
+//    });
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -141,8 +142,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     }
 
 
-//第一次连接将图片保存为文件
-
     public void getImageBitmap(final String url, final ViewHolder holder) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -152,46 +151,110 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-
             }
 
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                String path = url;
-                int position = url.lastIndexOf("/");
-                path = path.substring(position, url.length());
-                String tempPath = Environment.getExternalStorageDirectory() + path;
-                File tempFile = new File(tempPath);
-                FileOutputStream fileOutputStream = null;
-                byte[] buffer = null;
-                try {
-                    try {
-                        if (tempFile.exists()) {
-                            tempFile.delete();
-                        }
-                        tempFile.createNewFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                byte[] bytes;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize=2;
+                options.inJustDecodeBounds = false;
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream(),null,options);
 
-                    fileOutputStream = new FileOutputStream(tempFile);
-                    buffer = new byte[1024];
-                    int len = 0;
-                    while ((len = response.body().byteStream().read(buffer)) != -1) {
-                        fileOutputStream.write(buffer, 0, len);
+                if (bitmap != null && bitmap.getWidth() != 0) {
+                    //缩放法压缩
+                    Matrix matrix = new Matrix();
+                    matrix.setScale(0.5f, 0.5f);
+                    bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+                }
+
+                if (bitmap != null && bitmap.getWidth() != 0) {
+                    //质量压缩
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+                    bytes = baos.toByteArray();
+                    bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                }
+
+                imageCache.addToDiskLruCache(url, bitmap);
+                imageCache.addBitmapToCache(url, bitmap);
+//                Message msg = handler.obtainMessage();
+//                msg.obj = holder;
+//                Bundle bundle = new Bundle();
+//                bundle.putString("url", url);
+//                msg.setData(bundle);
+//                handler.sendMessage(msg);
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
+                        notifyDataSetChanged();
                     }
-                    getFitSampleBitmap(tempPath, holder, url);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    response.body().byteStream().close();
-                    call.cancel();
-                    fileOutputStream.close();
-                    buffer = null;
+                });
+                response.body().byteStream().close();
+                bitmap = null;
+                if (baos != null) {
+                    //baos.close();
+                    baos = null;
+                    bytes = null;
                 }
             }
         });
     }
+
+
+//第一次连接将图片保存为文件
+
+//    public void getImageBitmap(final String url, final ViewHolder holder) {
+//        OkHttpClient client = new OkHttpClient();
+//        Request request = new Request.Builder()
+//                .get()
+//                .url(url + width)
+//                .build();
+//        client.newCall(request).enqueue(new okhttp3.Callback() {
+//            @Override
+//            public void onFailure(okhttp3.Call call, IOException e) {
+//
+//            }
+//
+//            @Override
+//            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+//                String path = url;
+//                int position = url.lastIndexOf("/");
+//                path = path.substring(position, url.length());
+//                String tempPath = Environment.getExternalStorageDirectory() + path;
+//                File tempFile = new File(tempPath);
+//                FileOutputStream fileOutputStream = null;
+//                byte[] buffer = null;
+//                try {
+//                    try {
+//                        if (tempFile.exists()) {
+//                            tempFile.delete();
+//                        }
+//                        tempFile.createNewFile();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    fileOutputStream = new FileOutputStream(tempFile);
+//                    buffer = new byte[1024];
+//                    int len = 0;
+//                    while ((len = response.body().byteStream().read(buffer)) != -1) {
+//                        fileOutputStream.write(buffer, 0, len);
+//                    }
+//                    getFitSampleBitmap(tempPath, holder, url);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                } finally {
+//                    response.body().byteStream().close();
+//                    call.cancel();
+//                    fileOutputStream.close();
+//                    buffer = null;
+//                }
+//            }
+//        });
+//    }
 
 
     public void getFitSampleBitmap(String file_path, ViewHolder holder, String url) {
@@ -262,14 +325,13 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             }
             imageCache.addToDiskLruCache(url, bitmap);
             imageCache.addBitmapToCache(url, bitmap);
-            Message msg = handler.obtainMessage();
-            msg.obj = holder;
-            Bundle bundle = new Bundle();
-            bundle.putString("url", url);
-            msg.setData(bundle);
-            handler.sendMessage(msg);
+//            Message msg = handler.obtainMessage();
+//            msg.obj = holder;
+//            Bundle bundle = new Bundle();
+//            bundle.putString("url", url);
+//            msg.setData(bundle);
+//            handler.sendMessage(msg);
             bitmap = null;
         }
-        System.gc();
     }
 }
