@@ -88,6 +88,7 @@ public class RotateFragment extends BaseEditFragment {
         activity.mRotatePanel.reset();
         activity.mRotatePanel.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showNext();
+        mSeekBar.setProgress(0);
     }
 
     /**
@@ -136,6 +137,7 @@ public class RotateFragment extends BaseEditFragment {
         activity.mainImage.setVisibility(View.VISIBLE);
         this.mRotatePanel.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
+        mSeekBar.setProgress(0);
     }
 
     /**

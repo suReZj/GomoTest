@@ -66,14 +66,17 @@
         android:layout_alignParentBottom="true"
         android:background="@color/main_backgroud"
         android:overScrollMode="never" />
-
-    <FrameLayout
-        android:id="@+id/work_space"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottom_gallery"
-        android:layout_below="@id/banner"
-        android:background="#000000">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_above="@id/bottom_gallery"
+    android:layout_below="@id/banner"
+    android:background="#000000">
+    <!--<FrameLayout-->
+        <!--android:id="@+id/work_space"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="#000000">-->
 
         <com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch
             android:id="@+id/main_image"
@@ -107,16 +110,20 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
-            android:visibility="gone" />
+            android:visibility="gone"
+            />
 
         <com.xinlan.imageeditlibrary.editimage.view.CustomPaintView
             android:id="@+id/custom_paint_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:visibility="gone" />
-    </FrameLayout>
-
+            android:visibility="gone"
+            android:background="@color/materialcolorpicker__blue"
+            android:layout_centerInParent="true"
+            />
+    <!--</FrameLayout>-->
+</RelativeLayout>
     <LinearLayout
         android:id="@+id/redo_uodo_panel"
         android:layout_width="wrap_content"

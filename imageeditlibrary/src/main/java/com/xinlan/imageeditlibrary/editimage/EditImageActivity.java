@@ -553,14 +553,19 @@ public class EditImageActivity extends BaseActivity {
             case MODE_TEXT://文字贴图 图片保存
 //                mAddTextFragment.applyTextImage();
 //                mAddTextFragment=AddTextFragment.newInstance();
+                mTextStickerView.setVisibility(View.GONE);
                 mAddTextFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_PAINT://保存涂鸦
 //                mPaintFragment.savePaintImage(EditImageActivity.this);
+                mPaintView.invalidate();
+                mPaintView.generatorBit();
+                mPaintView.setVisibility(View.GONE);
                 mPaintFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_BEAUTY://保存美颜后的图片
 //                mBeautyFragment.applyBeauty();
+
                 mBeautyFragment.backToMain(EditImageActivity.this);
                 break;
             default:

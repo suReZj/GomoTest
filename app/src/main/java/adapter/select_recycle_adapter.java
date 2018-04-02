@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -32,7 +33,7 @@ public class select_recycle_adapter extends RecyclerView.Adapter<select_recycle_
     static class ViewHolder extends RecyclerView.ViewHolder{
         private ImageView imageView;
         private TextView textView;
-        private LinearLayout layout;
+        private RelativeLayout layout;
         public ViewHolder(View itemView) {
             super(itemView);
             imageView=itemView.findViewById(R.id.item_select_image);

@@ -7,7 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.SeekBar;
 
@@ -30,6 +34,8 @@ import com.xinlan.imageeditlibrary.editimage.ui.ColorPicker;
 import com.xinlan.imageeditlibrary.editimage.utils.DensityUtil;
 import com.xinlan.imageeditlibrary.editimage.view.CustomPaintView;
 import com.xinlan.imageeditlibrary.editimage.view.PaintModeView;
+
+import static com.xinlan.imageeditlibrary.editimage.utils.DensityUtil.dip2px;
 
 
 /**
@@ -114,8 +120,6 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         mColorListView.setLayoutManager(stickerListLayoutManager);
         mColorAdapter = new ColorListAdapter(this, mPaintColors, this);
         mColorListView.setAdapter(mColorAdapter);
-
-
     }
 
     @Override
@@ -136,24 +140,35 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
     public void backToMain(Context context) {
         activity=(EditImageActivity)context;
         activity.mode = EditImageActivity.MODE_NONE;
-        activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
+        activity.bottomGallery.setCurrentItem(0);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
 //        updatePaintView();
-        if(mPaintView!=null){
-            this.mPaintView.setVisibility(View.GONE);
-            mPaintView.reset();
+        if(activity.mPaintView!=null){
+            activity.mPaintView.setVisibility(View.GONE);
+            activity.mPaintView.reset();
         }
 
 //        mPaintView.generatorBit();
 
     }
 
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onShow(EditImageActivity activity) {
         activity.mode = EditImageActivity.MODE_PAINT;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.bannerFlipper.showNext();
+        mPaintView.invalidate();
         activity.mPaintView.setVisibility(View.VISIBLE);
+
+
+//        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(activity.mPaintView.getLayoutParams());
+
+//        FrameLayout.LayoutParams params=new FrameLayout.LayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+//                ViewGroup.LayoutParams.FILL_PARENT));
+//        params.width = dip2px(getContext(),textParams.height);
+//        params.height = dip2px(getContext(),textParams.width);
+//        activity.mPaintView.setLayoutParams(params);
     }
 
     @Override
