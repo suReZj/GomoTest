@@ -134,12 +134,19 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
      */
     @Override
     public void backToMain(Context context) {
+        activity=(EditImageActivity)context;
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
+//        updatePaintView();
+        if(mPaintView!=null){
+            this.mPaintView.setVisibility(View.GONE);
+            mPaintView.reset();
+        }
 
-        this.mPaintView.setVisibility(View.GONE);
+//        mPaintView.generatorBit();
+
     }
 
     public void onShow(EditImageActivity activity) {

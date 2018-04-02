@@ -170,9 +170,9 @@ public class StickerView extends View {
             case MotionEvent.ACTION_UP:
                 if (deleteId > 0) {// 删除选定贴图
                     bank.remove(deleteId);
-                    currentStatus = STATUS_IDLE;// 返回空闲状态
                     invalidate();
                 }// end if
+                currentStatus = STATUS_IDLE;// 返回空闲状态
                 deleteId = -1;
                 ret = false;
                 break;

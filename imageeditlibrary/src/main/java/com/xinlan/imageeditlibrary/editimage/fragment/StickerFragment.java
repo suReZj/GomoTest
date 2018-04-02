@@ -27,6 +27,7 @@ import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 import com.xinlan.imageeditlibrary.editimage.adapter.StickerAdapter;
 import com.xinlan.imageeditlibrary.editimage.model.StickerBean;
 import com.xinlan.imageeditlibrary.editimage.task.StickerTask;
+import com.xinlan.imageeditlibrary.editimage.utils.Matrix3;
 import com.xinlan.imageeditlibrary.editimage.view.StickerItem;
 import com.xinlan.imageeditlibrary.editimage.view.StickerView;
 
@@ -85,6 +86,7 @@ public class StickerFragment extends BaseEditFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         this.mStickerView = activity.mStickerView;
         flipper = (ViewFlipper) mainView.findViewById(R.id.flipper);
         flipper.setInAnimation(activity, R.anim.in_bottom_to_top);
@@ -263,6 +265,7 @@ public class StickerFragment extends BaseEditFragment {
         activity.bottomGallery.setCurrentItem(0);
         mStickerView.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
+        mStickerView.clear();
     }
 
     /**
@@ -296,42 +299,55 @@ public class StickerFragment extends BaseEditFragment {
     /**
      * 保存贴图层 合成一张图片
      */
-    public void applyStickers(Context context) {
+    public void applyStickers(Context context,Bitmap bitmap) {
         // System.out.println("保存 合成图片");
         if (mSaveTask != null) {
             mSaveTask.cancel(true);
         }
         mSaveTask = new SaveStickersTask((EditImageActivity) context);
         activity=(EditImageActivity) context;
-        if(activity==null){
-            Log.e("null","null");
-        }
-        mSaveTask.execute(activity.getMainBit());
+//        mSaveTask.execute(activity.getMainBit());
+        mSaveTask.execute(bitmap);
     }
 
 
 //    @Override
 //    public void onSaveInstanceState(Bundle outState) {
-//        Log.e("onSaveInstanceState","onSaveInstanceState");
+//        Matrix touchMatrix = ((EditImageActivity)getContext()).mainImage.getImageViewMatrix();
+//        float[] data = new float[9];
+//        Bitmap resultBit = Bitmap.createBitmap(activity.getMainBit()).copy(
+//                Bitmap.Config.ARGB_8888, true);
+//        Canvas canvas = new Canvas(resultBit);
+//        touchMatrix.getValues(data);// 底部图片变化记录矩阵原始数据
+//        Matrix3 cal = new Matrix3(data);// 辅助矩阵计算类
+//        Matrix3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
+//        Matrix m = new Matrix();
+//        m.setValues(inverseMatrix.getValues());
+//        LinkedHashMap<Integer, StickerItem> addItems = mStickerView.getBank();
+//        for (Integer id : addItems.keySet()) {
+//            StickerItem item = addItems.get(id);
+//            item.matrix.postConcat(m);// 乘以底部图片变化矩阵
+//            canvas.drawBitmap(item.bitmap, item.matrix, null);
+//        }// end for
+//        outState.putParcelable("bitmap",resultBit);
 //        super.onSaveInstanceState(outState);
 //    }
 //
 //    @Override
 //    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
 //        super.onViewStateRestored(savedInstanceState);
-//        activity=ensureEditActivity();
-//        backToMain();
+////        backToMain(getContext());
 //        Log.e("onViewStateRestored","onViewStateRestored");
 //    }
 
 //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
+//        Log.e("TAG", "onConfigurationChanged");
 //        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            backToMain();
+//            backToMain(getContext());
 //        } else {
-//            backToMain();
+//            backToMain(getContext());
 //        }
 //        super.onConfigurationChanged(newConfig);
-//        Log.e("TAG", "onConfigurationChanged");
 //    }
 }// end class

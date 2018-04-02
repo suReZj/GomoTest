@@ -146,10 +146,11 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
     }
 
     public void applyBeauty() {
-        if (mResultBitmapRef.get() != null && (mSmooth != 0 || mWhiteSkin != 0)) {
-            activity.changeMainBitmap(mResultBitmapRef.get(),true);
+        if(mResultBitmapRef!=null){
+            if (mResultBitmapRef.get() != null && (mSmooth != 0 || mWhiteSkin != 0)) {
+                activity.changeMainBitmap(mResultBitmapRef.get(),true);
+            }
         }
-
         backToMain(getContext());
     }
 

@@ -60,7 +60,7 @@ public class CustomPaintView extends View {
         }
     }
 
-    private void generatorBit() {
+    public void generatorBit() {
         mDrawBit = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         mPaintCanvas = new Canvas(mDrawBit);
     }

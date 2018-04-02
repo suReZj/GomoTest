@@ -29,6 +29,7 @@ import java.util.List;
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
 import bean.UserViewInfo;
+import event.showActivityEvent;
 import event.updateAlbumEvent;
 import sure.gomotest.R;
 
@@ -151,6 +152,11 @@ public class AlbumActivity extends AppCompatActivity {
         albumName = messageEvent.getAlbumName();
         getData();
         setListener();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changePosition(showActivityEvent messageEvent) {
+        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 
 }

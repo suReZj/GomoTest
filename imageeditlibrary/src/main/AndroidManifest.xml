@@ -4,11 +4,10 @@
     <application>
     <!--图片编辑Activity-->
     <activity
-        android:name="com.xinlan.imageeditlibrary.editimage.EditImageActivity">
+        android:name="com.xinlan.imageeditlibrary.editimage.EditImageActivity"
+        android:configChanges="orientation|keyboardHidden|screenSize">
         <!--android:configChanges="orientation">-->
 
-
-        <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
 
     </activity>
     </application>

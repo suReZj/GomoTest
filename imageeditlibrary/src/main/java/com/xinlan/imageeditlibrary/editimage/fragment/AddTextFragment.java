@@ -169,7 +169,11 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
-        mTextStickerView.setVisibility(View.GONE);
+//        mTextStickerView.clearTextContent();
+//        mTextStickerView.resetView();
+//        mTextStickerView.setVisibility(View.GONE);
+//        mTextStickerView.setEditText(null);
+//        mTextStickerView.clearFocus();
     }
 
     @Override

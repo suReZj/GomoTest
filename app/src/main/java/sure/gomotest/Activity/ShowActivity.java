@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.previewlibrary.GPreviewActivity;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import adapter.viewPager_adapter;
+import event.showActivityEvent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import sure.gomotest.R;
@@ -213,6 +216,13 @@ public class ShowActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
+        EventBus.getDefault().post(event);
+        finish();
     }
 }
 

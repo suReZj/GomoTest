@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import adapter.viewPager_adapter;
 import bean.AlbumBean;
 import event.saveImageEvent;
+import event.showActivityEvent;
 import event.updateAlbumEvent;
 import sure.gomotest.R;
 import util.FileUtils;
@@ -111,5 +112,12 @@ public class AlbumDetailActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(updateAlbumEvent messageEvent) {
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBackPressed() {
+        showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
+        EventBus.getDefault().post(event);
+        finish();
     }
 }

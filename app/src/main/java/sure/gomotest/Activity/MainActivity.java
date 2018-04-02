@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,12 +28,17 @@ import com.liaoinstan.springview.widget.SpringView;
 import com.previewlibrary.GPreviewBuilder;
 
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.main_recycle_adapter;
 import bean.UserViewInfo;
+import event.showActivityEvent;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         setContentView(R.layout.activity_main);
         initView();
         setListener();
@@ -121,6 +128,13 @@ public class MainActivity extends AppCompatActivity {
             public void onItemLongClick(View view, int position) {
             }
         });
+
+//        recyclerView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                return false;
+//            }
+//        });
     }
 
     /**
@@ -272,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
             closeDisk();
         }
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -291,5 +306,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshData(showActivityEvent messageEvent) {
+//        recyclerView.scrollToPosition(messageEvent.getPosition());
+        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 }

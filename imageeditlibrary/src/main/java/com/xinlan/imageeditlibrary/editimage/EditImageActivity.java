@@ -21,6 +21,7 @@ import android.view.View.OnClickListener;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.bumptech.glide.Glide;
 import com.xinlan.imageeditlibrary.BaseActivity;
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.fragment.AddTextFragment;
@@ -43,6 +44,8 @@ import com.xinlan.imageeditlibrary.editimage.utils.BitmapUtils;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
 import com.xinlan.imageeditlibrary.editimage.widget.EditCache;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * <p>
@@ -347,7 +350,7 @@ public class EditImageActivity extends BaseActivity {
         public void onClick(View v) {
             switch (mode) {
                 case MODE_STICKERS:
-                    mStickerFragment.applyStickers(EditImageActivity.this);// 保存贴图
+                    mStickerFragment.applyStickers(EditImageActivity.this,mainBitmap);// 保存贴图
                     break;
                 case MODE_FILTER:// 滤镜编辑状态
                     mFilterListFragment.applyFilterImage();// 保存滤镜贴图
@@ -415,6 +418,10 @@ public class EditImageActivity extends BaseActivity {
                 increaseOpTimes();
             }
             mainBitmap = newBit;
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            mainBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+//            byte[] bytes=baos.toByteArray();
+//            Glide.with(EditImageActivity.this).load(bytes).centerCrop().into(mainImage);
             mainImage.setImageBitmap(mainBitmap);
             mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
         }
@@ -514,11 +521,7 @@ public class EditImageActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-//        outState.putParcelable("bitmap", mainBitmap);
-//        if (mode == MODE_PAINT) {
-//            mPaintFragment.savePaintImage(EditImageActivity.this);
-//        }
-        outState.putInt("mode",mode);
+//        outState.putInt("mode",mode);
         super.onSaveInstanceState(outState);
     }
 
@@ -527,4 +530,42 @@ public class EditImageActivity extends BaseActivity {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+//        mainImage.clear();
+        switch (mode) {
+            case MODE_STICKERS:
+//                mStickerFragment.applyStickers(EditImageActivity.this,mainBitmap);// 保存贴图
+                mStickerFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_FILTER:// 滤镜编辑状态
+//                mFilterListFragment.applyFilterImage();// 保存滤镜贴图
+                mFilterListFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_CROP:// 剪切图片保存
+//                mCropFragment.applyCropImage();
+                mCropFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_ROTATE:// 旋转图片保存
+//                mRotateFragment.applyRotateImage();
+                mRotateFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_TEXT://文字贴图 图片保存
+//                mAddTextFragment.applyTextImage();
+//                mAddTextFragment=AddTextFragment.newInstance();
+                mAddTextFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_PAINT://保存涂鸦
+//                mPaintFragment.savePaintImage(EditImageActivity.this);
+                mPaintFragment.backToMain(EditImageActivity.this);
+                break;
+            case MODE_BEAUTY://保存美颜后的图片
+//                mBeautyFragment.applyBeauty();
+                mBeautyFragment.backToMain(EditImageActivity.this);
+                break;
+            default:
+                break;
+        }// end switch
+        super.onConfigurationChanged(newConfig);
+    }
 }// end class

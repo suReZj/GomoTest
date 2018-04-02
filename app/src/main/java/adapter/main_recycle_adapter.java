@@ -179,13 +179,8 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
                 imageCache.addToDiskLruCache(url, bitmap);
                 imageCache.addBitmapToCache(url, bitmap);
-//                Message msg = handler.obtainMessage();
-//                msg.obj = holder;
-//                Bundle bundle = new Bundle();
-//                bundle.putString("url", url);
-//                msg.setData(bundle);
-//                handler.sendMessage(msg);
-                ((Activity)context).runOnUiThread(new Runnable() {
+
+                ((Activity) context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));

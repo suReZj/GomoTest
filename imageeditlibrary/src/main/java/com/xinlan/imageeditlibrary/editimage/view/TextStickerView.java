@@ -228,6 +228,7 @@ public class TextStickerView extends View {
         }//end for i
 
         mTextRect.offset(x, y);
+//        mTextRect.offset(100, 100);
 
         mHelpBoxRect.set(mTextRect.left - PADDING, mTextRect.top - PADDING
                 , mTextRect.right + PADDING, mTextRect.bottom + PADDING);
