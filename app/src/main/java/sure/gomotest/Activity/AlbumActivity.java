@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.callback.SaveCallback;
 
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
+import bean.showPath;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
 import sure.gomotest.R;
@@ -39,8 +41,9 @@ public class AlbumActivity extends AppCompatActivity {
     private String albumName;
     private Intent intent;
     private List<AlbumBean> list;
-    private ArrayList<String> urlList = new ArrayList<>();
+    private ArrayList<showPath> urlList = new ArrayList<>();
     private int index = 0;
+    private showPath showPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +71,9 @@ public class AlbumActivity extends AppCompatActivity {
 
         list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
         for(int i=0;i<list.size();i++){
-            urlList.add(list.get(i).getPath());
+            showPath=new showPath();
+            showPath.setPath(list.get(i).getPath());
+            urlList.add(showPath);
         }
 
         adapter = new album_recycle_adapter(list);
@@ -79,23 +84,28 @@ public class AlbumActivity extends AppCompatActivity {
         albumName = albumName.substring(position + 1, albumName.length());
         textView.setText(albumName);
 
-
 //        getData();
     }
 
     public void setListener() {
         adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(final View view, final int position) {
                 albumPath = list.get(position).getPath();
-                Intent showItent=new Intent(AlbumActivity.this,AlbumDetailActivity.class);
-                showItent.putStringArrayListExtra("list",urlList);
-                showItent.putExtra("position",position);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
-                }else {
-                    startActivity(showItent);
-                }
+
+                DataSupport.saveAllAsync(urlList).listen(new SaveCallback() {
+                    @Override
+                    public void onFinish(boolean success) {
+                        Intent showItent=new Intent(AlbumActivity.this,AlbumDetailActivity.class);
+                        showItent.putExtra("position",position);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
+                        }else {
+                            startActivity(showItent);
+                        }
+                    }
+                });
+
             }
 
             @Override
@@ -134,7 +144,9 @@ public class AlbumActivity extends AppCompatActivity {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
             urlList.clear();
             for(int i=0;i<list.size();i++){
-                urlList.add(list.get(i).getPath());
+                showPath=new showPath();
+                showPath.setPath(list.get(i).getPath());
+                urlList.add(showPath);
             }
             adapter = new album_recycle_adapter(list);
             recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));

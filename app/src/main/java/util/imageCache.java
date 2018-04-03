@@ -71,7 +71,9 @@ public class imageCache {
      * @param bitmap LruCache的值，即图片的Bitmap对象
      */
     public void addBitmapToCache(String url, Bitmap bitmap) {
-        mCache.put(url, bitmap);
+        if(url!=null&&bitmap!=null){
+            mCache.put(url, bitmap);
+        }
 //        bitmap=null;
 //        Log.e("add",url);
     }
@@ -147,8 +149,9 @@ public class imageCache {
             if (editor != null) {
                 OutputStream outputStream;
                 outputStream = editor.newOutputStream(0);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-
+                if(outputStream!=null&&bitmap!=null){
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                }
                 if (outputStream != null) {
                     editor.commit();
                 } else {

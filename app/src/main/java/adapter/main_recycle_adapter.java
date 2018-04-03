@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 
+import com.bumptech.glide.Glide;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,7 +66,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             int width = ((Activity) itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
-            params.width = width / 3;
+            params.width = (width-6) / 3;
             imageView.setLayoutParams(params);
         }
     }
@@ -113,7 +115,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.imageView.setTag(list.get(position));
+//        holder.imageView.setTag(list.get(position));
         holder.imageView.setImageResource(R.mipmap.ic_launcher);
 
 //        Glide.with(context).load(list.get(position)).into(holder.imageView);
@@ -146,7 +148,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     public void getImageBitmap(final String url, final ViewHolder holder) {
         Request request = new Request.Builder()
                 .get()
-                .url(url + width)
+                .url(url)
                 .build();
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
@@ -159,7 +161,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 //                byte[] bytes;
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;
-                options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
                 Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, options);
 
@@ -184,7 +185,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     @Override
                     public void run() {
                         holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
-                        notifyDataSetChanged();
+//                        notifyDataSetChanged();
                     }
                 });
 //                call.cancel();

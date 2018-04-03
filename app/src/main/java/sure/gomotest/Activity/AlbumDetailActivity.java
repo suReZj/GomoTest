@@ -15,12 +15,15 @@ import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import adapter.viewPager_adapter;
 import bean.AlbumBean;
+import bean.showPath;
 import event.saveImageEvent;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
@@ -35,7 +38,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
     private String path;
     private MyViewPager viewPager;
     private viewPager_adapter adapter;
-    private ArrayList<String> list;
+    private List<showPath> list;
 
 
     @Override
@@ -53,7 +56,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
         Intent intent=getIntent();
         viewPager=(MyViewPager)findViewById(R.id.activity_detail_viewPager);
-        list=intent.getStringArrayListExtra("list");
+        list= DataSupport.findAll(showPath.class);
         adapter=new viewPager_adapter(list);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(intent.getIntExtra("position",0));
@@ -69,6 +72,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
         super.onDestroy();
         albumPath = "";
         EventBus.getDefault().unregister(this);
+        DataSupport.deleteAll(showPath.class);
     }
 
     @Override

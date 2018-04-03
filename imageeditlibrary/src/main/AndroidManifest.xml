@@ -5,7 +5,8 @@
     <!--图片编辑Activity-->
     <activity
         android:name="com.xinlan.imageeditlibrary.editimage.EditImageActivity"
-        android:configChanges="orientation|keyboardHidden|screenSize">
+        android:configChanges="orientation|keyboardHidden|screenSize"
+        android:screenOrientation="portrait">
         <!--android:configChanges="orientation">-->
 
 

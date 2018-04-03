@@ -8,6 +8,12 @@ import android.view.WindowManager;
 
 import com.jaredrummler.android.widget.AnimatedSvgView;
 
+import org.litepal.crud.DataSupport;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import bean.ImagePath;
 import sure.gomotest.R;
 import util.SVG;
 import yanzhikai.textpath.AsyncTextPathView;
@@ -16,6 +22,7 @@ public class LoadingActivity extends AppCompatActivity {
     private AsyncTextPathView asyncTextPathView;
     private AsyncTextPathView sureTextPathView;
     private AnimatedSvgView svgView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

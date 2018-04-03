@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,12 +29,16 @@ import com.liaoinstan.springview.widget.SpringView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.litepal.crud.DataSupport;
+import org.litepal.crud.callback.SaveCallback;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import adapter.main_recycle_adapter;
+import bean.ImagePath;
+import bean.showPath;
 import event.showActivityEvent;
 import gson.gson_result;
 import gson.gson_welfare;
@@ -44,6 +49,7 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit.getData;
 import retrofit2.Retrofit;
 import sure.gomotest.R;
+import util.OnDoubleClickListener;
 import util.RetrofitUtil;
 
 import static util.Contants.url;
@@ -69,7 +75,11 @@ public class MainActivity extends AppCompatActivity {
     private int end;
     private Retrofit retrofit = RetrofitUtil.getRetrofit(url);
     private getData getData = retrofit.create(getData.class);
-
+    private int index = 0;
+    private List<ImagePath> pathList=new ArrayList<>();
+    private ImagePath imagePath;
+    private List<showPath> showList=new ArrayList<>();
+    private showPath showPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +99,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         adapter = new main_recycle_adapter(list, MainActivity.this);
         recyclerView.setAdapter(adapter);
+        pathList = DataSupport.findAll(ImagePath.class);
         setImage(page);
         springView = (SpringView) findViewById(R.id.activity_main_frame);
         springView.setFooter(new DefaultFooter(MainActivity.this));
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
+
     }
 
     private void setListener() {
@@ -110,23 +122,35 @@ public class MainActivity extends AppCompatActivity {
 
         adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(final View view, final int position) {
                 imageUrl = list.get(position);
-                Intent intent = new Intent(MainActivity.this, ShowActivity.class);
-                intent.putStringArrayListExtra("list", list);
-                intent.putExtra("position", position);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
-                } else {
-                    startActivity(intent);
-                }
+
+//                intent.putStringArrayListExtra("list", list);
+                DataSupport.saveAllAsync(showList).listen(new SaveCallback() {
+                    @Override
+                    public void onFinish(boolean success) {
+                        Log.e("showList",showList.size()+"");
+                        Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                        intent.putExtra("position", position);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
+                        } else {
+                            startActivity(intent);
+                        }
+                    }
+                });
             }
 
             @Override
             public void onItemLongClick(View view, int position) {
             }
         });
-
+        toolbar.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
+            @Override
+            public void onDoubleClick() {
+                recyclerView.scrollToPosition(0);
+            }
+        }));
     }
 
     /**
@@ -216,56 +240,88 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        getData = retrofit.create(getData.class);
-        getData.getWelfare("9", page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<gson_welfare>() {
-                    private Disposable disposable;
+        if ((pathList.size()!=0)&&(list.size() < pathList.size())) {
+            if (list.size() % 18 == 0) {
+                System.gc();
+            }
+            index = list.size() + 9;
+            start = list.size();
+            end = start;
+            for (int i = list.size(); i < index; i++) {
+                showPath=new showPath();
+                showPath.setPath(pathList.get(i).getPath());
+                showList.add(showPath);
+                list.add(pathList.get(i).getPath());
+                adapter.notifyItemInserted(end);
+                end++;
+            }
+            if (page != 1) {
+                springView.onFinishFreshAndLoad();
+            }
+        } else {
+            getData = retrofit.create(getData.class);
+            getData.getWelfare("9", page)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<gson_welfare>() {
+                        private Disposable disposable;
 
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposable = d;
-                    }
-
-                    @Override
-                    public void onNext(gson_welfare value) {
-                        if (list.size() % 18 == 0) {
-                            System.gc();
+                        @Override
+                        public void onSubscribe(Disposable d) {
+                            disposable = d;
                         }
-                        results = value.getResults();
-                        start = list.size();
-                        end = start;
-                        for (int i = 0; i < results.size(); i++) {
-//                            Log.e("position:" + i, results.get(i).getUrl());
-                            if (error.equals(results.get(i).getUrl())) {
-                                list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
-                            } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
-                                list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
-                            } else {
-                                list.add(results.get(i).getUrl());
+
+                        @Override
+                        public void onNext(gson_welfare value) {
+                            if (list.size() % 18 == 0) {
+                                System.gc();
                             }
-                            adapter.notifyItemInserted(end);
-                            end++;
+                            results = value.getResults();
+                            start = list.size();
+                            end = start;
+                            for (int i = 0; i < results.size(); i++) {
+                                imagePath=new ImagePath();
+                                showPath=new showPath();
+                                if (error.equals(results.get(i).getUrl())) {
+                                    list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
+                                    imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
+                                    imagePath.save();
+                                    showPath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
+                                } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
+                                    list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
+                                    imagePath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
+                                    imagePath.save();
+                                    showPath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
+                                } else {
+                                    list.add(results.get(i).getUrl());
+                                    imagePath.setPath(results.get(i).getUrl());
+                                    imagePath.save();
+                                    showPath.setPath(results.get(i).getUrl());
+                                }
+                                showList.add(showPath);
+                                adapter.notifyItemInserted(end);
+                                end++;
+                                imagePath=null;
+                            }
+                            if (page != 1) {
+                                springView.onFinishFreshAndLoad();
+                            }
                         }
-                        if (page != 1) {
-                            springView.onFinishFreshAndLoad();
-                        }
-                    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        disposable.dispose();
-                        if (page != 1) {
-                            springView.onFinishFreshAndLoad();
+                        @Override
+                        public void onError(Throwable e) {
+                            disposable.dispose();
+                            if (page != 1) {
+                                springView.onFinishFreshAndLoad();
+                            }
+                            Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
-                    }
 
-                    @Override
-                    public void onComplete() {
-                    }
-                });
+                        @Override
+                        public void onComplete() {
+                        }
+                    });
+        }
     }
 
     @Override
@@ -274,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
         if (flag) {
             closeDisk();
         }
+        DataSupport.deleteAll(bean.showPath.class);
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }

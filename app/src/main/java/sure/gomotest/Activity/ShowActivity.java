@@ -25,6 +25,8 @@ import com.previewlibrary.GPreviewActivity;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import org.greenrobot.eventbus.EventBus;
+import org.litepal.crud.DataSupport;
+import org.litepal.crud.callback.UpdateOrDeleteCallback;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,9 +34,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import adapter.viewPager_adapter;
+import bean.showPath;
 import event.showActivityEvent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -49,10 +53,10 @@ public class ShowActivity extends AppCompatActivity {
     private Random mRandom = new Random();
     final int downLoadImage=0;
     final int editImage=1;
-    private ArrayList<String> list;
+    private List<showPath> list;
     private int position;
     private viewPager_adapter adapter;
-    private
+
 
     Handler handler=new Handler(new Handler.Callback() {
         @Override
@@ -81,7 +85,7 @@ public class ShowActivity extends AppCompatActivity {
         }
 
         Intent intent=getIntent();
-        list=intent.getStringArrayListExtra("list");
+        list= DataSupport.findAll(showPath.class);
         position=intent.getIntExtra("position",0);
 
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
@@ -189,6 +193,12 @@ public class ShowActivity extends AppCompatActivity {
             handler.removeCallbacksAndMessages(null);
             handler = null;
         }
+//        DataSupport.deleteAllAsync(showPath.class).listen(new UpdateOrDeleteCallback() {
+//            @Override
+//            public void onFinish(int rowsAffected) {
+//                Log.e("delete","delete");
+//            }
+//        });
     }
 
     @Override
@@ -219,6 +229,8 @@ public class ShowActivity extends AppCompatActivity {
         EventBus.getDefault().post(event);
         finish();
     }
+
+
 }
 
 

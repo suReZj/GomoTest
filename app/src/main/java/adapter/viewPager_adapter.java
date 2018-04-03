@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
+import bean.showPath;
 import uk.co.senab.photoview.PhotoView;
 
 /**
@@ -15,9 +16,9 @@ import uk.co.senab.photoview.PhotoView;
  */
 
 public class viewPager_adapter extends PagerAdapter {
-    private List<String> list;
+    private List<showPath> list;
 
-    public viewPager_adapter(List<String> list) {
+    public viewPager_adapter(List<showPath> list) {
         this.list = list;
     }
 
@@ -34,7 +35,7 @@ public class viewPager_adapter extends PagerAdapter {
     @Override
     public View instantiateItem(ViewGroup container, int position) {
         PhotoView photoView = new PhotoView(container.getContext());
-        Glide.with(container.getContext()).load(list.get(position)).into(photoView);
+        Glide.with(container.getContext()).load(list.get(position).getPath()).into(photoView);
 
         // Now just add PhotoView to ViewPager and return it
         container.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -48,7 +49,7 @@ public class viewPager_adapter extends PagerAdapter {
     }
 
     public String getUrl(int position){
-        return list.get(position);
+        return list.get(position).getPath();
     }
 
     @Override
