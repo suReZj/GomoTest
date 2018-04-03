@@ -195,6 +195,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 //                    baos = null;
 //                    bytes = null;
 //                }
+//                bitmap=null;
             }
         });
         request = null;
