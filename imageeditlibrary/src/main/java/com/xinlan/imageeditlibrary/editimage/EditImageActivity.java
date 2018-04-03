@@ -558,9 +558,9 @@ public class EditImageActivity extends BaseActivity {
                 break;
             case MODE_PAINT://保存涂鸦
 //                mPaintFragment.savePaintImage(EditImageActivity.this);
-                mPaintView.invalidate();
-                mPaintView.generatorBit();
-                mPaintView.setVisibility(View.GONE);
+//                mPaintView.invalidate();
+//                mPaintView.generatorBit();
+//                mPaintView.setVisibility(View.GONE);
                 mPaintFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_BEAUTY://保存美颜后的图片

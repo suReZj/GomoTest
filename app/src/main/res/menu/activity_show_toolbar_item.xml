@@ -12,11 +12,4 @@
         android:title="@string/downLoad"
         android:icon="@drawable/ic_file_download_white_24dp"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/like"
-        android:title="@string/like"
-        android:icon="@drawable/ic_favorite_white_24dp"
-        app:showAsAction="always"
-        />
-
 </menu>

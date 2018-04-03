@@ -40,7 +40,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     compile 'com.jakewharton:disklrucache:2.0.2'
     compile project(path: ':androidlibmagick')
-    compile 'tyrant:heartlayout:1.0.1'
     compile 'org.litepal.android:core:1.6.1'
     implementation project(':imageeditlibrary')
     compile 'com.ycjiang:ImagePreview:2.1.2'

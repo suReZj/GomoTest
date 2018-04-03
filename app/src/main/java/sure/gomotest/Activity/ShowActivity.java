@@ -45,7 +45,6 @@ import widght.MyViewPager;
 
 public class ShowActivity extends AppCompatActivity {
     private Toolbar toolbar;
-//    private HeartLayout heartLayout;
     private ViewPager viewPager;
     private Random mRandom = new Random();
     final int downLoadImage=0;
@@ -73,7 +72,6 @@ public class ShowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show);
-//        heartLayout = (HeartLayout) findViewById(R.id.activity_show_heart);
         toolbar = (Toolbar) findViewById(R.id.activity_show_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -207,9 +205,6 @@ public class ShowActivity extends AppCompatActivity {
                 break;
             case R.id.download:
                 getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this,downLoadImage);
-                break;
-            case R.id.like:
-//                heartLayout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
                 break;
             case R.id.edit:
                 getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);

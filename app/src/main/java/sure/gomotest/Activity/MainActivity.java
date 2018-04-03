@@ -16,16 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import com.liaoinstan.springview.container.DefaultFooter;
 import com.liaoinstan.springview.widget.SpringView;
-import com.previewlibrary.GPreviewBuilder;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapter.main_recycle_adapter;
-import bean.UserViewInfo;
 import event.showActivityEvent;
 import gson.gson_result;
 import gson.gson_welfare;
@@ -66,9 +62,14 @@ public class MainActivity extends AppCompatActivity {
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
-    private List<UserViewInfo> showImageList = new ArrayList<>();
     private String error = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
     private long backLastPressedTimestamp = 0;
+    private List<gson_result> results;
+    private int start;
+    private int end;
+    private Retrofit retrofit = RetrofitUtil.getRetrofit(url);
+    private getData getData = retrofit.create(getData.class);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +112,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 imageUrl = list.get(position);
-                showImageList = new ArrayList<>();
-                UserViewInfo bean = new UserViewInfo(list.get(position));
-                showImageList.add(bean);
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
                 intent.putStringArrayListExtra("list", list);
                 intent.putExtra("position", position);
@@ -129,12 +127,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        recyclerView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                return false;
-//            }
-//        });
     }
 
     /**
@@ -224,8 +216,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        Retrofit retrofit = RetrofitUtil.getRetrofit(url);
-        getData getData = retrofit.create(getData.class);
+        getData = retrofit.create(getData.class);
         getData.getWelfare("9", page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -242,9 +233,9 @@ public class MainActivity extends AppCompatActivity {
                         if (list.size() % 18 == 0) {
                             System.gc();
                         }
-                        List<gson_result> results = value.getResults();
-                        int start = list.size();
-                        int end = start;
+                        results = value.getResults();
+                        start = list.size();
+                        end = start;
                         for (int i = 0; i < results.size(); i++) {
 //                            Log.e("position:" + i, results.get(i).getUrl());
                             if (error.equals(results.get(i).getUrl())) {
@@ -254,8 +245,6 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 list.add(results.get(i).getUrl());
                             }
-                            UserViewInfo bean = new UserViewInfo(results.get(i).getUrl());
-                            showImageList.add(bean);
                             adapter.notifyItemInserted(end);
                             end++;
                         }

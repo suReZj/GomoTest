@@ -34,7 +34,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import sure.gomotest.Activity.MainActivity;
 import sure.gomotest.R;
-import tyrantgit.widget.HeartLayout;
 
 import static util.Contants.bigImage;
 
@@ -201,7 +200,6 @@ public class ShowDialog {
     public static void setImage(Bitmap bitmap){
         final View contentView = LayoutInflater.from(mContext).inflate(R.layout.show_image_dialog, null);
         ImageView imageView = (ImageView) contentView.findViewById(R.id.show_image);
-        final HeartLayout layout = contentView.findViewById(R.id.periscope);
 
         if (bitmap == null) {
             Log.e("null", "null");
@@ -229,7 +227,6 @@ public class ShowDialog {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                layout.addHeart(Color.rgb(mRandom.nextInt(255), mRandom.nextInt(255), mRandom.nextInt(255)));
             }
         });
 

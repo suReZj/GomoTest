@@ -158,8 +158,9 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         activity.mode = EditImageActivity.MODE_PAINT;
         activity.mainImage.setImageBitmap(activity.getMainBit());
         activity.bannerFlipper.showNext();
-        mPaintView.invalidate();
-        activity.mPaintView.setVisibility(View.VISIBLE);
+        if(activity.mPaintView.getVisibility()==View.GONE){
+            activity.mPaintView.setVisibility(View.VISIBLE);
+        }
 
 
 //        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(activity.mPaintView.getLayoutParams());

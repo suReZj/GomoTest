@@ -18,13 +18,6 @@
             app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
             app:titleTextColor="@color/white"/>
     </android.support.design.widget.AppBarLayout>
-
-    <!--<tyrantgit.widget.HeartLayout android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:id="@+id/activity_show_heart"-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--&gt;-->
-    <!--<include layout="@layout/activity_image_preview_photo"/>-->
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

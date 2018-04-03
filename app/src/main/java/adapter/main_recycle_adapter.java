@@ -40,6 +40,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private List<String> list;
     private Context context;
     private imageCache imageCache;
+    private OkHttpClient client = new OkHttpClient();
 //    Handler handler = new Handler(new Handler.Callback() {
 //        @Override
 //        public boolean handleMessage(Message msg) {
@@ -143,7 +144,6 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
     public void getImageBitmap(final String url, final ViewHolder holder) {
-        OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .get()
                 .url(url + width)
@@ -155,13 +155,13 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                byte[] bytes;
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                byte[] bytes;
                 BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize=2;
+                options.inSampleSize = 2;
                 options.inJustDecodeBounds = false;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
-                Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream(),null,options);
+                Bitmap bitmap = BitmapFactory.decodeStream(response.body().byteStream(), null, options);
 
                 if (bitmap != null && bitmap.getWidth() != 0) {
                     //缩放法压缩
@@ -170,12 +170,12 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 }
 
-                if (bitmap != null && bitmap.getWidth() != 0) {
-                    //质量压缩
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-                    bytes = baos.toByteArray();
-                    bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                }
+//                if (bitmap != null && bitmap.getWidth() != 0) {
+//                    //质量压缩
+//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+//                    bytes = baos.toByteArray();
+//                    bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//                }
 
                 imageCache.addToDiskLruCache(url, bitmap);
                 imageCache.addBitmapToCache(url, bitmap);
@@ -187,15 +187,17 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                         notifyDataSetChanged();
                     }
                 });
-                response.body().byteStream().close();
-                bitmap = null;
-                if (baos != null) {
-                    //baos.close();
-                    baos = null;
-                    bytes = null;
-                }
+//                call.cancel();
+//                response.body().byteStream().close();
+//                bitmap = null;
+//                if (baos != null) {
+//                    //baos.close();
+//                    baos = null;
+//                    bytes = null;
+//                }
             }
         });
+        request = null;
     }
 
 

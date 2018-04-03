@@ -9,13 +9,10 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import com.previewlibrary.GPreviewBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,7 +25,6 @@ import java.util.List;
 
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
-import bean.UserViewInfo;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
 import sure.gomotest.R;
