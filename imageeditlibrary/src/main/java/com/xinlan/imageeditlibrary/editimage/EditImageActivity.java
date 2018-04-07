@@ -46,6 +46,7 @@ import com.xinlan.imageeditlibrary.editimage.widget.EditCache;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
 
 import java.io.ByteArrayOutputStream;
+import java.util.concurrent.ExecutionException;
 
 /**
  * <p>
@@ -136,20 +137,7 @@ public class EditImageActivity extends BaseActivity {
         checkInitImageLoader();
         setContentView(R.layout.activity_image_edit);
         initView();
-//        if (savedInstanceState != null) {
-
-//            mainBitmap = savedInstanceState.getParcelable("bitmap");
-//            mainImage.setImageBitmap(mainBitmap);
-//            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
-//        } else {
         getData();
-//        }
-//        if (savedInstanceState != null) {
-//            int lastMode=savedInstanceState.getInt("mode");
-//            if(lastMode==MODE_STICKERS){
-//                mPaintFragment.backToMain(EditImageActivity.this);
-//            }
-//        }
         super.onCreate(savedInstanceState);
     }
 
@@ -285,7 +273,7 @@ public class EditImageActivity extends BaseActivity {
         @Override
         protected Bitmap doInBackground(String... params) {
             return BitmapUtils.getSampledBitmap(params[0], imageWidth,
-                    imageHeight);
+                    imageHeight, EditImageActivity.this);
         }
 
         @Override
@@ -350,7 +338,7 @@ public class EditImageActivity extends BaseActivity {
         public void onClick(View v) {
             switch (mode) {
                 case MODE_STICKERS:
-                    mStickerFragment.applyStickers(EditImageActivity.this,mainBitmap);// 保存贴图
+                    mStickerFragment.applyStickers(EditImageActivity.this, mainBitmap);// 保存贴图
                     break;
                 case MODE_FILTER:// 滤镜编辑状态
                     mFilterListFragment.applyFilterImage();// 保存滤镜贴图
@@ -418,10 +406,6 @@ public class EditImageActivity extends BaseActivity {
                 increaseOpTimes();
             }
             mainBitmap = newBit;
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            mainBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//            byte[] bytes=baos.toByteArray();
-//            Glide.with(EditImageActivity.this).load(bytes).centerCrop().into(mainImage);
             mainImage.setImageBitmap(mainBitmap);
             mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
         }

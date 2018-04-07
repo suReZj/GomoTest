@@ -38,7 +38,6 @@ import java.util.List;
 
 import adapter.main_recycle_adapter;
 import bean.ImagePath;
-import bean.showPath;
 import event.showActivityEvent;
 import gson.gson_result;
 import gson.gson_welfare;
@@ -78,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
     private int index = 0;
     private List<ImagePath> pathList=new ArrayList<>();
     private ImagePath imagePath;
-    private List<showPath> showList=new ArrayList<>();
-    private showPath showPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,19 +123,19 @@ public class MainActivity extends AppCompatActivity {
                 imageUrl = list.get(position);
 
 //                intent.putStringArrayListExtra("list", list);
-                DataSupport.saveAllAsync(showList).listen(new SaveCallback() {
-                    @Override
-                    public void onFinish(boolean success) {
-                        Log.e("showList",showList.size()+"");
+//                DataSupport.saveAllAsync(showList).listen(new SaveCallback() {
+//                    @Override
+//                    public void onFinish(boolean success) {
                         Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                        intent.putExtra("size",list.size());
                         intent.putExtra("position", position);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
                         } else {
                             startActivity(intent);
                         }
-                    }
-                });
+//                    }
+//                });
             }
 
             @Override
@@ -248,9 +245,6 @@ public class MainActivity extends AppCompatActivity {
             start = list.size();
             end = start;
             for (int i = list.size(); i < index; i++) {
-                showPath=new showPath();
-                showPath.setPath(pathList.get(i).getPath());
-                showList.add(showPath);
                 list.add(pathList.get(i).getPath());
                 adapter.notifyItemInserted(end);
                 end++;
@@ -281,24 +275,19 @@ public class MainActivity extends AppCompatActivity {
                             end = start;
                             for (int i = 0; i < results.size(); i++) {
                                 imagePath=new ImagePath();
-                                showPath=new showPath();
                                 if (error.equals(results.get(i).getUrl())) {
                                     list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     imagePath.save();
-                                    showPath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                 } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
                                     list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                     imagePath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                     imagePath.save();
-                                    showPath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                 } else {
                                     list.add(results.get(i).getUrl());
                                     imagePath.setPath(results.get(i).getUrl());
                                     imagePath.save();
-                                    showPath.setPath(results.get(i).getUrl());
                                 }
-                                showList.add(showPath);
                                 adapter.notifyItemInserted(end);
                                 end++;
                                 imagePath=null;
@@ -330,7 +319,6 @@ public class MainActivity extends AppCompatActivity {
         if (flag) {
             closeDisk();
         }
-        DataSupport.deleteAll(bean.showPath.class);
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
@@ -356,7 +344,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(showActivityEvent messageEvent) {
-//        recyclerView.scrollToPosition(messageEvent.getPosition());
         recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 }

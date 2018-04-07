@@ -188,6 +188,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 //                        notifyDataSetChanged();
                     }
                 });
+
 //                call.cancel();
 //                response.body().byteStream().close();
 //                bitmap = null;

@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.ViewFlipper;
 
 import com.xinlan.imageeditlibrary.BaseActivity;
@@ -131,6 +132,13 @@ public class StickerFragment extends BaseEditFragment {
         activity.mStickerFragment.mStickerView=activity.mStickerView;
         activity.mStickerFragment.getmStickerView().setVisibility(
                 View.VISIBLE);
+//        activity.mainImage.getBitmapRect().
+        float width=activity.mainImage.getBitmapRect().right-activity.mainImage.getBitmapRect().left;
+        float height=activity.mainImage.getBitmapRect().bottom-activity.mainImage.getBitmapRect().top;
+
+        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams((int)width,(int)height);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+//        activity.mStickerView.setLayoutParams(layoutParams);
         activity.bannerFlipper.showNext();
 
     }

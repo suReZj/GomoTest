@@ -23,8 +23,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -39,6 +41,8 @@ import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+
+import com.bumptech.glide.Glide;
 
 /**
  * BitmapUtils
@@ -387,15 +391,24 @@ public class BitmapUtils {
         return resizeBitmap( input, destWidth, destHeight, 0 );
     }
 
-    public static Bitmap getSampledBitmap(String filePath, int reqWidth, int reqHeight) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filePath, options);
-        int inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-        options.inSampleSize = inSampleSize;
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filePath, options);
+    public static Bitmap getSampledBitmap(String filePath, int reqWidth, int reqHeight,Context context) {
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(filePath, options);
+//        int inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+//        options.inSampleSize = inSampleSize;
+//        options.inPreferredConfig = Bitmap.Config.RGB_565;
+//        options.inJustDecodeBounds = false;
+//        return BitmapFactory.decodeFile(filePath, options);
+        Bitmap bitmap=null;
+        try {
+            bitmap=Glide.with(context).load(filePath).asBitmap().fitCenter().into(reqWidth,reqHeight).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 
 

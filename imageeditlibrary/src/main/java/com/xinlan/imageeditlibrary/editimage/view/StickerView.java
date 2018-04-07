@@ -8,10 +8,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 /**
  * 贴图操作控件
@@ -96,6 +99,11 @@ public class StickerView extends View {
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
+        int top;
+        int bottom;
+        int right;
+        int left;
+        RectF size;
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
 
@@ -143,13 +151,27 @@ public class StickerView extends View {
 
 
             case MotionEvent.ACTION_MOVE:
+                top = this.getTop();
+                bottom = this.getBottom();
+                right = this.getRight();
+                left = this.getLeft();
+                size = new RectF(left, top, right, bottom);
                 ret = true;
                 if (currentStatus == STATUS_MOVE) {// 移动贴图
+
                     float dx = x - oldx;
                     float dy = y - oldy;
                     if (currentItem != null) {
                         currentItem.updatePos(dx, dy);
-                        invalidate();
+                        if((currentItem.dstRect.bottom<bottom)&&(currentItem.dstRect.top>top)&&(currentItem.dstRect.right<right)&&(currentItem.dstRect.left>left)
+//                                &&(currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)
+//                                &&(currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)
+//                                &&(currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
+                                ){
+                            invalidate();
+                        }else {
+                            currentItem.updatePos(-dx,-dy);
+                        }
                     }// end if
                     oldx = x;
                     oldy = y;
@@ -159,7 +181,16 @@ public class StickerView extends View {
                     float dy = y - oldy;
                     if (currentItem != null) {
                         currentItem.updateRotateAndScale(oldx, oldy, dx, dy);// 旋转
-                        invalidate();
+                        if((currentItem.dstRect.bottom<bottom)&&(currentItem.dstRect.top>top)&&(currentItem.dstRect.right<right)&&(currentItem.dstRect.left>left)&&
+                                (currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)&&
+                                (currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)&&
+                                (currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
+                                ){
+                            invalidate();
+                        }else {
+                            currentItem.updateRotateAndScale(oldx, oldy, -dx, -dy);// 旋转
+                        }
+
                     }// end if
                     oldx = x;
                     oldy = y;

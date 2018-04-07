@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
@@ -18,10 +16,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-import adapter.viewPager_adapter;
+import adapter.album_viewPager_adapter;
+import adapter.main_viewPager_adapter;
 import bean.AlbumBean;
 import bean.showPath;
 import event.saveImageEvent;
@@ -37,13 +35,15 @@ public class AlbumDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private String path;
     private MyViewPager viewPager;
-    private viewPager_adapter adapter;
-    private List<showPath> list;
+    private album_viewPager_adapter adapter;
+    private List<AlbumBean> list;
+    private String albumName;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        albumName=getIntent().getStringExtra("albumname");
         setContentView(R.layout.activity_album_detail);
         EventBus.getDefault().register(this);
         toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
@@ -56,8 +56,8 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
         Intent intent=getIntent();
         viewPager=(MyViewPager)findViewById(R.id.activity_detail_viewPager);
-        list= DataSupport.findAll(showPath.class);
-        adapter=new viewPager_adapter(list);
+        list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+        adapter=new album_viewPager_adapter(list);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(intent.getIntExtra("position",0));
     }

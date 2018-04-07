@@ -81,8 +81,8 @@
         <com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouch
             android:id="@+id/main_image"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center" />
+            android:layout_height="match_parent"
+            android:layout_gravity="center"/>
 
         <com.xinlan.imageeditlibrary.editimage.view.StickerView
             android:id="@+id/sticker_panel"

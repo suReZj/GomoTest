@@ -254,7 +254,10 @@ public class TextStickerView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean ret = super.onTouchEvent(event);// 是否向下传递事件标志 true为消耗
-
+        int top;
+        int bottom;
+        int right;
+        int left;
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
@@ -284,6 +287,10 @@ public class TextStickerView extends View {
 
                 break;
             case MotionEvent.ACTION_MOVE:
+                top = this.getTop();
+                bottom = this.getBottom();
+                right = this.getRight();
+                left = this.getLeft();
                 ret = true;
                 if (mCurrentMode == MOVE_MODE) {// 移动贴图
                     mCurrentMode = MOVE_MODE;
@@ -293,10 +300,16 @@ public class TextStickerView extends View {
                     layout_x += dx;
                     layout_y += dy;
 
-                    invalidate();
+//                    if((mTextRect.left+dx>left)&&(mTextRect.right+dx<right)&&(mTextRect.left+dy>top)&&(mTextRect.left+dy<bottom)){
+                        invalidate();
 
+//                    }else {
+//                        layout_x -= dx;
+//                        layout_y -= dy;
+//                    }
                     last_x = x;
                     last_y = y;
+
                 } else if (mCurrentMode == ROTATE_MODE) {// 旋转 缩放文字操作
                     mCurrentMode = ROTATE_MODE;
                     float dx = x - last_x;

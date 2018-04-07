@@ -44,6 +44,7 @@ public class AlbumActivity extends AppCompatActivity {
     private ArrayList<showPath> urlList = new ArrayList<>();
     private int index = 0;
     private showPath showPath;
+    private String album;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,7 @@ public class AlbumActivity extends AppCompatActivity {
     public void initView() {
         intent = getIntent();
         albumName = intent.getStringExtra("name");
+        album=albumName;
 
         toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
         toolbar.setTitle("");
@@ -70,11 +72,11 @@ public class AlbumActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.activity_album_textView);
 
         list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-        for(int i=0;i<list.size();i++){
-            showPath=new showPath();
-            showPath.setPath(list.get(i).getPath());
-            urlList.add(showPath);
-        }
+//        for(int i=0;i<list.size();i++){
+//            showPath=new showPath();
+//            showPath.setPath(list.get(i).getPath());
+//            urlList.add(showPath);
+//        }
 
         adapter = new album_recycle_adapter(list);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
@@ -93,18 +95,19 @@ public class AlbumActivity extends AppCompatActivity {
             public void onItemClick(final View view, final int position) {
                 albumPath = list.get(position).getPath();
 
-                DataSupport.saveAllAsync(urlList).listen(new SaveCallback() {
-                    @Override
-                    public void onFinish(boolean success) {
+//                DataSupport.saveAllAsync(urlList).listen(new SaveCallback() {
+//                    @Override
+//                    public void onFinish(boolean success) {
                         Intent showItent=new Intent(AlbumActivity.this,AlbumDetailActivity.class);
+                        showItent.putExtra("albumname",album);
                         showItent.putExtra("position",position);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                             startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
                         }else {
                             startActivity(showItent);
                         }
-                    }
-                });
+//                    }
+//                });
 
             }
 

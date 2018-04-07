@@ -8,17 +8,13 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import bean.showPath;
+import bean.AlbumBean;
 import uk.co.senab.photoview.PhotoView;
 
-/**
- * Created by zhangzijian on 2018/03/27.
- */
+public class album_viewPager_adapter extends PagerAdapter {
+    private List<AlbumBean> list;
 
-public class viewPager_adapter extends PagerAdapter {
-    private List<showPath> list;
-
-    public viewPager_adapter(List<showPath> list) {
+    public album_viewPager_adapter(List<AlbumBean> list) {
         this.list = list;
     }
 

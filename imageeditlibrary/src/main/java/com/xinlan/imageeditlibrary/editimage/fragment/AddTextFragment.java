@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.xinlan.imageeditlibrary.R;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
@@ -169,11 +170,11 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showPrevious();
-//        mTextStickerView.clearTextContent();
-//        mTextStickerView.resetView();
-//        mTextStickerView.setVisibility(View.GONE);
-//        mTextStickerView.setEditText(null);
-//        mTextStickerView.clearFocus();
+        mTextStickerView.clearTextContent();
+        mTextStickerView.resetView();
+        mTextStickerView.setVisibility(View.GONE);
+        mTextStickerView.setEditText(null);
+        mTextStickerView.clearFocus();
     }
 
     @Override
@@ -183,6 +184,11 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         activity.bannerFlipper.showNext();
         mTextStickerView.setVisibility(View.VISIBLE);
         mInputText.clearFocus();
+        float width=activity.mainImage.getBitmapRect().right-activity.mainImage.getBitmapRect().left;
+        float height=activity.mainImage.getBitmapRect().bottom-activity.mainImage.getBitmapRect().top;
+        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams((int)width,(int)height);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+        mTextStickerView.setLayoutParams(layoutParams);
     }
 
     /**

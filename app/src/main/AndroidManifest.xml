@@ -36,9 +36,11 @@
         </activity>
         <activity android:name=".Activity.AlbumActivity" />
         <activity android:name=".Activity.SelectActivity" />
-        <activity android:name=".Activity.ShowActivity" />
-        <activity android:name=".Activity.AlbumDetailActivity" />
-        <activity android:name=".Activity.MainActivity"></activity>
+        <activity android:name=".Activity.ShowActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity android:name=".Activity.AlbumDetailActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity android:name=".Activity.MainActivity"/>
     </application>
 
 </manifest>

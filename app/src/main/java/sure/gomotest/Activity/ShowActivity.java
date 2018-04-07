@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,31 +13,25 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.previewlibrary.GPreviewActivity;
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
 import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
-import org.litepal.crud.callback.UpdateOrDeleteCallback;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import adapter.viewPager_adapter;
-import bean.showPath;
+import adapter.main_viewPager_adapter;
+import bean.ImagePath;
 import event.showActivityEvent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -53,9 +46,9 @@ public class ShowActivity extends AppCompatActivity {
     private Random mRandom = new Random();
     final int downLoadImage=0;
     final int editImage=1;
-    private List<showPath> list;
+    private List<ImagePath> list;
     private int position;
-    private viewPager_adapter adapter;
+    private main_viewPager_adapter adapter;
 
 
     Handler handler=new Handler(new Handler.Callback() {
@@ -85,11 +78,11 @@ public class ShowActivity extends AppCompatActivity {
         }
 
         Intent intent=getIntent();
-        list= DataSupport.findAll(showPath.class);
+        list=DataSupport.limit(intent.getIntExtra("size",0)).find(ImagePath.class);
         position=intent.getIntExtra("position",0);
 
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
-        adapter=new viewPager_adapter(list);
+        adapter=new main_viewPager_adapter(list);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(position);
     }
