@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     private int index = 0;
     private List<ImagePath> pathList = new ArrayList<>();
     private ImagePath imagePath;
+    private int getNum=18;
 
 
     @Override

@@ -140,7 +140,9 @@ public class StickerFragment extends BaseEditFragment {
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
 //        activity.mStickerView.setLayoutParams(layoutParams);
         activity.bannerFlipper.showNext();
-
+        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+            activity.undoLayout.setVisibility(View.GONE);
+        }
     }
 
     //导入贴图数据
@@ -274,6 +276,9 @@ public class StickerFragment extends BaseEditFragment {
         mStickerView.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
         mStickerView.clear();
+        if(activity.undoLayout.getVisibility()==View.GONE){
+            activity.undoLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -299,7 +304,7 @@ public class StickerFragment extends BaseEditFragment {
         @Override
         public void onPostResult(Bitmap result) {
             mStickerView.clear();
-            activity.changeMainBitmap(result,true);
+            activity.changeMainBitmap(null,result,true);
             backToMain(getContext());
         }
     }// end inner class

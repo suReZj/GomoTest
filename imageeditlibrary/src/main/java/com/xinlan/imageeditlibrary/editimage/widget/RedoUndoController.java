@@ -65,7 +65,7 @@ public class RedoUndoController implements View.OnClickListener {
         //System.out.println("Undo!!!");
         Bitmap lastBitmap = mEditCache.getNextCurrentBit();
         if (lastBitmap != null && !lastBitmap.isRecycled()) {
-            mActivity.changeMainBitmap(lastBitmap, false);
+            mActivity.changeMainBitmap(null,lastBitmap, false);
         }
     }
 
@@ -76,7 +76,7 @@ public class RedoUndoController implements View.OnClickListener {
         //System.out.println("Redo!!!");
         Bitmap preBitmap = mEditCache.getPreCurrentBit();
         if (preBitmap != null && !preBitmap.isRecycled()) {
-            mActivity.changeMainBitmap(preBitmap, false);
+            mActivity.changeMainBitmap(null,preBitmap, false);
         }
     }
 

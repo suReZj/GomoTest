@@ -148,6 +148,9 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
             activity.mPaintView.setVisibility(View.GONE);
             activity.mPaintView.reset();
         }
+        if(activity.undoLayout.getVisibility()==View.GONE){
+            activity.undoLayout.setVisibility(View.VISIBLE);
+        }
 
 //        mPaintView.generatorBit();
 
@@ -161,6 +164,12 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         if(activity.mPaintView.getVisibility()==View.GONE){
             activity.mPaintView.setVisibility(View.VISIBLE);
         }
+        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+            activity.undoLayout.setVisibility(View.GONE);
+        }
+
+
+
 
 
 //        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(activity.mPaintView.getLayoutParams());
@@ -328,7 +337,7 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
         @Override
         public void onPostResult(Bitmap result) {
             mPaintView.reset();
-            activity.changeMainBitmap(result , true);
+            activity.changeMainBitmap(null,result , true);
             backToMain(getContext());
         }
     }//end inner class

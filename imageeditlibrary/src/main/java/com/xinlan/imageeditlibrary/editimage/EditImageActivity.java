@@ -2,12 +2,20 @@ package com.xinlan.imageeditlibrary.editimage;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -18,6 +26,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -46,6 +55,7 @@ import com.xinlan.imageeditlibrary.editimage.widget.EditCache;
 import com.xinlan.imageeditlibrary.editimage.widget.RedoUndoController;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -110,7 +120,9 @@ public class EditImageActivity extends BaseActivity {
     public BeautyFragment mBeautyFragment;//美颜模式Fragment
     private SaveImageTask mSaveImageTask;
 
-    private RedoUndoController mRedoUndoController;//撤销操作
+    public RedoUndoController mRedoUndoController;//撤销操作
+
+    public LinearLayout undoLayout;
 
     /**
      * @param context
@@ -204,6 +216,7 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mRedoUndoController = new RedoUndoController(this, findViewById(R.id.redo_uodo_panel));
+        undoLayout=findViewById(R.id.redo_uodo_panel);
     }
 
     /**
@@ -266,21 +279,6 @@ public class EditImageActivity extends BaseActivity {
         mLoadImageTask.execute(filepath);
     }
 
-    /**
-     * 导入文件图片任务
-     */
-    private final class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            return BitmapUtils.getSampledBitmap(params[0], imageWidth,
-                    imageHeight, EditImageActivity.this);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            changeMainBitmap(result, false);
-        }
-    }// end inner class
 
     @Override
     public void onBackPressed() {
@@ -396,19 +394,158 @@ public class EditImageActivity extends BaseActivity {
      * @param newBit
      * @param needPushUndoStack
      */
-    public void changeMainBitmap(Bitmap newBit, boolean needPushUndoStack) {
-        if (newBit == null)
-            return;
+    public void changeMainBitmap(String path, Bitmap newBit, boolean needPushUndoStack) {
+        if (path != null) {
+//            try {
+//                newBit=Glide.with(getApplicationContext()).load(filePath).asBitmap().fitCenter().into(imageWidth,imageHeight).get();
+            if (mainBitmap == null || mainBitmap != newBit) {
+                if (needPushUndoStack) {
+                    mRedoUndoController.switchMainBit(mainBitmap, newBit);
+                    increaseOpTimes();
+                }
+                mainBitmap = newBit;
+                mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                newBit.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                byte[] bytes=baos.toByteArray();
 
-        if (mainBitmap == null || mainBitmap != newBit) {
-            if (needPushUndoStack) {
-                mRedoUndoController.switchMainBit(mainBitmap, newBit);
-                increaseOpTimes();
+                Glide.with(getApplicationContext()).load(bytes).into(mainImage);
+//                Glide.with(getApplicationContext()).load(path).into(mainImage);
             }
-            mainBitmap = newBit;
-            mainImage.setImageBitmap(mainBitmap);
-            mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }
+        } else {
+            if (newBit == null)
+                return;
+
+            if (mainBitmap == null || mainBitmap != newBit) {
+                if (needPushUndoStack) {
+                    mRedoUndoController.switchMainBit(mainBitmap, newBit);
+                    increaseOpTimes();
+                }
+                mainBitmap = newBit;
+                mainImage.setImageBitmap(mainBitmap);
+                mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
+            }
         }
+
+    }
+
+    public int getBitmapRotateAngle(String path) {
+        Log.e("path", path);
+        int digree = 0;
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            exif = null;
+        }
+        if (exif != null) {
+            int ori = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+            switch (ori) {
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    digree = 90;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    digree = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    digree = 270;
+                    break;
+                default:
+                    digree = 0;
+                    break;
+            }
+
+        }
+        Log.e("digree", digree + "");
+        return digree;
+    }
+
+    /**
+     * 导入文件图片任务
+     */
+    private final class LoadImageTask extends AsyncTask<String, Void, Bitmap> {
+        String path = null;
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            path = params[0];
+            Bitmap bitmap = null;
+            try {
+                bitmap=Glide.with(getApplicationContext()).load(filePath).asBitmap().fitCenter().into(imageWidth, imageHeight).get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+//            return BitmapUtils.getSampledBitmap(params[0], imageWidth,
+//                    imageHeight, EditImageActivity.this);
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+//            getBitmapRotateAngle(getRealPathFromUri(getApplicationContext(),Uri.parse("file://"+path)));
+
+//            changeMainBitmap( rotateBitmap(getBitmapRotateAngle(path),result), false);
+            changeMainBitmap(path, result, false);
+        }
+    }// end inner class
+
+    public Bitmap rotateBitmap(int digree, Bitmap bitmap) {
+        Bitmap newBitmap = null;
+        if (digree == 0) {
+            newBitmap = bitmap;
+        } else {
+            Matrix m = new Matrix();
+            m.setRotate(digree, bitmap.getWidth() / 2, bitmap.getHeight() / 2);
+            newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(),
+                    bitmap.getHeight(), m, true);
+            Log.e("digree", digree + "");
+//            newBitmap=adjustPhotoRotation(bitmap,digree);
+            if (bitmap != newBitmap) {
+                bitmap.recycle();
+            }
+        }
+        return newBitmap;
+    }
+
+    Bitmap adjustPhotoRotation(Bitmap bm, final int orientationDegree) {
+
+        Matrix m = new Matrix();
+        m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+        float targetX, targetY;
+        if (orientationDegree == 90) {
+            targetX = bm.getHeight();
+            targetY = 0;
+        } else {
+            targetX = bm.getHeight();
+            targetY = bm.getWidth();
+        }
+
+        final float[] values = new float[9];
+        m.getValues(values);
+
+        float x1 = values[Matrix.MTRANS_X];
+        float y1 = values[Matrix.MTRANS_Y];
+
+        m.postTranslate(targetX - x1, targetY - y1);
+
+        Bitmap bm1 = Bitmap.createBitmap(bm.getHeight(), bm.getWidth(), Bitmap.Config.ARGB_8888);
+
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(bm1);
+        canvas.drawBitmap(bm, m, paint);
+
+
+        return bm1;
     }
 
     @Override

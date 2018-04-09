@@ -158,6 +158,9 @@ public class CropFragment extends BaseEditFragment {
         activity.mCropPanel.setCropRect(r);
         // System.out.println(r.left + "    " + r.top);
         activity.bannerFlipper.showNext();
+		if(activity.undoLayout.getVisibility()==View.VISIBLE){
+			activity.undoLayout.setVisibility(View.GONE);
+		}
     }
 
     /**
@@ -187,6 +190,9 @@ public class CropFragment extends BaseEditFragment {
 		}
 		mCropPanel.setRatioCropRect(activity.mainImage.getBitmapRect(), -1);
 		activity.bannerFlipper.showPrevious();
+		if(activity.undoLayout.getVisibility()==View.GONE){
+			activity.undoLayout.setVisibility(View.VISIBLE);
+		}
 	}
 
 	/**
@@ -263,7 +269,7 @@ public class CropFragment extends BaseEditFragment {
 			if (result == null)
 				return;
 
-            activity.changeMainBitmap(result,true);
+            activity.changeMainBitmap(null,result,true);
 			activity.mCropPanel.setCropRect(activity.mainImage.getBitmapRect());
 			backToMain(getContext());
 		}

@@ -57,18 +57,20 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private CardView cardView;
+//        private CardView cardView;
         public ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image);
-            cardView = itemView.findViewById(R.id.item_cardView);
+//            cardView = itemView.findViewById(R.id.item_cardView);
             int width = ((Activity) itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
             params.width = (width-6) / 3;
+//            params.width=width/2;
             imageView.setLayoutParams(params);
+
         }
     }
 
@@ -135,12 +137,12 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
         if (mOnItemClickLitener != null) {
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnItemClickLitener.onItemClick(holder.itemView, position);
-                }
-            });
+//            holder.cardView.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    mOnItemClickLitener.onItemClick(holder.itemView, position);
+//                }
+//            });
         }
 
     }
@@ -275,7 +277,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 //            int heightRatio = Math.round((float) options.outHeight / (float) holder.imageView.getHeight());
 //            inSampleSize = Math.min(widthRatio, heightRatio);
 //        }
-        options.inSampleSize = 2;
+//        options.inSampleSize = 2;
 
         options.inJustDecodeBounds = false;
         options.inPreferredConfig = Bitmap.Config.RGB_565;

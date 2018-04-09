@@ -23,6 +23,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import adapter.album_viewPager_adapter;
@@ -60,13 +61,24 @@ public class AlbumDetailActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        Intent intent=getIntent();
         viewPager=(MyViewPager)findViewById(R.id.activity_detail_viewPager);
-        list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-        adapter=new album_viewPager_adapter(list);
-        viewPager.setAdapter(adapter);
-        viewPager.setCurrentItem(intent.getIntExtra("position",0));
+        Intent intent=getIntent();
+        if(intent.getStringArrayListExtra("list")!=null){
+            AlbumBean albumBean=new AlbumBean();
+            albumBean.setPath(intent.getStringArrayListExtra("list").get(0));
+            list=new ArrayList<>();
+            list.add(albumBean);
+            adapter=new album_viewPager_adapter(list);
+            viewPager.setAdapter(adapter);
+            viewPager.setCurrentItem(intent.getIntExtra("position",0));
+        }else {
+            list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+            adapter=new album_viewPager_adapter(list);
+            viewPager.setAdapter(adapter);
+            viewPager.setCurrentItem(intent.getIntExtra("position",0));
+        }
+
+
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式

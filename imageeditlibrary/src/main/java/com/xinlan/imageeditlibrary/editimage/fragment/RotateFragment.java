@@ -89,6 +89,9 @@ public class RotateFragment extends BaseEditFragment {
         activity.mRotatePanel.setVisibility(View.VISIBLE);
         activity.bannerFlipper.showNext();
         mSeekBar.setProgress(0);
+        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+            activity.undoLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -138,6 +141,9 @@ public class RotateFragment extends BaseEditFragment {
         this.mRotatePanel.setVisibility(View.GONE);
         activity.bannerFlipper.showPrevious();
         mSeekBar.setProgress(0);
+        if(activity.undoLayout.getVisibility()==View.GONE){
+            activity.undoLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -217,7 +223,7 @@ public class RotateFragment extends BaseEditFragment {
                 return;
 
             // 切换新底图
-            activity.changeMainBitmap(result,true);
+            activity.changeMainBitmap(null,result,true);
             backToMain(getContext());
         }
     }// end inner class

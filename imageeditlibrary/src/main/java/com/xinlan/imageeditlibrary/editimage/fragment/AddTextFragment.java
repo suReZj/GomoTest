@@ -175,6 +175,9 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         mTextStickerView.setVisibility(View.GONE);
         mTextStickerView.setEditText(null);
         mTextStickerView.clearFocus();
+        if(activity.undoLayout.getVisibility()==View.GONE){
+            activity.undoLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -189,6 +192,9 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams((int)width,(int)height);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
         mTextStickerView.setLayoutParams(layoutParams);
+        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+            activity.undoLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -236,7 +242,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
             mTextStickerView.clearTextContent();
             mTextStickerView.resetView();
 
-            activity.changeMainBitmap(result , true);
+            activity.changeMainBitmap(null,result , true);
             backToMain(getContext());
         }
     }//end inner class

@@ -135,14 +135,14 @@
         android:paddingRight="10dp">
         <ImageView
             android:id="@+id/uodo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="15dp"
             android:src="@drawable/uodo" />
         <ImageView
             android:id="@+id/redo_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:src="@drawable/redo" />
     </LinearLayout>
 
