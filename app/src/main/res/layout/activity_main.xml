@@ -5,15 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="sure.gomotest.Activity.MainActivity">
-
+    tools:context="sure.gomotest.Activity.MainActivity"
+    android:fitsSystemWindows="true">
+<android.support.design.widget.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true">
     <android.support.v7.widget.Toolbar
         android:id="@+id/activity_main_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="@color/toolbarBackground"
+        android:fitsSystemWindows="true"
         />
-
+</android.support.design.widget.AppBarLayout>
     <com.liaoinstan.springview.widget.SpringView
         android:id="@+id/activity_main_frame"
         android:layout_width="match_parent"

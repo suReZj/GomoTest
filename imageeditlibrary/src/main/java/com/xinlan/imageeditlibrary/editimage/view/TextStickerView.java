@@ -14,6 +14,7 @@ import android.text.Layout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -62,6 +63,7 @@ public class TextStickerView extends View {
     private static final int MOVE_MODE = 3;//移动模式
     private static final int ROTATE_MODE = 4;//旋转模式
     private static final int DELETE_MODE = 5;//删除模式
+    private static final int SCALE_MODE = 6;
 
     private EditText mEditText;//输入控件
 
@@ -80,6 +82,8 @@ public class TextStickerView extends View {
     private boolean mAutoNewLine = false;//是否需要自动换行
     private List<String> mTextContents = new ArrayList<String>(2);//存放所写的文字内容
     private String mText;
+    private float oldx, oldy;
+    private int top,bottom,left,right;
 
     public TextStickerView(Context context) {
         super(context);
@@ -102,7 +106,6 @@ public class TextStickerView extends View {
 
     private void initView(Context context) {
         debugPaint.setColor(Color.parseColor("#66ff0000"));
-
         mDeleteBitmap = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.sticker_delete);
         mRotateBitmap = BitmapFactory.decodeResource(context.getResources(),
@@ -253,15 +256,26 @@ public class TextStickerView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         boolean ret = super.onTouchEvent(event);// 是否向下传递事件标志 true为消耗
-        int top;
-        int bottom;
-        int right;
-        int left;
+        int top=0;
+        int bottom = 0;
+        int right=0;
+        int left=0;
         int action = event.getAction();
         float x = event.getX();
         float y = event.getY();
-        switch (action) {
+        switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                last_x = event.getX(0);
+                last_y = event.getY(0);
+                oldx = event.getX(1);
+                oldy = event.getY(1);
+                isShowHelpBox = true;
+                mCurrentMode = SCALE_MODE;
+
+                break;
+
             case MotionEvent.ACTION_DOWN:
                 if (mDeleteDstRect.contains(x, y)) {// 删除模式
                     isShowHelpBox = true;
@@ -280,7 +294,7 @@ public class TextStickerView extends View {
                     ret = true;
                     invalidate();
                 } else {
-                    isShowHelpBox = false;
+//                    isShowHelpBox = false;
                     invalidate();
                 }// end if
 
@@ -296,17 +310,10 @@ public class TextStickerView extends View {
                     mCurrentMode = MOVE_MODE;
                     float dx = x - last_x;
                     float dy = y - last_y;
-
                     layout_x += dx;
                     layout_y += dy;
 
-//                    if((mTextRect.left+dx>left)&&(mTextRect.right+dx<right)&&(mTextRect.left+dy>top)&&(mTextRect.left+dy<bottom)){
-                        invalidate();
-
-//                    }else {
-//                        layout_x -= dx;
-//                        layout_y -= dy;
-//                    }
+                    invalidate();
                     last_x = x;
                     last_y = y;
 
@@ -316,16 +323,52 @@ public class TextStickerView extends View {
                     float dy = y - last_y;
 
                     updateRotateAndScale(dx, dy);
+//                    if(((mHelpBoxRect.bottom-mHelpBoxRect.top)>(bottom-top))||((mHelpBoxRect.right-mHelpBoxRect.left)>(right-left))){
+//                        updateRotateAndScale(-dx, -dy);
+//                        last_x = x;
+//                        last_y = y;
+//                    }else {
+                        invalidate();
+                        last_x = x;
+                        last_y = y;
+//                    }
 
-                    invalidate();
-                    last_x = x;
-                    last_y = y;
+                } else if (mCurrentMode == SCALE_MODE) {
+                    try {
+                        float x_1 = event.getX(0);
+                        float x_2 = event.getX(1);
+                        float y_1 = event.getY(0);
+                        float y_2 = event.getY(1);
+                        float x_3 = x_1 - x_2;
+                        float y_3 = y_1 - y_2;
+                        double second = Math.sqrt(x_3 * x_3 + y_3 * y_3);
+                        x_3 = oldx - last_x;
+                        y_3 = oldy - last_y;
+                        double first = Math.sqrt(x_3 * x_3 + y_3 * y_3);
+                        updateScale((float) (second / first));
+//                        if((second/first>1)&&(((mHelpBoxRect.bottom-mHelpBoxRect.top)>(bottom-top))||((mHelpBoxRect.right-mHelpBoxRect.left)>(right-left)))){
+//                            updateScale((float) (first / second));
+//                            oldx = x_1;
+//                            oldy = y_1;
+//                            last_x = x_2;
+//                            last_y = y_2;
+//                        }else {
+                            invalidate();
+                            oldx = x_1;
+                            oldy = y_1;
+                            last_x = x_2;
+                            last_y = y_2;
+//                        }
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (mCurrentMode == DELETE_MODE) {// 删除选定贴图
                     mCurrentMode = IDLE_MODE;// 返回空闲状态
+                    this.resetView();
                     clearTextContent();
                     invalidate();
                 }// end if
@@ -345,6 +388,23 @@ public class TextStickerView extends View {
     }
 
 
+    public void updateScale(float scale) {
+        top = this.getTop();
+        bottom = this.getBottom();
+        right = this.getRight();
+        left = this.getLeft();
+        mScale *= scale;
+        if(mScale>15){
+            return;
+        }
+        float newWidth = mHelpBoxRect.width() * mScale;
+
+        if (newWidth < 70||(newWidth>2*Math.max(right-left,bottom-top))) {
+            mScale /= scale;
+            return;
+        }
+    }
+
     /**
      * 旋转 缩放 更新
      *
@@ -352,6 +412,10 @@ public class TextStickerView extends View {
      * @param dy
      */
     public void updateRotateAndScale(final float dx, final float dy) {
+        top = this.getTop();
+        bottom = this.getBottom();
+        right = this.getRight();
+        left = this.getLeft();
         float c_x = mHelpBoxRect.centerX();
         float c_y = mHelpBoxRect.centerY();
 
@@ -375,9 +439,9 @@ public class TextStickerView extends View {
         mScale *= scale;
         float newWidth = mHelpBoxRect.width() * mScale;
 
-        if (newWidth < 70) {
+        if ((newWidth < 70)||(newWidth>2*Math.max(right-left,bottom-top))) {
             mScale /= scale;
-            return;
+//            return;
         }
 
         double cos = (xa * xb + ya * yb) / (srcLen * curLen);

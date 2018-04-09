@@ -4,14 +4,19 @@ import android.Manifest;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -20,6 +25,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.liaoinstan.springview.container.DefaultFooter;
@@ -75,8 +83,9 @@ public class MainActivity extends AppCompatActivity {
     private Retrofit retrofit = RetrofitUtil.getRetrofit(url);
     private getData getData = retrofit.create(getData.class);
     private int index = 0;
-    private List<ImagePath> pathList=new ArrayList<>();
+    private List<ImagePath> pathList = new ArrayList<>();
     private ImagePath imagePath;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +112,25 @@ public class MainActivity extends AppCompatActivity {
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
 
+        Window window = this.getWindow();
+        //添加Flag把状态栏设为可绘制模式
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //如果为全透明模式，取消设置Window半透明的Flag
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //设置状态栏为透明
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(Color.TRANSPARENT);
+        }
+        //设置window的状态栏不可见
+        window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        //view不根据系统窗口来调整自己的布局
+        ViewGroup mContentView = (ViewGroup) window.findViewById(Window.ID_ANDROID_CONTENT);
+        View mChildView = mContentView.getChildAt(0);
+        if (mChildView != null) {
+            ViewCompat.setFitsSystemWindows(mChildView, false);
+            ViewCompat.requestApplyInsets(mChildView);
+        }
+
     }
 
     private void setListener() {
@@ -126,14 +154,15 @@ public class MainActivity extends AppCompatActivity {
 //                DataSupport.saveAllAsync(showList).listen(new SaveCallback() {
 //                    @Override
 //                    public void onFinish(boolean success) {
-                        Intent intent = new Intent(MainActivity.this, ShowActivity.class);
-                        intent.putExtra("size",list.size());
-                        intent.putExtra("position", position);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
-                        } else {
-                            startActivity(intent);
-                        }
+                Log.e("url", list.get(position));
+                Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                intent.putExtra("size", list.size());
+                intent.putExtra("position", position);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
+                } else {
+                    startActivity(intent);
+                }
 //                    }
 //                });
             }
@@ -237,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        if ((pathList.size()!=0)&&(list.size() < pathList.size())) {
+        if ((pathList.size() != 0) && (list.size() < pathList.size())) {
             if (list.size() % 18 == 0) {
                 System.gc();
             }
@@ -274,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
                             start = list.size();
                             end = start;
                             for (int i = 0; i < results.size(); i++) {
-                                imagePath=new ImagePath();
+                                imagePath = new ImagePath();
                                 if (error.equals(results.get(i).getUrl())) {
                                     list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
@@ -290,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 adapter.notifyItemInserted(end);
                                 end++;
-                                imagePath=null;
+                                imagePath = null;
                             }
                             if (page != 1) {
                                 springView.onFinishFreshAndLoad();
@@ -321,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+//        MyApplication.getRefWatcher(this).watch(this);
     }
 
     @Override

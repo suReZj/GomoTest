@@ -26,12 +26,14 @@ public class StickerView extends View {
     private static int STATUS_MOVE = 1;// 移动状态
     private static int STATUS_DELETE = 2;// 删除状态
     private static int STATUS_ROTATE = 3;// 图片旋转状态
+    private static int STATUS_SCALE = 4;
 
     private int imageCount;// 已加入照片的数量
     private Context mContext;
     private int currentStatus;// 当前状态
     private StickerItem currentItem;// 当前操作的贴图数据
     private float oldx, oldy;
+    private float oldx1, oldy1;
 
     private Paint rectPaint = new Paint();
     private Paint boxPaint = new Paint();
@@ -105,6 +107,24 @@ public class StickerView extends View {
         int left;
         RectF size;
         switch (action & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+                for (Integer id : bank.keySet()) {
+                    oldx = event.getX(0);
+                    oldy = event.getY(0);
+                    oldx1 = event.getX(1);
+                    oldy1 = event.getY(1);
+                    StickerItem item = bank.get(id);
+                    if(item.dstRect.contains(oldx,oldy)&&item.dstRect.contains(oldx1,oldy1)){
+                        if (currentItem != null) {
+                            currentItem.isDrawHelpTool = false;
+                        }
+                        Log.e("TAG", "多指移动");
+                        currentStatus = STATUS_SCALE;
+                        currentItem = item;
+                        currentItem.isDrawHelpTool = true;
+                    }
+                }
+                break;
             case MotionEvent.ACTION_DOWN:
 
                 for (Integer id : bank.keySet()) {
@@ -136,7 +156,6 @@ public class StickerView extends View {
                         currentStatus = STATUS_MOVE;
                         oldx = x;
                         oldy = y;
-                        invalidate();
                     }
                 }// end for each
 
@@ -163,15 +182,15 @@ public class StickerView extends View {
                     float dy = y - oldy;
                     if (currentItem != null) {
                         currentItem.updatePos(dx, dy);
-                        if((currentItem.dstRect.bottom<bottom)&&(currentItem.dstRect.top>top)&&(currentItem.dstRect.right<right)&&(currentItem.dstRect.left>left)
-//                                &&(currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)
-//                                &&(currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)
-//                                &&(currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
-                                ){
+//                        if ((currentItem.dstRect.bottom < bottom) && (currentItem.dstRect.top > top) && (currentItem.dstRect.right < right) && (currentItem.dstRect.left > left)
+////                                &&(currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)
+////                                &&(currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)
+////                                &&(currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
+//                                ) {
                             invalidate();
-                        }else {
-                            currentItem.updatePos(-dx,-dy);
-                        }
+//                        } else {
+//                            currentItem.updatePos(-dx, -dy);
+//                        }
                     }// end if
                     oldx = x;
                     oldy = y;
@@ -181,19 +200,54 @@ public class StickerView extends View {
                     float dy = y - oldy;
                     if (currentItem != null) {
                         currentItem.updateRotateAndScale(oldx, oldy, dx, dy);// 旋转
-                        if((currentItem.dstRect.bottom<bottom)&&(currentItem.dstRect.top>top)&&(currentItem.dstRect.right<right)&&(currentItem.dstRect.left>left)&&
-                                (currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)&&
-                                (currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)&&
-                                (currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
-                                ){
-                            invalidate();
+                        if(Math.max(currentItem.dstRect.right-currentItem.dstRect.left,currentItem.dstRect.bottom-currentItem.dstRect.top)>Math.max((bottom-top),right-left)){
+                            currentItem.updateRotateAndScale(-oldx, -oldy, -dx, -dy);
                         }else {
-                            currentItem.updateRotateAndScale(oldx, oldy, -dx, -dy);// 旋转
-                        }
+                            invalidate();
 
+                        }
                     }// end if
                     oldx = x;
                     oldy = y;
+                } else if (currentStatus == STATUS_SCALE) {
+                    try {
+                        float x_1 = event.getX(0);
+                        float x_2 = event.getX(1);
+                        float y_1 = event.getY(0);
+                        float y_2 = event.getY(1);
+                        float x_3 = x_1 - x_2;
+                        float y_3 = y_1 - y_2;
+                        double second = Math.sqrt(x_3 * x_3 + y_3 * y_3);
+                        x_3 = oldx - oldx1;
+                        y_3 = oldy - oldy1;
+                        double first = Math.sqrt(x_3 * x_3 + y_3 * y_3);
+                        currentItem.updateScale((float) (second / first));
+//                        if ((currentItem.dstRect.bottom < bottom) && (currentItem.dstRect.top > top) && (currentItem.dstRect.right < right) && (currentItem.dstRect.left > left) &&
+//                                (currentItem.deleteRect.bottom < bottom) && (currentItem.deleteRect.top > top) && (currentItem.deleteRect.right < right) && (currentItem.deleteRect.left > left) &&
+//                                (currentItem.rotateRect.bottom < bottom) && (currentItem.rotateRect.top > top) && (currentItem.rotateRect.right < right) && (currentItem.rotateRect.left > left) &&
+//                                (currentItem.helpBox.bottom < bottom) && (currentItem.helpBox.top > top) && (currentItem.helpBox.right < right) && (currentItem.helpBox.left > left)
+//                                ) {
+                        if(Math.max(currentItem.dstRect.right-currentItem.dstRect.left,currentItem.dstRect.bottom-currentItem.dstRect.top)>Math.max((bottom-top),right-left)){
+                            currentItem.updateScale((float) (first / second));
+                            oldx = x_1;
+                            oldy = y_1;
+                            oldx1 = x_2;
+                            oldy1 = y_2;
+                        }else {
+                            invalidate();
+                            oldx = x_1;
+                            oldy = y_1;
+                            oldx1 = x_2;
+                            oldy1 = y_2;
+                        }
+
+//                        }else {
+//                            currentItem.updateScale((float) (first / second));
+//                        }
+
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             case MotionEvent.ACTION_CANCEL:

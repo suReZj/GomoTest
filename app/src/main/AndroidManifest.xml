@@ -40,7 +40,8 @@
             android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity android:name=".Activity.AlbumDetailActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
-        <activity android:name=".Activity.MainActivity"/>
+        <activity android:name=".Activity.MainActivity"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

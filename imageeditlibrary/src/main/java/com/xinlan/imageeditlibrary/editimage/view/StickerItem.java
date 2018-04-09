@@ -141,6 +141,32 @@ public class StickerItem {
 
     }
 
+
+    public void updateScale(float scale){
+
+        float newWidth = dstRect.width() * scale;
+//        if (newWidth / initWidth < MIN_SCALE) {// 最小缩放值检测
+//            return;
+//        }
+
+        this.matrix.postScale(scale, scale, this.dstRect.centerX(),
+                this.dstRect.centerY());// 存入scale矩阵
+        // this.matrix.postRotate(5, this.dstRect.centerX(),
+        // this.dstRect.centerY());
+        RectUtil.scaleRect(this.dstRect, scale);// 缩放目标矩形
+        helpBox.set(dstRect);
+        updateHelpBoxRect();// 重新计算
+        rotateRect.offsetTo(helpBox.right - BUTTON_WIDTH, helpBox.bottom
+                - BUTTON_WIDTH);
+        deleteRect.offsetTo(helpBox.left - BUTTON_WIDTH, helpBox.top
+                - BUTTON_WIDTH);
+
+        detectRotateRect.offsetTo(helpBox.right - BUTTON_WIDTH, helpBox.bottom
+                - BUTTON_WIDTH);
+        detectDeleteRect.offsetTo(helpBox.left - BUTTON_WIDTH, helpBox.top
+                - BUTTON_WIDTH);
+    }
+
     /**
      * 旋转 缩放 更新
      *

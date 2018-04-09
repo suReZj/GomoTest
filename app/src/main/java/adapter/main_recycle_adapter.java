@@ -19,6 +19,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -170,34 +171,38 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     matrix.setScale(0.5f, 0.5f);
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 }
+                Bitmap newBitmap=null;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
+                if((baos!=null)&&(bitmap!=null)){
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    int option = 100;
+                    //循环判断如果压缩后图片是否大于50kb,大于继续压缩
+                    while ( baos.toByteArray().length / 1024>50) {
+                        //清空baos
+                        baos.reset();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, option, baos);
+                        option -= 10;//每次都减少10
+                    }
+                    //把压缩后的数据baos存放到ByteArrayInputStream中
+                    ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
+                    //把ByteArrayInputStream数据生成图片
+                    newBitmap = BitmapFactory.decodeStream(isBm, null, null);
+                    bitmap=newBitmap;
+                }
 
-//                if (bitmap != null && bitmap.getWidth() != 0) {
-//                    //质量压缩
-//                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
-//                    bytes = baos.toByteArray();
-//                    bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-//                }
 
                 imageCache.addToDiskLruCache(url, bitmap);
                 imageCache.addBitmapToCache(url, bitmap);
+
 
                 ((Activity) context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
-//                        notifyDataSetChanged();
                     }
                 });
-
-//                call.cancel();
-//                response.body().byteStream().close();
-//                bitmap = null;
-//                if (baos != null) {
-//                    //baos.close();
-//                    baos = null;
-//                    bytes = null;
-//                }
-//                bitmap=null;
+                bitmap=null;
             }
         });
         request = null;
