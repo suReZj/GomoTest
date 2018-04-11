@@ -406,10 +406,12 @@ public class EditImageActivity extends BaseActivity {
                 mainBitmap = newBit;
                 mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                newBit.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                byte[] bytes=baos.toByteArray();
+                if(!mainBitmap.isRecycled()){
+                    mainBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] bytes=baos.toByteArray();
+                    Glide.with(getApplicationContext()).load(bytes).into(mainImage);
+                }
 
-                Glide.with(getApplicationContext()).load(bytes).into(mainImage);
 //                Glide.with(getApplicationContext()).load(path).into(mainImage);
             }
 //            } catch (InterruptedException e) {
@@ -511,7 +513,7 @@ public class EditImageActivity extends BaseActivity {
             Log.e("digree", digree + "");
 //            newBitmap=adjustPhotoRotation(bitmap,digree);
             if (bitmap != newBitmap) {
-                bitmap.recycle();
+//                bitmap.recycle();
             }
         }
         return newBitmap;

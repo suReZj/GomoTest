@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/black"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:id="@+id/activity_show_layout">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

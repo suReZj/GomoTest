@@ -16,12 +16,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
@@ -56,6 +59,7 @@ public class ShowActivity extends AppCompatActivity {
     private List<ImagePath> list;
     private int position;
     private main_viewPager_adapter adapter;
+    private FrameLayout frameLayout;
 
 
     Handler handler=new Handler(new Handler.Callback() {
@@ -84,6 +88,7 @@ public class ShowActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        frameLayout=(FrameLayout) findViewById(R.id.activity_show_layout);
         Intent intent=getIntent();
         list=DataSupport.limit(intent.getIntExtra("size",0)).find(ImagePath.class);
         position=intent.getIntExtra("position",0);
@@ -111,6 +116,7 @@ public class ShowActivity extends AppCompatActivity {
             ViewCompat.setFitsSystemWindows(mChildView, false);
             ViewCompat.requestApplyInsets(mChildView);
         }
+        setListener();
     }
 
     public  void getImageBitmap(final String url, final Context context, final int type) {
@@ -122,7 +128,8 @@ public class ShowActivity extends AppCompatActivity {
 
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/beauty/" + fileName + ".jpg");
-
+        File outputFile = FileUtils.genEditFile();
+//        EditImageActivity.start(ShowActivity.this,url,outputFile.getAbsolutePath(),9);
         if(file.exists()){
             if(type==0){
                 Message msg=handler.obtainMessage();
@@ -130,8 +137,9 @@ public class ShowActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
                 return;
             }else {
-                File outputFile = FileUtils.genEditFile();
-                EditImageActivity.start(ShowActivity.this,savePath,outputFile.getAbsolutePath(),9);
+        EditImageActivity.start(ShowActivity.this,url,outputFile.getAbsolutePath(),9);
+
+//                EditImageActivity.start(ShowActivity.this,savePath,outputFile.getAbsolutePath(),9);
             }
         }else {
             OkHttpClient client = new OkHttpClient();
@@ -251,7 +259,25 @@ public class ShowActivity extends AppCompatActivity {
         finish();
     }
 
+    public void getColorWithAlpha(float alpha, int baseColor) {
+        int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
+        int rgb = 0x00ffffff & baseColor;
+        viewPager.setBackgroundColor(a + rgb);
+    }
 
+
+    public void setListener(){
+//        viewPager.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()){
+//                    case MotionEvent.ACTION_MOVE:
+//                        Log.e("ACTION_MOVE","ACTION_MOVE");
+//                }
+//                return false;
+//            }
+//        });
+    }
 }
 
 

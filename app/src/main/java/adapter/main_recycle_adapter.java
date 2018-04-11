@@ -40,7 +40,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private Context context;
     private imageCache imageCache;
     private OkHttpClient client = new OkHttpClient();
-    private String error="http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
+    private String error = "http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
 //    Handler handler = new Handler(new Handler.Callback() {
 //        @Override
 //        public boolean handleMessage(Message msg) {
@@ -64,7 +64,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
             int width = ((Activity) itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
-            params.width = (width-6) / 3;
+            params.width = (width - 6) / 3;
 //            params.width=width/2;
             imageView.setLayoutParams(params);
 
@@ -120,26 +120,26 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         holder.imageView.setImageResource(R.mipmap.loadimage);
 
 //        Glide.with(context).load(list.get(position)).into(holder.imageView);
-        Bitmap bitmap=imageCache.getBitmapFromCache(list.get(position));
-        double scale=0;
+        Bitmap bitmap = imageCache.getBitmapFromCache(list.get(position));
+        double scale = 0;
         if (bitmap != null) {
-            scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
+            scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
             ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
 
-            params.height=(int)(params.width*scale);
+            params.height = (int) (params.width * scale);
             holder.imageView.setLayoutParams(params);
             holder.imageView.setImageBitmap(bitmap);
         } else {
             bitmap = imageCache.getBitmapFromDisk(list.get(position));
             if (bitmap != null) {
                 imageCache.addBitmapToCache(list.get(position), bitmap);
-                scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
+                scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
                 ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
-                params.height=(int)(params.width*scale);
+                params.height = (int) (params.width * scale);
                 holder.imageView.setLayoutParams(params);
                 holder.imageView.setImageBitmap(bitmap);
             } else {
-                getImageBitmap(list.get(position), holder);
+                getImageBitmap(list.get(position), holder, position);
             }
         }
 
@@ -156,7 +156,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     }
 
 
-    public void getImageBitmap(final String url, final ViewHolder holder) {
+    public void getImageBitmap(final String url, final ViewHolder holder, final int position) {
         Request request = new Request.Builder()
                 .get()
                 .url(url)
@@ -181,14 +181,14 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     matrix.setScale(0.5f, 0.5f);
                     bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 }
-                Bitmap newBitmap=null;
+                Bitmap newBitmap = null;
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 //质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-                if((baos!=null)&&(bitmap!=null)){
+                if ((baos != null) && (bitmap != null)) {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     int option = 100;
                     //循环判断如果压缩后图片是否大于50kb,大于继续压缩
-                    while ( baos.toByteArray().length / 1024>50) {
+                    while (baos.toByteArray().length / 1024 > 50) {
                         //清空baos
                         baos.reset();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, option, baos);
@@ -198,30 +198,39 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                     ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
                     //把ByteArrayInputStream数据生成图片
                     newBitmap = BitmapFactory.decodeStream(isBm, null, null);
-                    bitmap=newBitmap;
+                    bitmap = newBitmap;
+                }
+
+                if (bitmap == null) {
+//                    list.remove(position);
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyItemRemoved(position);
+                        }
+                    });
+                } else {
+                    imageCache.addToDiskLruCache(url, bitmap);
+                    imageCache.addBitmapToCache(url, bitmap);
+
+
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Bitmap bitmap = imageCache.getBitmapFromCache(url);
+                            if (bitmap != null) {
+                                double scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
+                                ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+                                params.height = (int) (params.width * scale);
+                                holder.imageView.setLayoutParams(params);
+                            }
+                            holder.imageView.setImageBitmap(bitmap);
+                        }
+                    });
+                    bitmap = null;
                 }
 
 
-
-
-                imageCache.addToDiskLruCache(url, bitmap);
-                imageCache.addBitmapToCache(url, bitmap);
-
-
-                ((Activity) context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Bitmap bitmap=imageCache.getBitmapFromCache(url);
-                        if(bitmap!=null){
-                            double scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
-                            ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
-                            params.height=(int)(params.width*scale);
-                            holder.imageView.setLayoutParams(params);
-                        }
-                        holder.imageView.setImageBitmap(bitmap);
-                    }
-                });
-                bitmap=null;
             }
         });
         request = null;
