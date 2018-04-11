@@ -5,34 +5,30 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 
-import com.bumptech.glide.Glide;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+import magick.ColorspaceType;
+import magick.ImageInfo;
+import magick.MagickException;
+import magick.MagickImage;
+import magick.util.MagickBitmap;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import sure.gomotest.Activity.MainActivity;
 import sure.gomotest.R;
 import util.imageCache;
-
-import static util.Contants.width;
 
 
 /**
@@ -44,6 +40,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private Context context;
     private imageCache imageCache;
     private OkHttpClient client = new OkHttpClient();
+    private String error="http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
 //    Handler handler = new Handler(new Handler.Callback() {
 //        @Override
 //        public boolean handleMessage(Message msg) {
@@ -57,13 +54,13 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-//        private CardView cardView;
+        private CardView cardView;
         public ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image);
-//            cardView = itemView.findViewById(R.id.item_cardView);
+            cardView = itemView.findViewById(R.id.item_cardView);
             int width = ((Activity) itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
@@ -119,16 +116,27 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 //        holder.imageView.setTag(list.get(position));
-        holder.imageView.setImageResource(R.mipmap.ic_launcher);
+//        holder.imageView.setImageResource(R.mipmap.ic_launcher);
+        holder.imageView.setImageResource(R.mipmap.loadimage);
 
 //        Glide.with(context).load(list.get(position)).into(holder.imageView);
+        Bitmap bitmap=imageCache.getBitmapFromCache(list.get(position));
+        double scale=0;
+        if (bitmap != null) {
+            scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
+            ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
 
-        if (imageCache.getBitmapFromCache(list.get(position)) != null) {
-            holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(list.get(position)));
+            params.height=(int)(params.width*scale);
+            holder.imageView.setLayoutParams(params);
+            holder.imageView.setImageBitmap(bitmap);
         } else {
-            Bitmap bitmap = imageCache.getBitmapFromDisk(list.get(position));
+            bitmap = imageCache.getBitmapFromDisk(list.get(position));
             if (bitmap != null) {
                 imageCache.addBitmapToCache(list.get(position), bitmap);
+                scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
+                ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+                params.height=(int)(params.width*scale);
+                holder.imageView.setLayoutParams(params);
                 holder.imageView.setImageBitmap(bitmap);
             } else {
                 getImageBitmap(list.get(position), holder);
@@ -137,12 +145,12 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
 
 
         if (mOnItemClickLitener != null) {
-//            holder.cardView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    mOnItemClickLitener.onItemClick(holder.itemView, position);
-//                }
-//            });
+            holder.cardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickLitener.onItemClick(holder.itemView, position);
+                }
+            });
         }
 
     }
@@ -194,6 +202,8 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 }
 
 
+
+
                 imageCache.addToDiskLruCache(url, bitmap);
                 imageCache.addBitmapToCache(url, bitmap);
 
@@ -201,7 +211,14 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                 ((Activity) context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
+                        Bitmap bitmap=imageCache.getBitmapFromCache(url);
+                        if(bitmap!=null){
+                            double scale=(double) (bitmap.getHeight())/(double) (bitmap.getWidth());
+                            ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+                            params.height=(int)(params.width*scale);
+                            holder.imageView.setLayoutParams(params);
+                        }
+                        holder.imageView.setImageBitmap(bitmap);
                     }
                 });
                 bitmap=null;

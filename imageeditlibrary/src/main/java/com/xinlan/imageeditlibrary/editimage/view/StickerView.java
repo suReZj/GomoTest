@@ -109,16 +109,19 @@ public class StickerView extends View {
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 for (Integer id : bank.keySet()) {
+                    if(bank.size()==1){
+                        currentItem=bank.get(id);
+                    }
                     oldx = event.getX(0);
                     oldy = event.getY(0);
                     oldx1 = event.getX(1);
                     oldy1 = event.getY(1);
                     StickerItem item = bank.get(id);
-                    if(item.dstRect.contains(oldx,oldy)&&item.dstRect.contains(oldx1,oldy1)){
+//                    if(item.dstRect.contains(oldx,oldy)&&item.dstRect.contains(oldx1,oldy1)){
+                    if(item==currentItem){
                         if (currentItem != null) {
                             currentItem.isDrawHelpTool = false;
                         }
-                        Log.e("TAG", "多指移动");
                         currentStatus = STATUS_SCALE;
                         currentItem = item;
                         currentItem.isDrawHelpTool = true;
@@ -156,14 +159,16 @@ public class StickerView extends View {
                         currentStatus = STATUS_MOVE;
                         oldx = x;
                         oldy = y;
+                    }else {
+
                     }
                 }// end for each
 
-                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
-                    currentItem.isDrawHelpTool = false;
-                    currentItem = null;
-                    invalidate();
-                }
+//                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
+//                    currentItem.isDrawHelpTool = false;
+//                    currentItem = null;
+//                    invalidate();
+//                }
 
 
                 break;
@@ -204,7 +209,6 @@ public class StickerView extends View {
                             currentItem.updateRotateAndScale(-oldx, -oldy, -dx, -dy);
                         }else {
                             invalidate();
-
                         }
                     }// end if
                     oldx = x;
@@ -257,6 +261,11 @@ public class StickerView extends View {
                     bank.remove(deleteId);
                     invalidate();
                 }// end if
+                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
+                    currentItem.isDrawHelpTool = false;
+                    currentItem = null;
+                    invalidate();
+                }
                 currentStatus = STATUS_IDLE;// 返回空闲状态
                 deleteId = -1;
                 ret = false;

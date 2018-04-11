@@ -9,9 +9,10 @@
     >
 
 <ImageView android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
     android:id="@+id/item_image"
     android:transitionName="shareNames"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:scaleType="fitXY"
     />
 </android.support.v7.widget.CardView>

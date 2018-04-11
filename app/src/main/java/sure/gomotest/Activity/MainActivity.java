@@ -268,10 +268,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void setImage(final int page) {
         if ((pathList.size() != 0) && (list.size() < pathList.size())) {
-            if (list.size() % 18 == 0) {
+            if (list.size() % 15 == 0) {
                 System.gc();
             }
-            index = list.size() + 9;
+            if(page==1){
+                index=list.size()+15;
+            }else {
+                index = list.size() + 15;
+            }
             start = list.size();
             end = start;
             for (int i = list.size(); i < index; i++) {
@@ -284,7 +288,18 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             getData = retrofit.create(getData.class);
-            getData.getWelfare("9", page)
+//            int requestSum;
+//            if(page==1){
+//                requestSum=18;
+//            }else {
+//                requestSum=9;
+//            }
+//            int requestPage=page;
+//            if(page==2){
+//                requestPage++;
+//            }
+            getData.getWelfare("15", page)
+//            getData.getWelfare(String.valueOf(requestSum), requestPage)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<gson_welfare>() {
@@ -325,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
                             if (page != 1) {
                                 springView.onFinishFreshAndLoad();
                             }
+
                         }
 
                         @Override

@@ -191,7 +191,7 @@ public class EditImageActivity extends BaseActivity {
         // 底部gallery
         bottomGallery = (CustomViewPager) findViewById(R.id.bottom_gallery);
         //bottomGallery.setOffscreenPageLimit(7);
-        mMainMenuFragment = MainMenuFragment.newInstance(EditImageActivity.this);
+        mMainMenuFragment = MainMenuFragment.newInstance(getApplicationContext());
         mBottomGalleryAdapter = new BottomGalleryAdapter(
                 this.getSupportFragmentManager());
         mStickerFragment = StickerFragment.newInstance();
@@ -551,6 +551,7 @@ public class EditImageActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (mLoadImageTask != null) {
             mLoadImageTask.cancel(true);
         }
