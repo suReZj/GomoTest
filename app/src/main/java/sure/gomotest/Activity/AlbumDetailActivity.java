@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -26,13 +27,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import adapter.album_fragment_adapter;
 import adapter.album_viewPager_adapter;
-import adapter.main_viewPager_adapter;
+import adapter.main_fragment_adapter;
 import bean.AlbumBean;
 import bean.showPath;
 import event.saveImageEvent;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
+import fragment.showFragment;
 import sure.gomotest.R;
 import util.FileUtils;
 import widght.MyViewPager;
@@ -46,12 +49,15 @@ public class AlbumDetailActivity extends AppCompatActivity {
     private album_viewPager_adapter adapter;
     private List<AlbumBean> list;
     private String albumName;
+    private album_fragment_adapter fragmentAdapter;
+    private List<showFragment> fragmentList = new ArrayList<>();
+    private int firstIndex;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        albumName=getIntent().getStringExtra("albumname");
+        albumName = getIntent().getStringExtra("albumname");
         setContentView(R.layout.activity_album_detail);
         EventBus.getDefault().register(this);
         toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
@@ -61,23 +67,32 @@ public class AlbumDetailActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        viewPager=(MyViewPager)findViewById(R.id.activity_detail_viewPager);
-        Intent intent=getIntent();
-        if(intent.getStringArrayListExtra("list")!=null){
-            AlbumBean albumBean=new AlbumBean();
+        viewPager = (MyViewPager) findViewById(R.id.activity_detail_viewPager);
+        Intent intent = getIntent();
+        if (intent.getStringArrayListExtra("list") != null) {
+            AlbumBean albumBean = new AlbumBean();
             albumBean.setPath(intent.getStringArrayListExtra("list").get(0));
-            list=new ArrayList<>();
+            list = new ArrayList<>();
             list.add(albumBean);
-            adapter=new album_viewPager_adapter(list);
+            adapter = new album_viewPager_adapter(list);
             viewPager.setAdapter(adapter);
-            viewPager.setCurrentItem(intent.getIntExtra("position",0));
-        }else {
+            viewPager.setCurrentItem(intent.getIntExtra("position", 0));
+        } else {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-            adapter=new album_viewPager_adapter(list);
-            viewPager.setAdapter(adapter);
-            viewPager.setCurrentItem(intent.getIntExtra("position",0));
+            for (int i = 0; i < list.size(); i++) {
+                Bundle bundle = new Bundle();
+                bundle.putString("path", list.get(i).getPath());
+                showFragment fragment = showFragment.newInstance(bundle);
+//            fragment.setImage(list.get(i).getPath(),getApplicationContext());
+                fragmentList.add(fragment);
+            }
+            fragmentAdapter = new album_fragment_adapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
+//            adapter=new album_viewPager_adapter(list);
+//            viewPager.setAdapter(adapter);
+            viewPager.setAdapter(fragmentAdapter);
+            viewPager.setCurrentItem(intent.getIntExtra("position", 0));
         }
-
+        firstIndex = intent.getIntExtra("position", 0);
 
 
         Window window = this.getWindow();
@@ -147,7 +162,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
             case R.id.detail_edit:
                 File outputFile = FileUtils.genEditFile();
                 path = outputFile.getAbsolutePath();
-                EditImageActivity.start(AlbumDetailActivity.this, adapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -155,13 +170,17 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(updateAlbumEvent messageEvent) {
-        adapter.notifyDataSetChanged();
+        fragmentAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
-        showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
+        showActivityEvent event = new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-        finish();
+        if(viewPager.getCurrentItem()!=firstIndex){
+            finish();
+        }else {
+            ActivityCompat.finishAfterTransition(this);
+        }
     }
 }

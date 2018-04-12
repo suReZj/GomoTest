@@ -38,6 +38,7 @@
         <activity android:name=".Activity.SelectActivity" />
         <activity android:name=".Activity.ShowActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
+            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"/>-->
         <activity android:name=".Activity.AlbumDetailActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"/>
         <activity android:name=".Activity.MainActivity"

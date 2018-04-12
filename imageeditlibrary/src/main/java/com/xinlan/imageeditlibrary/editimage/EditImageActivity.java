@@ -178,7 +178,8 @@ public class EditImageActivity extends BaseActivity {
         backBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+//                onBackPressed();
+                finish();
             }
         });
 

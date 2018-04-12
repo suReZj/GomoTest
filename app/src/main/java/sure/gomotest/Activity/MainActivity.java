@@ -393,4 +393,13 @@ public class MainActivity extends AppCompatActivity {
     public void refreshData(showActivityEvent messageEvent) {
         recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
+
+
+    public int[] getXY(int position){
+        int xy[]=new int[2];
+        View view=recyclerView.getChildAt(position);
+        xy[0]=(int)view.getX();
+        xy[1]=(int)view.getY();
+        return xy;
+    }
 }

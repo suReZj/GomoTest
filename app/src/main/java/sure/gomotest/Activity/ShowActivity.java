@@ -1,5 +1,6 @@
 package sure.gomotest.Activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,19 +12,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -37,22 +38,29 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import adapter.main_fragment_adapter;
 import adapter.main_viewPager_adapter;
 import bean.ImagePath;
 import event.showActivityEvent;
+import fragment.showFragment;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import sure.gomotest.R;
 import util.FileUtils;
+import widght.BTViewPager;
 import widght.MyViewPager;
+import sure.gomotest.R;
+import widght.NoPreloadViewPager;
+import widght.SmoothImageView;
 
 
 public class ShowActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ViewPager viewPager;
+//private NoPreloadViewPager viewPager;
     private Random mRandom = new Random();
     final int downLoadImage=0;
     final int editImage=1;
@@ -60,6 +68,9 @@ public class ShowActivity extends AppCompatActivity {
     private int position;
     private main_viewPager_adapter adapter;
     private FrameLayout frameLayout;
+    private List<showFragment> fragmentList=new ArrayList<>();
+    private main_fragment_adapter main_fragment_adapter;
+    private int firstIndex;
 
 
     Handler handler=new Handler(new Handler.Callback() {
@@ -92,10 +103,24 @@ public class ShowActivity extends AppCompatActivity {
         Intent intent=getIntent();
         list=DataSupport.limit(intent.getIntExtra("size",0)).find(ImagePath.class);
         position=intent.getIntExtra("position",0);
+        firstIndex=position;
 
+        for(int i=0;i<list.size();i++){
+            Bundle bundle=new Bundle();
+            bundle.putString("path",list.get(i).getPath());
+            showFragment fragment=showFragment.newInstance(bundle);
+            fragment.setUserVisibleHint(false);
+//            fragment.setImage(list.get(i).getPath(),getApplicationContext());
+            fragmentList.add(fragment);
+        }
+
+//        viewPager=(NoPreloadViewPager)findViewById(R.id.activity_show_viewPager);
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
-        adapter=new main_viewPager_adapter(list);
-        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(0);
+//        adapter=new main_viewPager_adapter(list);
+//        viewPager.setAdapter(adapter);
+        main_fragment_adapter =new main_fragment_adapter(getSupportFragmentManager(),fragmentList,list,getApplicationContext());
+        viewPager.setAdapter(main_fragment_adapter);
         viewPager.setCurrentItem(position);
 
         Window window = this.getWindow();
@@ -116,7 +141,6 @@ public class ShowActivity extends AppCompatActivity {
             ViewCompat.setFitsSystemWindows(mChildView, false);
             ViewCompat.requestApplyInsets(mChildView);
         }
-        setListener();
     }
 
     public  void getImageBitmap(final String url, final Context context, final int type) {
@@ -243,10 +267,12 @@ public class ShowActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.download:
-                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this,downLoadImage);
+//                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this,downLoadImage);
+                getImageBitmap(main_fragment_adapter.getUrl(viewPager.getCurrentItem()),ShowActivity.this,downLoadImage);
                 break;
             case R.id.edit:
-                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);
+//                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);
+                getImageBitmap(main_fragment_adapter.getUrl(viewPager.getCurrentItem()),ShowActivity.this,editImage);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -256,27 +282,20 @@ public class ShowActivity extends AppCompatActivity {
     public void onBackPressed() {
         showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-        finish();
+//        finish();
+//        onDestroy();
+        if(viewPager.getCurrentItem()!=firstIndex){
+            finish();
+        }else {
+            ActivityCompat.finishAfterTransition(this);
+        }
+//        ScaleAnimation scaleAnimation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, x, y);
     }
 
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
         viewPager.setBackgroundColor(a + rgb);
-    }
-
-
-    public void setListener(){
-//        viewPager.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()){
-//                    case MotionEvent.ACTION_MOVE:
-//                        Log.e("ACTION_MOVE","ACTION_MOVE");
-//                }
-//                return false;
-//            }
-//        });
     }
 }
 
