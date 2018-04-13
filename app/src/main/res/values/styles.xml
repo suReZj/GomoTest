@@ -5,7 +5,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+<style name="showTheme" parent="AppTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@color/transparent</item>
+</style>
 <style name="toolBar">
 <item name="colorControlNormal">#ffffff</item>
 </style>

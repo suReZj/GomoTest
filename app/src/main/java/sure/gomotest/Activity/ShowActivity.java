@@ -1,6 +1,7 @@
 package sure.gomotest.Activity;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -24,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -50,16 +51,17 @@ import fragment.showFragment;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import util.FileUtils;
-import widght.BTViewPager;
-import widght.MyViewPager;
 import sure.gomotest.R;
+import widght.DepthPageTransformer;
+import widght.MyViewPager;
 import widght.NoPreloadViewPager;
 import widght.SmoothImageView;
+import widght.ZoomOutPageTransformer;
 
 
 public class ShowActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private ViewPager viewPager;
+    public MyViewPager viewPager;
 //private NoPreloadViewPager viewPager;
     private Random mRandom = new Random();
     final int downLoadImage=0;
@@ -71,7 +73,7 @@ public class ShowActivity extends AppCompatActivity {
     private List<showFragment> fragmentList=new ArrayList<>();
     private main_fragment_adapter main_fragment_adapter;
     private int firstIndex;
-
+    private boolean isTransformOut = false;
 
     Handler handler=new Handler(new Handler.Callback() {
         @Override
@@ -99,26 +101,28 @@ public class ShowActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+
         frameLayout=(FrameLayout) findViewById(R.id.activity_show_layout);
         Intent intent=getIntent();
         list=DataSupport.limit(intent.getIntExtra("size",0)).find(ImagePath.class);
         position=intent.getIntExtra("position",0);
         firstIndex=position;
 
+
         for(int i=0;i<list.size();i++){
             Bundle bundle=new Bundle();
             bundle.putString("path",list.get(i).getPath());
             showFragment fragment=showFragment.newInstance(bundle);
             fragment.setUserVisibleHint(false);
-//            fragment.setImage(list.get(i).getPath(),getApplicationContext());
             fragmentList.add(fragment);
         }
 
-//        viewPager=(NoPreloadViewPager)findViewById(R.id.activity_show_viewPager);
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
+        viewPager.setPageTransformer(true, new DepthPageTransformer());
+//        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         viewPager.setOffscreenPageLimit(0);
-//        adapter=new main_viewPager_adapter(list);
-//        viewPager.setAdapter(adapter);
+        adapter=new main_viewPager_adapter(list);
+//        viewPager.setPageMargin((int)getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
         main_fragment_adapter =new main_fragment_adapter(getSupportFragmentManager(),fragmentList,list,getApplicationContext());
         viewPager.setAdapter(main_fragment_adapter);
         viewPager.setCurrentItem(position);
@@ -280,23 +284,55 @@ public class ShowActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-//        finish();
 //        onDestroy();
         if(viewPager.getCurrentItem()!=firstIndex){
+            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
             finish();
         }else {
             ActivityCompat.finishAfterTransition(this);
+            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
         }
-//        ScaleAnimation scaleAnimation = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, x, y);
+//        transformOut();
     }
+
+
 
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
-        viewPager.setBackgroundColor(a + rgb);
+        frameLayout.setBackgroundColor(a + rgb);
     }
+
+    public void transformOut() {
+        if (isTransformOut) {
+            return;
+        }
+        isTransformOut = true;
+        int currentItem = viewPager.getCurrentItem();
+        if (currentItem < list.size()) {
+            showFragment fragment = fragmentList.get(currentItem);
+
+            fragment.changeBg(Color.TRANSPARENT);
+            fragment.transformOut(new SmoothImageView.onTransformListener() {
+                @Override
+                public void onTransformCompleted(SmoothImageView.Status status) {
+                    exit();
+                }
+            });
+        } else {
+            exit();
+        }
+    }
+
+    private void exit() {
+        finish();
+        overridePendingTransition(0, 0);
+    }
+
+
 }
 
 

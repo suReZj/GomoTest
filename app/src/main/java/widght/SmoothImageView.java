@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
@@ -20,7 +21,7 @@ import android.widget.ImageView;
 import com.previewlibrary.view.ImageUtils;
 
 import uk.co.senab.photoview.PhotoView;
-
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 
 public class SmoothImageView extends PhotoView {
@@ -165,6 +166,8 @@ public class SmoothImageView extends PhotoView {
 
                         // 水平方向移动不予处理
                         boolean s = !isMoved && (Math.abs(offsetX) > Math.abs(offsetY) || Math.abs(offsetY) < MIN_TRANS_DEST);
+                        Matrix matrix=new Matrix();
+                        matrix.setScale(1,1);
                         if (s) {
                             return super.dispatchTouchEvent(event);
                         } else {
@@ -230,7 +233,6 @@ public class SmoothImageView extends PhotoView {
                 }
             }
 //        }
-
         return super.dispatchTouchEvent(event);
 
     }
@@ -540,5 +542,11 @@ public class SmoothImageView extends PhotoView {
      * **/
     public static void setDuration(int duration) {
         TRANSFORM_DURATION=duration;
+    }
+
+    @Override
+    public void setOnScaleChangeListener(PhotoViewAttacher.OnScaleChangeListener onScaleChangeListener) {
+        super.setOnScaleChangeListener(onScaleChangeListener);
+
     }
 }

@@ -9,12 +9,14 @@ import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 
@@ -45,14 +47,14 @@ import static util.Contants.albumPath;
 public class AlbumDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private String path;
-    private MyViewPager viewPager;
+    public MyViewPager viewPager;
     private album_viewPager_adapter adapter;
     private List<AlbumBean> list;
     private String albumName;
     private album_fragment_adapter fragmentAdapter;
     private List<showFragment> fragmentList = new ArrayList<>();
     private int firstIndex;
-
+    private FrameLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +70,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         viewPager = (MyViewPager) findViewById(R.id.activity_detail_viewPager);
+        viewPager.setPageMargin((int)getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
         Intent intent = getIntent();
         if (intent.getStringArrayListExtra("list") != null) {
             AlbumBean albumBean = new AlbumBean();
@@ -83,17 +86,17 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 Bundle bundle = new Bundle();
                 bundle.putString("path", list.get(i).getPath());
                 showFragment fragment = showFragment.newInstance(bundle);
-//            fragment.setImage(list.get(i).getPath(),getApplicationContext());
                 fragmentList.add(fragment);
             }
             fragmentAdapter = new album_fragment_adapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
-//            adapter=new album_viewPager_adapter(list);
-//            viewPager.setAdapter(adapter);
             viewPager.setAdapter(fragmentAdapter);
+            viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
             viewPager.setCurrentItem(intent.getIntExtra("position", 0));
         }
         firstIndex = intent.getIntExtra("position", 0);
 
+
+        layout=(FrameLayout) findViewById(R.id.activity_detail_layout);
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -162,7 +165,11 @@ public class AlbumDetailActivity extends AppCompatActivity {
             case R.id.detail_edit:
                 File outputFile = FileUtils.genEditFile();
                 path = outputFile.getAbsolutePath();
-                EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                if (getIntent().getStringArrayListExtra("list") != null) {
+                    EditImageActivity.start(AlbumDetailActivity.this, adapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                } else {
+                    EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -177,10 +184,16 @@ public class AlbumDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         showActivityEvent event = new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-        if(viewPager.getCurrentItem()!=firstIndex){
+        if (viewPager.getCurrentItem() != firstIndex) {
             finish();
-        }else {
+        } else {
             ActivityCompat.finishAfterTransition(this);
         }
+    }
+
+    public void getColorWithAlpha(float alpha, int baseColor) {
+        int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
+        int rgb = 0x00ffffff & baseColor;
+        layout.setBackgroundColor(a + rgb);
     }
 }

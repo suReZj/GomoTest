@@ -14,6 +14,8 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
@@ -28,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.liaoinstan.springview.container.DefaultFooter;
@@ -47,6 +50,7 @@ import java.util.List;
 import adapter.main_recycle_adapter;
 import bean.ImagePath;
 import event.showActivityEvent;
+import fragment.showView;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -86,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private List<ImagePath> pathList = new ArrayList<>();
     private ImagePath imagePath;
     private int getNum=18;
+    private FrameLayout frameLayout;
+    private FragmentManager fm;
 
 
     @Override
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         setContentView(R.layout.activity_main);
+        fm=this.getSupportFragmentManager();
         initView();
         setListener();
     }
@@ -112,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
         springView.setFooter(new DefaultFooter(MainActivity.this));
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
+
+//        frameLayout=(FrameLayout) findViewById(R.id.activity_main_frameLayout);
+//        frameLayout.setVisibility(View.GONE);
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -150,11 +160,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(final View view, final int position) {
                 imageUrl = list.get(position);
-
-//                intent.putStringArrayListExtra("list", list);
-//                DataSupport.saveAllAsync(showList).listen(new SaveCallback() {
-//                    @Override
-//                    public void onFinish(boolean success) {
                 Log.e("url", list.get(position));
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
                 intent.putExtra("size", list.size());
@@ -164,8 +169,12 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     startActivity(intent);
                 }
-//                    }
-//                });
+//                Log.e("url", list.get(position));
+//                FragmentTransaction ft = fm.beginTransaction();
+//                ft.replace(R.id.activity_main_frameLayout, new showView());
+//                ft.commit();
+//                frameLayout.setVisibility(View.VISIBLE);
+
             }
 
             @Override

@@ -37,12 +37,14 @@
         <activity android:name=".Activity.AlbumActivity" />
         <activity android:name=".Activity.SelectActivity" />
         <activity android:name=".Activity.ShowActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
-            <!--android:theme="@android:style/Theme.Translucent.NoTitleBar"/>-->
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/showTheme"/>
         <activity android:name=".Activity.AlbumDetailActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"/>
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/showTheme"/>
         <activity android:name=".Activity.MainActivity"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>
