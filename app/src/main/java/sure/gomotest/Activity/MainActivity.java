@@ -5,12 +5,14 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -20,6 +22,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -31,6 +34,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.liaoinstan.springview.container.DefaultFooter;
@@ -49,6 +53,7 @@ import java.util.List;
 
 import adapter.main_recycle_adapter;
 import bean.ImagePath;
+import bean.ShowImageBean;
 import event.showActivityEvent;
 import fragment.showView;
 import gson.gson_result;
@@ -62,6 +67,7 @@ import retrofit2.Retrofit;
 import sure.gomotest.R;
 import util.OnDoubleClickListener;
 import util.RetrofitUtil;
+import widght.SmoothImageView;
 
 import static util.Contants.url;
 import static util.Contants.imageUrl;
@@ -92,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private int getNum=18;
     private FrameLayout frameLayout;
     private FragmentManager fm;
+    private ArrayList<ShowImageBean> showList=new ArrayList<>();
 
 
     @Override
@@ -120,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
 
-//        frameLayout=(FrameLayout) findViewById(R.id.activity_main_frameLayout);
-//        frameLayout.setVisibility(View.GONE);
+
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -162,19 +168,17 @@ public class MainActivity extends AppCompatActivity {
                 imageUrl = list.get(position);
                 Log.e("url", list.get(position));
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                int into[]=new int[3];
+                computeBoundsBackward(((StaggeredGridLayoutManager)layoutManager).findFirstVisibleItemPositions(into));
                 intent.putExtra("size", list.size());
                 intent.putExtra("position", position);
+                intent.putParcelableArrayListExtra("imagePaths",showList);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
+//                    startActivity(intent);
                 } else {
                     startActivity(intent);
                 }
-//                Log.e("url", list.get(position));
-//                FragmentTransaction ft = fm.beginTransaction();
-//                ft.replace(R.id.activity_main_frameLayout, new showView());
-//                ft.commit();
-//                frameLayout.setVisibility(View.VISIBLE);
-
             }
 
             @Override
@@ -280,15 +284,14 @@ public class MainActivity extends AppCompatActivity {
             if (list.size() % 15 == 0) {
                 System.gc();
             }
-            if(page==1){
+
                 index=list.size()+15;
-            }else {
-                index = list.size() + 15;
-            }
+
             start = list.size();
             end = start;
             for (int i = list.size(); i < index; i++) {
                 list.add(pathList.get(i).getPath());
+                showList.add(new ShowImageBean(pathList.get(i).getPath()));
                 adapter.notifyItemInserted(end);
                 end++;
             }
@@ -297,18 +300,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             getData = retrofit.create(getData.class);
-//            int requestSum;
-//            if(page==1){
-//                requestSum=18;
-//            }else {
-//                requestSum=9;
-//            }
-//            int requestPage=page;
-//            if(page==2){
-//                requestPage++;
-//            }
             getData.getWelfare("15", page)
-//            getData.getWelfare(String.valueOf(requestSum), requestPage)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<gson_welfare>() {
@@ -331,14 +323,17 @@ public class MainActivity extends AppCompatActivity {
                                 imagePath = new ImagePath();
                                 if (error.equals(results.get(i).getUrl())) {
                                     list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
+                                    showList.add(new ShowImageBean("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg"));
                                     imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     imagePath.save();
                                 } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
                                     list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
+                                    showList.add(new ShowImageBean("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg"));
                                     imagePath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                     imagePath.save();
                                 } else {
                                     list.add(results.get(i).getUrl());
+                                    showList.add(new ShowImageBean(results.get(i).getUrl()));
                                     imagePath.setPath(results.get(i).getUrl());
                                     imagePath.save();
                                 }
@@ -404,11 +399,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public int[] getXY(int position){
-        int xy[]=new int[2];
-        View view=recyclerView.getChildAt(position);
-        xy[0]=(int)view.getX();
-        xy[1]=(int)view.getY();
-        return xy;
+
+    private void computeBoundsBackward(int firstCompletelyVisiblePos[]) {
+        for (int i = firstCompletelyVisiblePos[0];i < showList.size(); i++) {
+            View itemView = layoutManager.findViewByPosition(i);
+            Rect bounds = new Rect();
+            Rect rect = new Rect();
+            getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+            if (itemView != null) {
+                ImageView imageView =  itemView.findViewById(R.id.item_image);
+                imageView.getGlobalVisibleRect(bounds);
+                bounds.top=bounds.top+rect.top;
+            }
+            showList.get(i).setBounds(bounds);
+        }
     }
 }

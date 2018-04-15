@@ -46,6 +46,7 @@ import java.util.Random;
 import adapter.main_fragment_adapter;
 import adapter.main_viewPager_adapter;
 import bean.ImagePath;
+import bean.ShowImageBean;
 import event.showActivityEvent;
 import fragment.showFragment;
 import okhttp3.OkHttpClient;
@@ -62,8 +63,6 @@ import widght.ZoomOutPageTransformer;
 public class ShowActivity extends AppCompatActivity {
     private Toolbar toolbar;
     public MyViewPager viewPager;
-//private NoPreloadViewPager viewPager;
-    private Random mRandom = new Random();
     final int downLoadImage=0;
     final int editImage=1;
     private List<ImagePath> list;
@@ -74,6 +73,7 @@ public class ShowActivity extends AppCompatActivity {
     private main_fragment_adapter main_fragment_adapter;
     private int firstIndex;
     private boolean isTransformOut = false;
+    private ArrayList<ShowImageBean> showList=new ArrayList<>();
 
     Handler handler=new Handler(new Handler.Callback() {
         @Override
@@ -108,14 +108,25 @@ public class ShowActivity extends AppCompatActivity {
         position=intent.getIntExtra("position",0);
         firstIndex=position;
 
-
-        for(int i=0;i<list.size();i++){
-            Bundle bundle=new Bundle();
-            bundle.putString("path",list.get(i).getPath());
-            showFragment fragment=showFragment.newInstance(bundle);
-            fragment.setUserVisibleHint(false);
-            fragmentList.add(fragment);
+        if(intent.getParcelableArrayListExtra("imagePaths")!=null){
+            showList=intent.getParcelableArrayListExtra("imagePaths");
+            for(int i=0;i<list.size();i++){
+                Bundle bundle=new Bundle();
+                bundle.putString("path",list.get(i).getPath());
+                bundle.putParcelable("imagePaths",showList.get(i));
+                showFragment fragment=showFragment.newInstance(bundle);
+                fragment.setUserVisibleHint(false);
+                fragmentList.add(fragment);
+            }
         }
+
+//        for(int i=0;i<list.size();i++){
+//            Bundle bundle=new Bundle();
+//            bundle.putString("path",list.get(i).getPath());
+//            showFragment fragment=showFragment.newInstance(bundle);
+//            fragment.setUserVisibleHint(false);
+//            fragmentList.add(fragment);
+//        }
 
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
@@ -248,14 +259,6 @@ public class ShowActivity extends AppCompatActivity {
             handler.removeCallbacksAndMessages(null);
             handler = null;
         }
-//        MyApplication.getRefWatcher(this).watch(this);
-
-        //        DataSupport.deleteAllAsync(showPath.class).listen(new UpdateOrDeleteCallback() {
-//            @Override
-//            public void onFinish(int rowsAffected) {
-//                Log.e("delete","delete");
-//            }
-//        });
     }
 
     @Override
@@ -271,11 +274,9 @@ public class ShowActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.download:
-//                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this,downLoadImage);
                 getImageBitmap(main_fragment_adapter.getUrl(viewPager.getCurrentItem()),ShowActivity.this,downLoadImage);
                 break;
             case R.id.edit:
-//                getImageBitmap(adapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);
                 getImageBitmap(main_fragment_adapter.getUrl(viewPager.getCurrentItem()),ShowActivity.this,editImage);
                 break;
         }
@@ -288,14 +289,14 @@ public class ShowActivity extends AppCompatActivity {
         showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
 //        onDestroy();
-        if(viewPager.getCurrentItem()!=firstIndex){
-            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
-            finish();
-        }else {
-            ActivityCompat.finishAfterTransition(this);
-            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
-        }
-//        transformOut();
+//        if(viewPager.getCurrentItem()!=firstIndex){
+//            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
+//            finish();
+//        }else {
+//            ActivityCompat.finishAfterTransition(this);
+//            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
+//        }
+        transformOut();
     }
 
 
@@ -316,6 +317,7 @@ public class ShowActivity extends AppCompatActivity {
             showFragment fragment = fragmentList.get(currentItem);
 
             fragment.changeBg(Color.TRANSPARENT);
+            changeBg(Color.TRANSPARENT);
             fragment.transformOut(new SmoothImageView.onTransformListener() {
                 @Override
                 public void onTransformCompleted(SmoothImageView.Status status) {
@@ -333,6 +335,9 @@ public class ShowActivity extends AppCompatActivity {
     }
 
 
+    public void changeBg(int color) {
+        frameLayout.setBackgroundColor(color);
+    }
 }
 
 

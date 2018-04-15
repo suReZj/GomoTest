@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 
+import bean.ShowImageBean;
 import sure.gomotest.Activity.AlbumDetailActivity;
 import sure.gomotest.Activity.ShowActivity;
 import sure.gomotest.R;
@@ -29,6 +30,7 @@ public class showFragment extends Fragment {
     private RelativeLayout rootView;
     private String showActivity = "Activity.ShowActivity";
     private String albumDetailActivity = "Activity.AlbumDetailActivity";
+    private ShowImageBean showBean;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +45,12 @@ public class showFragment extends Fragment {
         imageView = view.findViewById(R.id.fragment_show_photo);
         rootView = view.findViewById(R.id.fragment_show_layout);
         path = arg.getString("path");
+        showBean=arg.getParcelable("imagePaths");
+        if(showBean!=null){
+            imageView.setThumbRect(showBean.getBounds());
+        }
+
+//        imageView.setTag(showBean.getPath());
         Glide.with(container.getContext()).load(path).into(imageView);
 
         imageView.setAlphaChangeListener(new SmoothImageView.OnAlphaChangeListener() {
