@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -55,9 +56,7 @@ import util.FileUtils;
 import sure.gomotest.R;
 import widght.DepthPageTransformer;
 import widght.MyViewPager;
-import widght.NoPreloadViewPager;
 import widght.SmoothImageView;
-import widght.ZoomOutPageTransformer;
 
 
 public class ShowActivity extends AppCompatActivity {
@@ -120,23 +119,24 @@ public class ShowActivity extends AppCompatActivity {
             }
         }
 
-//        for(int i=0;i<list.size();i++){
-//            Bundle bundle=new Bundle();
-//            bundle.putString("path",list.get(i).getPath());
-//            showFragment fragment=showFragment.newInstance(bundle);
-//            fragment.setUserVisibleHint(false);
-//            fragmentList.add(fragment);
-//        }
 
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
-//        viewPager.setPageTransformer(true, new ZoomOutPageTransformer());
         viewPager.setOffscreenPageLimit(0);
         adapter=new main_viewPager_adapter(list);
 //        viewPager.setPageMargin((int)getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
         main_fragment_adapter =new main_fragment_adapter(getSupportFragmentManager(),fragmentList,list,getApplicationContext());
         viewPager.setAdapter(main_fragment_adapter);
         viewPager.setCurrentItem(position);
+        viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                showFragment fragment = fragmentList.get(position);
+                fragment.transformIn();
+            }
+        });
+
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -288,14 +288,6 @@ public class ShowActivity extends AppCompatActivity {
 
         showActivityEvent event=new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-//        onDestroy();
-//        if(viewPager.getCurrentItem()!=firstIndex){
-//            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
-//            finish();
-//        }else {
-//            ActivityCompat.finishAfterTransition(this);
-//            fragmentList.get(viewPager.getCurrentItem()).changeBg(Color.TRANSPARENT);
-//        }
         transformOut();
     }
 

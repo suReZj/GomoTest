@@ -60,7 +60,7 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.imageView.setImageResource(R.mipmap.ic_launcher);
+        holder.imageView.setImageResource(R.mipmap.loadimage);
         Glide.with(context).load(list.get(position).getPath()).into(holder.imageView);
         if (mOnItemClickLitener != null) {
             holder.imageView.setOnClickListener(new View.OnClickListener() {

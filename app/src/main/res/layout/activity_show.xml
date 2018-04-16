@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
 
     android:fitsSystemWindows="true"
-    android:id="@+id/activity_show_layout"
-    android:background="@color/black">
+    android:id="@+id/activity_show_layout">
+    <!--android:background="@color/black">-->
     <!--android:background="@android:color/transparent">-->
 
     <!--&gt;-->
@@ -40,12 +40,6 @@
             android:layout_height="match_parent"
             />
         <!---->
-        <!--<widght.NoPreloadViewPager-->
-            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-            <!--android:id="@+id/activity_show_viewPager"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--/>-->
         <!--android:background="@android:color/transparent"-->
     </RelativeLayout>
 </FrameLayout>

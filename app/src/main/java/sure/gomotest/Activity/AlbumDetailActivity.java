@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -33,6 +34,7 @@ import adapter.album_fragment_adapter;
 import adapter.album_viewPager_adapter;
 import adapter.main_fragment_adapter;
 import bean.AlbumBean;
+import bean.ShowImageBean;
 import bean.showPath;
 import event.saveImageEvent;
 import event.showActivityEvent;
@@ -41,6 +43,7 @@ import fragment.showFragment;
 import sure.gomotest.R;
 import util.FileUtils;
 import widght.MyViewPager;
+import widght.SmoothImageView;
 
 import static util.Contants.albumPath;
 
@@ -55,6 +58,10 @@ public class AlbumDetailActivity extends AppCompatActivity {
     private List<showFragment> fragmentList = new ArrayList<>();
     private int firstIndex;
     private FrameLayout layout;
+    private ArrayList<ShowImageBean> showList = new ArrayList<>();
+    private boolean isTransformOut = false;
+    private FrameLayout frameLayout;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
         albumName = getIntent().getStringExtra("albumname");
         setContentView(R.layout.activity_album_detail);
         EventBus.getDefault().register(this);
+        frameLayout = (FrameLayout) findViewById(R.id.activity_detail_layout);
         toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -70,8 +78,9 @@ public class AlbumDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         viewPager = (MyViewPager) findViewById(R.id.activity_detail_viewPager);
-        viewPager.setPageMargin((int)getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
-        Intent intent = getIntent();
+        viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
+        intent = getIntent();
+        showList = intent.getParcelableArrayListExtra("imagePaths");
         if (intent.getStringArrayListExtra("list") != null) {
             AlbumBean albumBean = new AlbumBean();
             albumBean.setPath(intent.getStringArrayListExtra("list").get(0));
@@ -80,23 +89,34 @@ public class AlbumDetailActivity extends AppCompatActivity {
             adapter = new album_viewPager_adapter(list);
             viewPager.setAdapter(adapter);
             viewPager.setCurrentItem(intent.getIntExtra("position", 0));
+            changeBg(Color.BLACK);
         } else {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
             for (int i = 0; i < list.size(); i++) {
                 Bundle bundle = new Bundle();
                 bundle.putString("path", list.get(i).getPath());
+                bundle.putParcelable("imagePaths", showList.get(i));
                 showFragment fragment = showFragment.newInstance(bundle);
                 fragmentList.add(fragment);
             }
             fragmentAdapter = new album_fragment_adapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
             viewPager.setAdapter(fragmentAdapter);
             viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
-            viewPager.setCurrentItem(intent.getIntExtra("position", 0));
+            final int position=intent.getIntExtra("position", 0);
+            viewPager.setCurrentItem(position);
+            viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    showFragment fragment = fragmentList.get(position);
+                    fragment.transformIn();
+                }
+            });
         }
         firstIndex = intent.getIntExtra("position", 0);
 
 
-        layout=(FrameLayout) findViewById(R.id.activity_detail_layout);
+        layout = (FrameLayout) findViewById(R.id.activity_detail_layout);
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -170,6 +190,9 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 } else {
                     EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
                 }
+                if(intent.getStringArrayListExtra("list") != null){
+                    finish();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -184,10 +207,10 @@ public class AlbumDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         showActivityEvent event = new showActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
-        if (viewPager.getCurrentItem() != firstIndex) {
+        if (intent.getStringArrayListExtra("list") != null) {
             finish();
         } else {
-            ActivityCompat.finishAfterTransition(this);
+            transformOut();
         }
     }
 
@@ -195,5 +218,37 @@ public class AlbumDetailActivity extends AppCompatActivity {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
         layout.setBackgroundColor(a + rgb);
+    }
+
+    public void transformOut() {
+        if (isTransformOut) {
+            return;
+        }
+        isTransformOut = true;
+        int currentItem = viewPager.getCurrentItem();
+        if (currentItem < list.size()) {
+            showFragment fragment = fragmentList.get(currentItem);
+
+            fragment.changeBg(Color.TRANSPARENT);
+            changeBg(Color.TRANSPARENT);
+            fragment.transformOut(new SmoothImageView.onTransformListener() {
+                @Override
+                public void onTransformCompleted(SmoothImageView.Status status) {
+                    exit();
+                }
+            });
+        } else {
+            exit();
+        }
+    }
+
+    private void exit() {
+        finish();
+        overridePendingTransition(0, 0);
+    }
+
+
+    public void changeBg(int color) {
+        frameLayout.setBackgroundColor(color);
     }
 }

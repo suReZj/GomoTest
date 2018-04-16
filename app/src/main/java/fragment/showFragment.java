@@ -60,10 +60,11 @@ public class showFragment extends Fragment {
 //                getColorWithAlpha(alpha / 255f, Color.BLACK);
 
                 if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
-                    ((ShowActivity) container.getContext()).getColorWithAlpha(alpha / 255f, Color.BLACK);
+                    ((ShowActivity) container.getContext()).getColorWithAlpha(alpha / 500f, Color.BLACK);
                 } else if (((Activity) container.getContext()).getLocalClassName().equals(albumDetailActivity)) {
-                    ((AlbumDetailActivity) container.getContext()).getColorWithAlpha(alpha / 255f, Color.BLACK);
+                    ((AlbumDetailActivity) container.getContext()).getColorWithAlpha(alpha / 500f, Color.BLACK);
                 }
+                getColorWithAlpha(alpha / 255f, Color.BLACK);
             }
         });
         imageView.setTransformOutListener(new SmoothImageView.OnTransformOutListener() {
@@ -119,17 +120,21 @@ public class showFragment extends Fragment {
         imageView.transformOut(listener);
     }
 
+    public void transformIn() {
+        imageView.transformIn(new SmoothImageView.onTransformListener() {
+            @Override
+            public void onTransformCompleted(SmoothImageView.Status status) {
+//                rootView.setBackgroundColor(Color.BLACK);
 
-//
-//    @Override
-//    public void onDestroyView() {
-//        setUserVisibleHint(false);
-//        super.onDestroyView();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        setUserVisibleHint(false);
-//        super.onStop();
-//    }
+                if (((Activity) getContext()).getLocalClassName().equals(showActivity)) {
+                    ((ShowActivity)getContext()).changeBg(Color.BLACK);
+                } else if (((Activity)getContext()).getLocalClassName().equals(albumDetailActivity)) {
+                    ((AlbumDetailActivity)getContext()).changeBg(Color.BLACK);
+                }
+            }
+        });
+    }
+
+
+
 }

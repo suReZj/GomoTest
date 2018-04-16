@@ -55,7 +55,6 @@ import adapter.main_recycle_adapter;
 import bean.ImagePath;
 import bean.ShowImageBean;
 import event.showActivityEvent;
-import fragment.showView;
 import gson.gson_result;
 import gson.gson_welfare;
 import io.reactivex.Observer;
@@ -71,8 +70,6 @@ import widght.SmoothImageView;
 
 import static util.Contants.url;
 import static util.Contants.imageUrl;
-import static util.ShowDialog.closeDisk;
-import static util.ShowDialog.fluchCache;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -85,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
     private boolean flag = false;
-    private String error = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
+    private String error_1 = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
+    private String error_2 = "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg";
+    private String error_3 = "http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
     private long backLastPressedTimestamp = 0;
     private List<gson_result> results;
     private int start;
@@ -95,10 +94,8 @@ public class MainActivity extends AppCompatActivity {
     private int index = 0;
     private List<ImagePath> pathList = new ArrayList<>();
     private ImagePath imagePath;
-    private int getNum=18;
-    private FrameLayout frameLayout;
     private FragmentManager fm;
-    private ArrayList<ShowImageBean> showList=new ArrayList<>();
+    private ArrayList<ShowImageBean> showList = new ArrayList<>();
 
 
     @Override
@@ -106,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
         setContentView(R.layout.activity_main);
-        fm=this.getSupportFragmentManager();
+        fm = this.getSupportFragmentManager();
         initView();
         setListener();
     }
@@ -126,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         springView.setFooter(new DefaultFooter(MainActivity.this));
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
 //        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
-
+//        list.add("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg");
 
 
         Window window = this.getWindow();
@@ -168,14 +165,14 @@ public class MainActivity extends AppCompatActivity {
                 imageUrl = list.get(position);
                 Log.e("url", list.get(position));
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
-                int into[]=new int[3];
-                computeBoundsBackward(((StaggeredGridLayoutManager)layoutManager).findFirstVisibleItemPositions(into));
+                int into[] = new int[3];
+                computeBoundsBackward(((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(into));
                 intent.putExtra("size", list.size());
                 intent.putExtra("position", position);
-                intent.putParcelableArrayListExtra("imagePaths",showList);
+                intent.putParcelableArrayListExtra("imagePaths", showList);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
-//                    startActivity(intent);
+//                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
+                    startActivity(intent);
                 } else {
                     startActivity(intent);
                 }
@@ -285,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
                 System.gc();
             }
 
-                index=list.size()+15;
+            index = list.size() + 15;
 
             start = list.size();
             end = start;
@@ -321,16 +318,17 @@ public class MainActivity extends AppCompatActivity {
                             end = start;
                             for (int i = 0; i < results.size(); i++) {
                                 imagePath = new ImagePath();
-                                if (error.equals(results.get(i).getUrl())) {
+                                if (error_1.equals(results.get(i).getUrl())) {
                                     list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     showList.add(new ShowImageBean("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg"));
                                     imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
                                     imagePath.save();
-                                } else if (results.get(i).getUrl().equals("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg")) {
+                                } else if (results.get(i).getUrl().equals(error_2)) {
                                     list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                     showList.add(new ShowImageBean("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg"));
                                     imagePath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
                                     imagePath.save();
+                                } else if (results.get(i).getUrl().equals(error_3)) {
                                 } else {
                                     list.add(results.get(i).getUrl());
                                     showList.add(new ShowImageBean(results.get(i).getUrl()));
@@ -366,9 +364,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         adapter.closeDisk();
-        if (flag) {
-            closeDisk();
-        }
         super.onDestroy();
         EventBus.getDefault().unregister(this);
 //        MyApplication.getRefWatcher(this).watch(this);
@@ -377,9 +372,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         adapter.fluchCache();
-        if (flag) {
-            fluchCache();
-        }
         super.onPause();
     }
 
@@ -395,23 +387,27 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(showActivityEvent messageEvent) {
-        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
+//        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 
 
-
     private void computeBoundsBackward(int firstCompletelyVisiblePos[]) {
-        for (int i = firstCompletelyVisiblePos[0];i < showList.size(); i++) {
+        for (int i = firstCompletelyVisiblePos[0]; i < showList.size(); i++) {
             View itemView = layoutManager.findViewByPosition(i);
             Rect bounds = new Rect();
             Rect rect = new Rect();
             getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
             if (itemView != null) {
-                ImageView imageView =  itemView.findViewById(R.id.item_image);
+                ImageView imageView = itemView.findViewById(R.id.item_image);
                 imageView.getGlobalVisibleRect(bounds);
-                bounds.top=bounds.top+rect.top;
+                bounds.top = bounds.top + rect.top;
             }
             showList.get(i).setBounds(bounds);
         }
+    }
+
+    public void removeShowList(int position) {
+        showList.remove(position);
+        list.remove(position);
     }
 }

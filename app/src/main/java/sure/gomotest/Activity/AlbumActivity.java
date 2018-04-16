@@ -3,7 +3,9 @@ package sure.gomotest.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
+import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,6 +34,7 @@ import java.util.List;
 
 import adapter.album_recycle_adapter;
 import bean.AlbumBean;
+import bean.ShowImageBean;
 import bean.showPath;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
@@ -50,6 +54,9 @@ public class AlbumActivity extends AppCompatActivity {
     private int index = 0;
     private showPath showPath;
     private String album;
+    private List<ShowImageBean> showList = new ArrayList<>();
+    private RecyclerView.LayoutManager layoutManager;
+    private ShowImageBean showImageBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +70,7 @@ public class AlbumActivity extends AppCompatActivity {
     public void initView() {
         intent = getIntent();
         albumName = intent.getStringExtra("name");
-        album=albumName;
+        album = albumName;
 
         toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
         toolbar.setTitle("");
@@ -77,14 +84,15 @@ public class AlbumActivity extends AppCompatActivity {
         textView = (TextView) findViewById(R.id.activity_album_textView);
 
         list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-//        for(int i=0;i<list.size();i++){
-//            showPath=new showPath();
-//            showPath.setPath(list.get(i).getPath());
-//            urlList.add(showPath);
-//        }
+
+        for (int i = 0; i < list.size(); i++) {
+            showImageBean = new ShowImageBean(list.get(i).getPath());
+            showList.add(showImageBean);
+        }
 
         adapter = new album_recycle_adapter(list);
-        recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+        layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
         int position = albumName.lastIndexOf("/");
@@ -118,21 +126,18 @@ public class AlbumActivity extends AppCompatActivity {
             @Override
             public void onItemClick(final View view, final int position) {
                 albumPath = list.get(position).getPath();
-
-//                DataSupport.saveAllAsync(urlList).listen(new SaveCallback() {
-//                    @Override
-//                    public void onFinish(boolean success) {
-                        Intent showItent=new Intent(AlbumActivity.this,AlbumDetailActivity.class);
-                        showItent.putExtra("albumname",album);
-                        showItent.putExtra("position",position);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                            startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
-                        }else {
-                            startActivity(showItent);
-                        }
-//                    }
-//                });
-
+                Intent showItent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
+                showItent.putExtra("albumname", album);
+                showItent.putExtra("position", position);
+                int into[] = new int[3];
+                computeBoundsBackward(((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(into));
+                showItent.putParcelableArrayListExtra("imagePaths", (ArrayList<? extends Parcelable>) showList);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                    startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
+                    startActivity(showItent);
+                } else {
+                    startActivity(showItent);
+                }
             }
 
             @Override
@@ -171,14 +176,21 @@ public class AlbumActivity extends AppCompatActivity {
         if (String.valueOf(textView.getText()).equals(dirPath)) {
             list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
             urlList.clear();
-            for(int i=0;i<list.size();i++){
-                showPath=new showPath();
+            for (int i = 0; i < list.size(); i++) {
+                showPath = new showPath();
                 showPath.setPath(list.get(i).getPath());
                 urlList.add(showPath);
             }
             adapter = new album_recycle_adapter(list);
-            recyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+            layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            showList.clear();
+            for (int i = 0; i < list.size(); i++) {
+                showImageBean = new ShowImageBean(list.get(i).getPath());
+                showList.add(showImageBean);
+            }
             setListener();
         }
     }
@@ -187,12 +199,26 @@ public class AlbumActivity extends AppCompatActivity {
     public void refreshData(updateAlbumEvent messageEvent) {
         albumName = messageEvent.getAlbumName();
         getData();
-        setListener();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void changePosition(showActivityEvent messageEvent) {
-        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
+//        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
+    }
+
+    private void computeBoundsBackward(int firstCompletelyVisiblePos[]) {
+        for (int i = firstCompletelyVisiblePos[0]; i < showList.size(); i++) {
+            View itemView = layoutManager.findViewByPosition(i);
+            Rect bounds = new Rect();
+            Rect rect = new Rect();
+            getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+            if (itemView != null) {
+                ImageView imageView = itemView.findViewById(R.id.item_album_image);
+                imageView.getGlobalVisibleRect(bounds);
+                bounds.top = bounds.top + rect.top;
+            }
+            showList.get(i).setBounds(bounds);
+        }
     }
 
 }

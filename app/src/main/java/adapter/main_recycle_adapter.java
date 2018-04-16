@@ -27,6 +27,7 @@ import magick.MagickImage;
 import magick.util.MagickBitmap;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import sure.gomotest.Activity.MainActivity;
 import sure.gomotest.R;
 import util.imageCache;
 
@@ -40,17 +41,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
     private Context context;
     private imageCache imageCache;
     private OkHttpClient client = new OkHttpClient();
-    private String error = "http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
-//    Handler handler = new Handler(new Handler.Callback() {
-//        @Override
-//        public boolean handleMessage(Message msg) {
-//            ViewHolder holder = (ViewHolder) msg.obj;
-//            String url = msg.getData().getString("url");
-//            holder.imageView.setImageBitmap(imageCache.getBitmapFromCache(url));
-//            notifyDataSetChanged();
-//            return false;
-//        }
-//    });
+
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -164,6 +155,13 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
+                ((Activity) context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyItemRemoved(position);
+                        ((MainActivity)context).removeShowList(position);
+                    }
+                });
             }
 
             @Override
@@ -207,6 +205,7 @@ public class main_recycle_adapter extends RecyclerView.Adapter<main_recycle_adap
                         @Override
                         public void run() {
                             notifyItemRemoved(position);
+                            ((MainActivity)context).removeShowList(position);
                         }
                     });
                 } else {
