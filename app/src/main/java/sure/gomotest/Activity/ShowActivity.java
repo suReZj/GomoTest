@@ -1,7 +1,5 @@
 package sure.gomotest.Activity;
 
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,10 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,10 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import adapter.main_fragment_adapter;
-import adapter.main_viewPager_adapter;
 import bean.ImagePath;
 import bean.ShowImageBean;
 import event.showActivityEvent;
@@ -66,7 +59,6 @@ public class ShowActivity extends AppCompatActivity {
     final int editImage=1;
     private List<ImagePath> list;
     private int position;
-    private main_viewPager_adapter adapter;
     private FrameLayout frameLayout;
     private List<showFragment> fragmentList=new ArrayList<>();
     private main_fragment_adapter main_fragment_adapter;
@@ -123,7 +115,6 @@ public class ShowActivity extends AppCompatActivity {
         viewPager=(MyViewPager)findViewById(R.id.activity_show_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
         viewPager.setOffscreenPageLimit(0);
-        adapter=new main_viewPager_adapter(list);
 //        viewPager.setPageMargin((int)getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
         main_fragment_adapter =new main_fragment_adapter(getSupportFragmentManager(),fragmentList,list,getApplicationContext());
         viewPager.setAdapter(main_fragment_adapter);
@@ -297,6 +288,7 @@ public class ShowActivity extends AppCompatActivity {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
         frameLayout.setBackgroundColor(a + rgb);
+        toolbar.setAlpha(alpha*510f/255f);
     }
 
     public void transformOut() {

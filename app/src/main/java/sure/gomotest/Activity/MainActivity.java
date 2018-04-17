@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> list = new ArrayList<>();
     private SpringView springView;
     private RecyclerView.LayoutManager layoutManager;
-    private boolean flag = false;
     private String error_1 = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
     private String error_2 = "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg";
     private String error_3 = "http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
@@ -170,12 +169,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("size", list.size());
                 intent.putExtra("position", position);
                 intent.putParcelableArrayListExtra("imagePaths", showList);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(MainActivity.this, view, "shareNames").toBundle());
-                    startActivity(intent);
-                } else {
-                    startActivity(intent);
-                }
+                startActivity(intent);
             }
 
             @Override
@@ -281,9 +275,7 @@ public class MainActivity extends AppCompatActivity {
             if (list.size() % 15 == 0) {
                 System.gc();
             }
-
             index = list.size() + 15;
-
             start = list.size();
             end = start;
             for (int i = list.size(); i < index; i++) {
@@ -342,9 +334,7 @@ public class MainActivity extends AppCompatActivity {
                             if (page != 1) {
                                 springView.onFinishFreshAndLoad();
                             }
-
                         }
-
                         @Override
                         public void onError(Throwable e) {
                             disposable.dispose();
@@ -353,7 +343,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
                         }
-
                         @Override
                         public void onComplete() {
                         }

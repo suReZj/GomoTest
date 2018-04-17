@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,7 +30,6 @@ import java.util.List;
 
 import adapter.album_fragment_adapter;
 import adapter.album_viewPager_adapter;
-import adapter.main_fragment_adapter;
 import bean.AlbumBean;
 import bean.ShowImageBean;
 import bean.showPath;
@@ -81,6 +78,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
         viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
         intent = getIntent();
         showList = intent.getParcelableArrayListExtra("imagePaths");
+
         if (intent.getStringArrayListExtra("list") != null) {
             AlbumBean albumBean = new AlbumBean();
             albumBean.setPath(intent.getStringArrayListExtra("list").get(0));
@@ -102,7 +100,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
             fragmentAdapter = new album_fragment_adapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
             viewPager.setAdapter(fragmentAdapter);
             viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
-            final int position=intent.getIntExtra("position", 0);
+            final int position = intent.getIntExtra("position", 0);
             viewPager.setCurrentItem(position);
             viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
@@ -150,7 +148,6 @@ public class AlbumDetailActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
         DataSupport.deleteAll(showPath.class);
 //        MyApplication.getRefWatcher(this).watch(this);
-
     }
 
     @Override
@@ -190,7 +187,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 } else {
                     EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
                 }
-                if(intent.getStringArrayListExtra("list") != null){
+                if (intent.getStringArrayListExtra("list") != null) {
                     finish();
                 }
                 break;
@@ -218,6 +215,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
         layout.setBackgroundColor(a + rgb);
+        toolbar.setAlpha(alpha * 510f / 255f);
     }
 
     public void transformOut() {

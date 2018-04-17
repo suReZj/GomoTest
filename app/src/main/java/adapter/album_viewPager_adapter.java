@@ -33,7 +33,6 @@ public class album_viewPager_adapter extends PagerAdapter {
         PhotoView photoView = new PhotoView(container.getContext());
         Glide.with(container.getContext()).load(list.get(position).getPath()).into(photoView);
 
-        // Now just add PhotoView to ViewPager and return it
         container.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         return photoView;

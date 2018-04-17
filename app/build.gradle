@@ -42,7 +42,6 @@ dependencies {
     compile project(path: ':androidlibmagick')
     compile 'org.litepal.android:core:1.6.1'
     implementation project(':imageeditlibrary')
-    compile 'com.ycjiang:ImagePreview:2.1.2'
     compile 'com.yanzhikai:TextPathView:0.1.1'
     compile 'com.jaredrummler:animated-svg-view:1.0.5'
     compile 'org.greenrobot:eventbus:3.1.1'

@@ -1,14 +1,10 @@
 package fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,19 +46,15 @@ public class showFragment extends Fragment {
             imageView.setThumbRect(showBean.getBounds());
         }
 
-//        imageView.setTag(showBean.getPath());
         Glide.with(container.getContext()).load(path).into(imageView);
 
         imageView.setAlphaChangeListener(new SmoothImageView.OnAlphaChangeListener() {
             @Override
             public void onAlphaChange(int alpha) {
-//                ((ShowActivity)(container.getContext())).setBackgroundColor(getColorWithAlpha(alpha / 255f, Color.BLACK));
-//                getColorWithAlpha(alpha / 255f, Color.BLACK);
-
                 if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
-                    ((ShowActivity) container.getContext()).getColorWithAlpha(alpha / 500f, Color.BLACK);
+                    ((ShowActivity) container.getContext()).getColorWithAlpha(alpha / 510f, Color.BLACK);
                 } else if (((Activity) container.getContext()).getLocalClassName().equals(albumDetailActivity)) {
-                    ((AlbumDetailActivity) container.getContext()).getColorWithAlpha(alpha / 500f, Color.BLACK);
+                    ((AlbumDetailActivity) container.getContext()).getColorWithAlpha(alpha / 510f, Color.BLACK);
                 }
                 getColorWithAlpha(alpha / 255f, Color.BLACK);
             }
@@ -72,7 +64,6 @@ public class showFragment extends Fragment {
             public void onTransformOut() {
                 if (imageView.checkMinScale()) {
                     ((Activity) container.getContext()).onBackPressed();
-//                    ((ShowActivity) container.getContext()).transformOut();
                 }
             }
         });
@@ -92,7 +83,6 @@ public class showFragment extends Fragment {
                         ((AlbumDetailActivity) container.getContext()).viewPager.setScanScroll(false);
                     }
                 }
-
             }
         });
 
@@ -124,8 +114,6 @@ public class showFragment extends Fragment {
         imageView.transformIn(new SmoothImageView.onTransformListener() {
             @Override
             public void onTransformCompleted(SmoothImageView.Status status) {
-//                rootView.setBackgroundColor(Color.BLACK);
-
                 if (((Activity) getContext()).getLocalClassName().equals(showActivity)) {
                     ((ShowActivity)getContext()).changeBg(Color.BLACK);
                 } else if (((Activity)getContext()).getLocalClassName().equals(albumDetailActivity)) {
@@ -134,7 +122,4 @@ public class showFragment extends Fragment {
             }
         });
     }
-
-
-
 }

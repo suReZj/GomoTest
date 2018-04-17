@@ -1,6 +1,5 @@
 package sure.gomotest.Activity;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -26,7 +25,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
-import org.litepal.crud.callback.SaveCallback;
 
 
 import java.util.ArrayList;
@@ -51,7 +49,6 @@ public class AlbumActivity extends AppCompatActivity {
     private Intent intent;
     private List<AlbumBean> list;
     private ArrayList<showPath> urlList = new ArrayList<>();
-    private int index = 0;
     private showPath showPath;
     private String album;
     private List<ShowImageBean> showList = new ArrayList<>();
@@ -118,7 +115,6 @@ public class AlbumActivity extends AppCompatActivity {
             ViewCompat.setFitsSystemWindows(mChildView, false);
             ViewCompat.requestApplyInsets(mChildView);
         }
-//        getData();
     }
 
     public void setListener() {
@@ -132,12 +128,7 @@ public class AlbumActivity extends AppCompatActivity {
                 int into[] = new int[3];
                 computeBoundsBackward(((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(into));
                 showItent.putParcelableArrayListExtra("imagePaths", (ArrayList<? extends Parcelable>) showList);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//                    startActivity(showItent, ActivityOptions.makeSceneTransitionAnimation(AlbumActivity.this, view, "shareNames").toBundle());
-                    startActivity(showItent);
-                } else {
-                    startActivity(showItent);
-                }
+                startActivity(showItent);
             }
 
             @Override

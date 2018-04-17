@@ -132,9 +132,6 @@ public class SmoothImageView extends PhotoView {
     private static final float MAX_TRANS_SCALE = 0.5f;
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-//        if(event.getAction()==MotionEvent.ACTION_POINTER_DOWN){
-//            super.dispatchTouchEvent(event);
-//        }else {
             if (getScale() == 1) {
                 int action = event.getAction();
                 switch (action) {

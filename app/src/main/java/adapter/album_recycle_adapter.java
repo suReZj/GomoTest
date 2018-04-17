@@ -2,9 +2,7 @@ package adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import java.util.List;
 
 import bean.AlbumBean;
 import sure.gomotest.R;
-import util.imageCache;
 
 /**
  * Created by zhangzijian on 2018/03/12.
@@ -25,8 +22,6 @@ import util.imageCache;
 public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_adapter.ViewHolder> {
     private Context context;
     private List<AlbumBean> list;
-    private imageCache imageCache;
-    private Bitmap bitmap;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView;
@@ -45,7 +40,6 @@ public class album_recycle_adapter extends RecyclerView.Adapter<album_recycle_ad
 
     public album_recycle_adapter(List<AlbumBean> list) {
         this.list = list;
-//        this.imageCache = new imageCache(context);
     }
 
     @Override
