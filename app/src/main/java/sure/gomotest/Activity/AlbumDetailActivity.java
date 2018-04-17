@@ -39,6 +39,7 @@ import event.updateAlbumEvent;
 import fragment.showFragment;
 import sure.gomotest.R;
 import util.FileUtils;
+import widght.DepthPageTransformer;
 import widght.MyViewPager;
 import widght.SmoothImageView;
 
@@ -75,7 +76,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         viewPager = (MyViewPager) findViewById(R.id.activity_detail_viewPager);
-        viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
+        viewPager.setPageTransformer(true, new DepthPageTransformer());
         intent = getIntent();
         showList = intent.getParcelableArrayListExtra("imagePaths");
 
