@@ -1,18 +1,17 @@
-package event;
+package bean;
+
+import android.util.Log;
+
+import org.litepal.crud.DataSupport;
 
 /**
- * Created by zhangzijian on 2018/03/19.
+ * Created by zhangzijian on 2018/03/13.
  */
 
-//用于图片编辑后产生新图片时刷新相册
-public class saveImageEvent {
+//相册照片实体类
+public class albumBean extends DataSupport {
     private String albumName;
     private String path;
-
-    public saveImageEvent(String albumName, String path) {
-        this.albumName = albumName;
-        this.path = path;
-    }
 
     public String getAlbumName() {
         return albumName;

@@ -3,9 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="toolbarBackground">#40aefc</color>
+    <color name="activity_toolbar_bg_color">#40aefc</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
-    <color name="fill">#EEAEEE</color>
     <color name="transparent">#00000000</color>
+    <color name="fill">#EEAEEE</color>
 </resources>

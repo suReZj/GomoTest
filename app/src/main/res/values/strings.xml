@@ -10,6 +10,9 @@
     <string name="beautyAlbum">美女相册</string>
     <string name="sure">Sure</string>
     <string name="press_back_again_to_exit">再按一次退出</string>
+    <string name="url">http://gank.io/api/data/</string>
+    <string name="head">(</string>
+    <string name="foot">)</string>
 
     <color name="google_red">#EA4335</color>
     <color name="google_yellow">#FBBC05</color>

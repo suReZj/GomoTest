@@ -1,7 +1,6 @@
 package sure.gomotest.Activity;
 
 import android.Manifest;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -10,30 +9,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -45,18 +35,17 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
-import org.litepal.crud.callback.SaveCallback;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapter.main_recycle_adapter;
-import bean.ImagePath;
-import bean.ShowImageBean;
+import adapter.ImageAdapter;
+import bean.imagePathBean;
+import bean.showImageBean;
 import event.showActivityEvent;
-import gson.gson_result;
-import gson.gson_welfare;
+import gson.resultGson;
+import gson.welfareGson;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -64,65 +53,57 @@ import io.reactivex.schedulers.Schedulers;
 import retrofit.getData;
 import retrofit2.Retrofit;
 import sure.gomotest.R;
-import util.OnDoubleClickListener;
-import util.RetrofitUtil;
-import widght.SmoothImageView;
+import widght.OnDoubleClickListener;
+import utils.RetrofitUtil;
+import widght.MyLayoutManager;
 
-import static util.Contants.url;
-import static util.Contants.imageUrl;
 
 
 public class MainActivity extends AppCompatActivity {
-    private File file;
-    private Toolbar toolbar;
-    private RecyclerView recyclerView;
-    private main_recycle_adapter adapter;
-    private int page = 1;
-    private ArrayList<String> list = new ArrayList<>();
-    private SpringView springView;
-    private RecyclerView.LayoutManager layoutManager;
-    private String error_1 = "https://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg";
-    private String error_2 = "https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg";
-    private String error_3 = "http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg";
-    private long backLastPressedTimestamp = 0;
-    private List<gson_result> results;
+    private File file;//拍照后图片存放的文件
+    private Toolbar toolbar;//toolbar
+    private RecyclerView recyclerView;//图片展示recyclerview
+    private ImageAdapter adapter;//图片展示adapter
+    private int page = 1;//当前图片加载页数
+    private ArrayList<String> imageList = new ArrayList<>();//首页展示图片URL的list
+    private SpringView springView;//上拉加载控件
+    private MyLayoutManager layoutManager;
+    private long backLastPressedTimestamp = 0;//用于判断双击退出程序
+    private List<resultGson> resultList;//retrofit请求后返回结果的list
+    private Retrofit retrofit ;//retrofit实例
+    private getData getData;//retrofit接口实例
+    private List<imagePathBean> pathList = new ArrayList<>();//数据库中存放的图片URL集合
+    private imagePathBean imagePath;//用于存储在数据库图片URL的实例
+    private ArrayList<showImageBean> showList = new ArrayList<>();//用于图片浏览时传递的list
     private int start;
     private int end;
-    private Retrofit retrofit = RetrofitUtil.getRetrofit(url);
-    private getData getData = retrofit.create(getData.class);
     private int index = 0;
-    private List<ImagePath> pathList = new ArrayList<>();
-    private ImagePath imagePath;
-    private FragmentManager fm;
-    private ArrayList<ShowImageBean> showList = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        setContentView(R.layout.activity_main);
-        fm = this.getSupportFragmentManager();
+        retrofit= RetrofitUtil.getRetrofit(getResources().getString(R.string.url));
+        getData = retrofit.create(getData.class);
+        setContentView(R.layout.main_activity);
         initView();
         setListener();
     }
 
     private void initView() {
-        toolbar = (Toolbar) findViewById(R.id.activity_main_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(toolbar);
-        recyclerView = (RecyclerView) findViewById(R.id.activity_main_recyclerView);
-        layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        recyclerView = (RecyclerView) findViewById(R.id.main_activity_rv);
+        layoutManager = new MyLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new main_recycle_adapter(list, MainActivity.this);
+        adapter = new ImageAdapter(imageList, MainActivity.this);
         recyclerView.setAdapter(adapter);
-        pathList = DataSupport.findAll(ImagePath.class);
+        pathList = DataSupport.findAll(imagePathBean.class);
         setImage(page);
-        springView = (SpringView) findViewById(R.id.activity_main_frame);
+        springView = (SpringView) findViewById(R.id.main_activity_sv);
         springView.setFooter(new DefaultFooter(MainActivity.this));
-//        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-01-20-030332.jpg");
-//        list.add("http://7xi8d6.com1.z0.glb.clouddn.com/2017-02-27-tumblr_om1aowIoKa1qbw5qso1_540.jpg");
-//        list.add("https://ws1.sinaimg.cn/large/610dc034ly1fhfmsbxvllj20u00u0q80.jpg");
 
 
         Window window = this.getWindow();
@@ -146,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void setListener() {
         springView.setListener(new SpringView.OnFreshListener() {
             @Override
@@ -158,15 +140,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        adapter.setOnItemClickLitener(new main_recycle_adapter.OnItemClickLitener() {
+        adapter.setOnItemClickLitener(new ImageAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(final View view, final int position) {
-                imageUrl = list.get(position);
-                Log.e("url", list.get(position));
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
+                showList.clear();
+                for (int i = 0; i < imageList.size(); i++) {
+                    showImageBean showImageBean = new showImageBean(imageList.get(i));
+                    showList.add(showImageBean);
+                }
                 int into[] = new int[3];
-                computeBoundsBackward(((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(into));
-                intent.putExtra("size", list.size());
+                computeBoundsBackward(layoutManager.findFirstVisibleItemPositions(into));
+                intent.putExtra("size", showList.size());
                 intent.putExtra("position", position);
                 intent.putParcelableArrayListExtra("imagePaths", showList);
                 startActivity(intent);
@@ -200,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intent, 1);
     }
 
+
     public void applyWritePermission() {
         String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= 23) {
@@ -215,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
             useCamera();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -251,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_toolbar_item, menu);
+        getMenuInflater().inflate(R.menu.activity_main_toolbar_menu, menu);
         return true;
     }
 
@@ -271,16 +258,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        if ((pathList.size() != 0) && (list.size() < pathList.size())) {
-            if (list.size() % 15 == 0) {
+        if ((pathList.size() != 0) && (imageList.size() < pathList.size())) {
+            if (imageList.size() % 15 == 0) {
                 System.gc();
             }
-            index = list.size() + 15;
-            start = list.size();
+            index = imageList.size() + 15;
+            start = imageList.size();
             end = start;
-            for (int i = list.size(); i < index; i++) {
-                list.add(pathList.get(i).getPath());
-                showList.add(new ShowImageBean(pathList.get(i).getPath()));
+            for (int i = imageList.size(); i < index; i++) {
+                imageList.add(pathList.get(i).getPath());
                 adapter.notifyItemInserted(end);
                 end++;
             }
@@ -292,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             getData.getWelfare("15", page)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<gson_welfare>() {
+                    .subscribe(new Observer<welfareGson>() {
                         private Disposable disposable;
 
                         @Override
@@ -301,32 +287,18 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onNext(gson_welfare value) {
-                            if (list.size() % 18 == 0) {
+                        public void onNext(welfareGson value) {
+                            if (imageList.size() % 18 == 0) {
                                 System.gc();
                             }
-                            results = value.getResults();
-                            start = list.size();
+                            resultList = value.getResults();
+                            start = imageList.size();
                             end = start;
-                            for (int i = 0; i < results.size(); i++) {
-                                imagePath = new ImagePath();
-                                if (error_1.equals(results.get(i).getUrl())) {
-                                    list.add("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
-                                    showList.add(new ShowImageBean("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg"));
-                                    imagePath.setPath("http://img.gank.io/anri.kumaki_23_10_2017_12_27_30_151.jpg");
-                                    imagePath.save();
-                                } else if (results.get(i).getUrl().equals(error_2)) {
-                                    list.add("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
-                                    showList.add(new ShowImageBean("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg"));
-                                    imagePath.setPath("http://ww2.sinaimg.cn/large/7a8aed7bgw1esbmanpn0tj20hr0qo0w8.jpg");
-                                    imagePath.save();
-                                } else if (results.get(i).getUrl().equals(error_3)) {
-                                } else {
-                                    list.add(results.get(i).getUrl());
-                                    showList.add(new ShowImageBean(results.get(i).getUrl()));
-                                    imagePath.setPath(results.get(i).getUrl());
-                                    imagePath.save();
-                                }
+                            for (int i = 0; i < resultList.size(); i++) {
+                                imagePath = new imagePathBean();
+                                imageList.add(resultList.get(i).getUrl());
+                                imagePath.setPath(resultList.get(i).getUrl());
+                                imagePath.save();
                                 adapter.notifyItemInserted(end);
                                 end++;
                                 imagePath = null;
@@ -335,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                                 springView.onFinishFreshAndLoad();
                             }
                         }
+
                         @Override
                         public void onError(Throwable e) {
                             disposable.dispose();
@@ -343,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
                         }
+
                         @Override
                         public void onComplete() {
                         }
@@ -380,6 +354,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 计算recyclerview的每个item的位置
+     */
     private void computeBoundsBackward(int firstCompletelyVisiblePos[]) {
         for (int i = firstCompletelyVisiblePos[0]; i < showList.size(); i++) {
             View itemView = layoutManager.findViewByPosition(i);
@@ -395,8 +372,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 移除list中加载错误的图片
+     */
     public void removeShowList(int position) {
-        showList.remove(position);
-        list.remove(position);
+        imageList.remove(position);
+        adapter.notifyDataSetChanged();
     }
 }

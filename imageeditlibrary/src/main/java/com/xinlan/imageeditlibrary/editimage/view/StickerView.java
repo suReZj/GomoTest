@@ -163,14 +163,6 @@ public class StickerView extends View {
 
                     }
                 }// end for each
-
-//                if (!ret && currentItem != null && currentStatus == STATUS_IDLE) {// 没有贴图被选择
-//                    currentItem.isDrawHelpTool = false;
-//                    currentItem = null;
-//                    invalidate();
-//                }
-
-
                 break;
 
 
@@ -187,20 +179,11 @@ public class StickerView extends View {
                     float dy = y - oldy;
                     if (currentItem != null) {
                         currentItem.updatePos(dx, dy);
-//                        if ((currentItem.dstRect.bottom < bottom) && (currentItem.dstRect.top > top) && (currentItem.dstRect.right < right) && (currentItem.dstRect.left > left)
-////                                &&(currentItem.deleteRect.bottom<bottom)&&(currentItem.deleteRect.top>top)&&(currentItem.deleteRect.right<right)&&(currentItem.deleteRect.left>left)
-////                                &&(currentItem.rotateRect.bottom<bottom)&&(currentItem.rotateRect.top>top)&&(currentItem.rotateRect.right<right)&&(currentItem.rotateRect.left>left)
-////                                &&(currentItem.helpBox.bottom<bottom)&&(currentItem.helpBox.top>top)&&(currentItem.helpBox.right<right)&&(currentItem.helpBox.left>left)
-//                                ) {
                             invalidate();
-//                        } else {
-//                            currentItem.updatePos(-dx, -dy);
-//                        }
                     }// end if
                     oldx = x;
                     oldy = y;
                 } else if (currentStatus == STATUS_ROTATE) {// 旋转 缩放图片操作
-                    // System.out.println("旋转");
                     float dx = x - oldx;
                     float dy = y - oldy;
                     if (currentItem != null) {
@@ -226,11 +209,6 @@ public class StickerView extends View {
                         y_3 = oldy - oldy1;
                         double first = Math.sqrt(x_3 * x_3 + y_3 * y_3);
                         currentItem.updateScale((float) (second / first));
-//                        if ((currentItem.dstRect.bottom < bottom) && (currentItem.dstRect.top > top) && (currentItem.dstRect.right < right) && (currentItem.dstRect.left > left) &&
-//                                (currentItem.deleteRect.bottom < bottom) && (currentItem.deleteRect.top > top) && (currentItem.deleteRect.right < right) && (currentItem.deleteRect.left > left) &&
-//                                (currentItem.rotateRect.bottom < bottom) && (currentItem.rotateRect.top > top) && (currentItem.rotateRect.right < right) && (currentItem.rotateRect.left > left) &&
-//                                (currentItem.helpBox.bottom < bottom) && (currentItem.helpBox.top > top) && (currentItem.helpBox.right < right) && (currentItem.helpBox.left > left)
-//                                ) {
                         if(Math.max(currentItem.dstRect.right-currentItem.dstRect.left,currentItem.dstRect.bottom-currentItem.dstRect.top)>Math.max((bottom-top),right-left)){
                             currentItem.updateScale((float) (first / second));
                             oldx = x_1;
@@ -244,11 +222,6 @@ public class StickerView extends View {
                             oldx1 = x_2;
                             oldy1 = y_2;
                         }
-
-//                        }else {
-//                            currentItem.updateScale((float) (first / second));
-//                        }
-
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }

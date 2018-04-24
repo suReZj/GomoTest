@@ -1,6 +1,6 @@
 package retrofit;
 
-import gson.gson_welfare;
+import gson.welfareGson;
 import io.reactivex.Observable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -11,5 +11,5 @@ import retrofit2.http.Path;
 
 public interface getData {
     @GET("福利/{number}/{page}")
-    Observable<gson_welfare> getWelfare(@Path("number") String number, @Path("page") Integer page);
+    Observable<welfareGson> getWelfare(@Path("number") String number, @Path("page") Integer page);
 }

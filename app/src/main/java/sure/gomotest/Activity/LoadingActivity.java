@@ -8,14 +8,8 @@ import android.view.WindowManager;
 
 import com.jaredrummler.android.widget.AnimatedSvgView;
 
-import org.litepal.crud.DataSupport;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import bean.ImagePath;
 import sure.gomotest.R;
-import util.SVG;
+import utils.SVGUtil;
 import yanzhikai.textpath.AsyncTextPathView;
 
 public class LoadingActivity extends AppCompatActivity {
@@ -33,7 +27,7 @@ public class LoadingActivity extends AppCompatActivity {
         /*set it to be full screen*/
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_loading);
+        setContentView(R.layout.loading_activity);
         initView();
         setListener();
     }
@@ -42,7 +36,7 @@ public class LoadingActivity extends AppCompatActivity {
         asyncTextPathView = (AsyncTextPathView) findViewById(R.id.firstAsyncTextPathView);
         svgView = (AnimatedSvgView) findViewById(R.id.animated_svg_view);
         sureTextPathView=(AsyncTextPathView)findViewById(R.id.secondAsyncTextPathView);
-        setSvg(SVG.values()[0]);
+        setSvg(SVGUtil.values()[0]);
     }
 
     public void setListener() {
@@ -58,7 +52,7 @@ public class LoadingActivity extends AppCompatActivity {
         });
     }
 
-    private void setSvg(SVG svg) {
+    private void setSvg(SVGUtil svg) {
         svgView.setGlyphStrings(svg.glyphs);
         svgView.setFillColors(svg.colors);
         svgView.setViewportSize(svg.width, svg.height);

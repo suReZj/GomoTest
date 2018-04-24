@@ -412,14 +412,8 @@ public class EditImageActivity extends BaseActivity {
                     byte[] bytes=baos.toByteArray();
                     Glide.with(getApplicationContext()).load(bytes).into(mainImage);
                 }
-
-//                Glide.with(getApplicationContext()).load(path).into(mainImage);
             }
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            } catch (ExecutionException e) {
-//                e.printStackTrace();
-//            }
+
         } else {
             if (newBit == null)
                 return;
@@ -467,7 +461,6 @@ public class EditImageActivity extends BaseActivity {
             }
 
         }
-        Log.e("digree", digree + "");
         return digree;
     }
 
@@ -646,7 +639,6 @@ public class EditImageActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-//        outState.putInt("mode",mode);
         super.onSaveInstanceState(outState);
     }
 
@@ -657,18 +649,14 @@ public class EditImageActivity extends BaseActivity {
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-//        mainImage.clear();
         switch (mode) {
             case MODE_STICKERS:
-//                mStickerFragment.applyStickers(EditImageActivity.this,mainBitmap);// 保存贴图
                 mStickerFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_FILTER:// 滤镜编辑状态
-//                mFilterListFragment.applyFilterImage();// 保存滤镜贴图
                 mFilterListFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_CROP:// 剪切图片保存
-//                mCropFragment.applyCropImage();
                 mCropFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_ROTATE:// 旋转图片保存
@@ -676,21 +664,13 @@ public class EditImageActivity extends BaseActivity {
                 mRotateFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_TEXT://文字贴图 图片保存
-//                mAddTextFragment.applyTextImage();
-//                mAddTextFragment=AddTextFragment.newInstance();
                 mTextStickerView.setVisibility(View.GONE);
                 mAddTextFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_PAINT://保存涂鸦
-//                mPaintFragment.savePaintImage(EditImageActivity.this);
-//                mPaintView.invalidate();
-//                mPaintView.generatorBit();
-//                mPaintView.setVisibility(View.GONE);
                 mPaintFragment.backToMain(EditImageActivity.this);
                 break;
             case MODE_BEAUTY://保存美颜后的图片
-//                mBeautyFragment.applyBeauty();
-
                 mBeautyFragment.backToMain(EditImageActivity.this);
                 break;
             default:

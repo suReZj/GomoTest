@@ -30,36 +30,32 @@ import org.litepal.crud.DataSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapter.album_recycle_adapter;
-import bean.AlbumBean;
-import bean.ShowImageBean;
-import bean.showPath;
+import adapter.AlbumAdapter;
+import bean.albumBean;
+import bean.showImageBean;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
 import sure.gomotest.R;
 
-import static util.Contants.albumPath;
 
 public class AlbumActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
-    private TextView textView;
-    private album_recycle_adapter adapter;
-    private String albumName;
+    private TextView textView;//用于展示相册名
+    private AlbumAdapter adapter;
+    private String albumName;//相册名
     private Intent intent;
-    private List<AlbumBean> list;
-    private ArrayList<showPath> urlList = new ArrayList<>();
-    private showPath showPath;
-    private String album;
-    private List<ShowImageBean> showList = new ArrayList<>();
+    private List<albumBean> list;//根据相册名从数据库中获取照片实例的list
+    private String album;//用于存放相册名
+    private List<showImageBean> showList = new ArrayList<>();//用于展示的图片list
     private RecyclerView.LayoutManager layoutManager;
-    private ShowImageBean showImageBean;
+    private showImageBean showImageBean;//展示的图片实例
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        setContentView(R.layout.activity_album);
+        setContentView(R.layout.album_activity);
         initView();
         setListener();
     }
@@ -69,7 +65,7 @@ public class AlbumActivity extends AppCompatActivity {
         albumName = intent.getStringExtra("name");
         album = albumName;
 
-        toolbar = (Toolbar) findViewById(R.id.activity_album_toolbar);
+        toolbar = (Toolbar) findViewById(R.id.album_activity_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -77,17 +73,17 @@ public class AlbumActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.activity_album_recyclerView);
-        textView = (TextView) findViewById(R.id.activity_album_textView);
+        recyclerView = (RecyclerView) findViewById(R.id.album_activity_rv);
+        textView = (TextView) findViewById(R.id.album_activity_tv);
 
-        list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+        list = DataSupport.where("albumName=?", albumName).find(albumBean.class);
 
         for (int i = 0; i < list.size(); i++) {
-            showImageBean = new ShowImageBean(list.get(i).getPath());
+            showImageBean = new showImageBean(list.get(i).getPath());
             showList.add(showImageBean);
         }
 
-        adapter = new album_recycle_adapter(list);
+        adapter = new AlbumAdapter(list);
         layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
@@ -118,10 +114,9 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     public void setListener() {
-        adapter.setOnItemClickLitener(new album_recycle_adapter.OnItemClickLitener() {
+        adapter.setOnItemClickLitener(new AlbumAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(final View view, final int position) {
-                albumPath = list.get(position).getPath();
                 Intent showItent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
                 showItent.putExtra("albumname", album);
                 showItent.putExtra("position", position);
@@ -139,7 +134,6 @@ public class AlbumActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_album_toolbar_item, menu);
         return true;
     }
 
@@ -165,21 +159,15 @@ public class AlbumActivity extends AppCompatActivity {
         int index = albumName.lastIndexOf("/");
         String dirPath = albumName.substring(index + 1, albumName.length());
         if (String.valueOf(textView.getText()).equals(dirPath)) {
-            list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-            urlList.clear();
-            for (int i = 0; i < list.size(); i++) {
-                showPath = new showPath();
-                showPath.setPath(list.get(i).getPath());
-                urlList.add(showPath);
-            }
-            adapter = new album_recycle_adapter(list);
+            list = DataSupport.where("albumName=?", albumName).find(albumBean.class);
+            adapter = new AlbumAdapter(list);
             layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(layoutManager);
             recyclerView.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             showList.clear();
             for (int i = 0; i < list.size(); i++) {
-                showImageBean = new ShowImageBean(list.get(i).getPath());
+                showImageBean = new showImageBean(list.get(i).getPath());
                 showList.add(showImageBean);
             }
             setListener();

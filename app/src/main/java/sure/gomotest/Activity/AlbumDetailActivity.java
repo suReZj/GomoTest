@@ -28,77 +28,74 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import adapter.album_fragment_adapter;
-import adapter.album_viewPager_adapter;
-import bean.AlbumBean;
-import bean.ShowImageBean;
-import bean.showPath;
+import adapter.AlbumFragmentAdapter;
+import adapter.PhotographAdapter;
+import bean.albumBean;
+import bean.showImageBean;
 import event.saveImageEvent;
 import event.showActivityEvent;
 import event.updateAlbumEvent;
-import fragment.showFragment;
+import fragment.ShowFragment;
 import sure.gomotest.R;
-import util.FileUtils;
+import utils.FileUtil;
 import widght.DepthPageTransformer;
 import widght.MyViewPager;
 import widght.SmoothImageView;
 
-import static util.Contants.albumPath;
 
 public class AlbumDetailActivity extends AppCompatActivity {
     private Toolbar toolbar;
-    private String path;
+    private String path;//图片编辑后的存放路径
     public MyViewPager viewPager;
-    private album_viewPager_adapter adapter;
-    private List<AlbumBean> list;
-    private String albumName;
-    private album_fragment_adapter fragmentAdapter;
-    private List<showFragment> fragmentList = new ArrayList<>();
-    private int firstIndex;
-    private FrameLayout layout;
-    private ArrayList<ShowImageBean> showList = new ArrayList<>();
-    private boolean isTransformOut = false;
-    private FrameLayout frameLayout;
+    private PhotographAdapter adapter;
+    private List<albumBean> list;//根据albumName在数据库查询改相册名下的所有照片的list
+    private String albumName;//相册名
+    private AlbumFragmentAdapter fragmentAdapter;
+    private List<ShowFragment> fragmentList = new ArrayList<>();//图片展示的fragment的list
+    private FrameLayout rootFLayout;//界面的根布局
+    private ArrayList<showImageBean> showList = new ArrayList<>();//用于展示的图片实例list
+    private boolean isTransformOut = false;//用于判断当前是否在执行退出动画
     private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         albumName = getIntent().getStringExtra("albumname");
-        setContentView(R.layout.activity_album_detail);
+        setContentView(R.layout.detail_activity);
         EventBus.getDefault().register(this);
-        frameLayout = (FrameLayout) findViewById(R.id.activity_detail_layout);
-        toolbar = (Toolbar) findViewById(R.id.activity_detail_toolbar);
+        rootFLayout = (FrameLayout) findViewById(R.id.detail_activity_fl);
+        toolbar = (Toolbar) findViewById(R.id.detail_activity_toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        viewPager = (MyViewPager) findViewById(R.id.activity_detail_viewPager);
+        viewPager = (MyViewPager) findViewById(R.id.detail_activity_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
         intent = getIntent();
         showList = intent.getParcelableArrayListExtra("imagePaths");
 
-        if (intent.getStringArrayListExtra("list") != null) {
-            AlbumBean albumBean = new AlbumBean();
+        if (intent.getStringArrayListExtra("list") != null) {//相机拍照后的展示
+            albumBean albumBean = new albumBean();
             albumBean.setPath(intent.getStringArrayListExtra("list").get(0));
             list = new ArrayList<>();
             list.add(albumBean);
-            adapter = new album_viewPager_adapter(list);
+            adapter = new PhotographAdapter(list);
             viewPager.setAdapter(adapter);
             viewPager.setCurrentItem(intent.getIntExtra("position", 0));
             changeBg(Color.BLACK);
-        } else {
-            list = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+        } else {//点击相册后的展示相册图片
+            list = DataSupport.where("albumName=?", albumName).find(albumBean.class);
             for (int i = 0; i < list.size(); i++) {
                 Bundle bundle = new Bundle();
                 bundle.putString("path", list.get(i).getPath());
                 bundle.putParcelable("imagePaths", showList.get(i));
-                showFragment fragment = showFragment.newInstance(bundle);
+                ShowFragment fragment = ShowFragment.newInstance(bundle);
                 fragmentList.add(fragment);
             }
-            fragmentAdapter = new album_fragment_adapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
+
+            fragmentAdapter = new AlbumFragmentAdapter(getSupportFragmentManager(), fragmentList, list, getApplicationContext());
             viewPager.setAdapter(fragmentAdapter);
             viewPager.setPageMargin((int) getResources().getDimensionPixelOffset(R.dimen.ui_5_dip));
             final int position = intent.getIntExtra("position", 0);
@@ -107,15 +104,12 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 @Override
                 public void onGlobalLayout() {
                     viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    showFragment fragment = fragmentList.get(position);
+                    ShowFragment fragment = fragmentList.get(position);
                     fragment.transformIn();
                 }
             });
         }
-        firstIndex = intent.getIntExtra("position", 0);
 
-
-        layout = (FrameLayout) findViewById(R.id.activity_detail_layout);
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -145,9 +139,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        albumPath = "";
         EventBus.getDefault().unregister(this);
-        DataSupport.deleteAll(showPath.class);
 //        MyApplication.getRefWatcher(this).watch(this);
     }
 
@@ -159,7 +151,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
             if (file.exists()) {
                 // 获取该图片的父路径名
                 String dirPath = new File(path).getParentFile().getAbsolutePath();
-                AlbumBean bean = new AlbumBean();
+                albumBean bean = new albumBean();
                 bean.setAlbumName(dirPath);
                 bean.setPath(path);
                 saveImageEvent event = new saveImageEvent(dirPath, path);
@@ -170,7 +162,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_detail_toolbar_item, menu);
+        getMenuInflater().inflate(R.menu.activity_detail_toolbar_menu, menu);
         return true;
     }
 
@@ -181,7 +173,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.detail_edit:
-                File outputFile = FileUtils.genEditFile();
+                File outputFile = FileUtil.genEditFile();
                 path = outputFile.getAbsolutePath();
                 if (getIntent().getStringArrayListExtra("list") != null) {
                     EditImageActivity.start(AlbumDetailActivity.this, adapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
@@ -215,7 +207,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
-        layout.setBackgroundColor(a + rgb);
+        rootFLayout.setBackgroundColor(a + rgb);
         toolbar.setAlpha(alpha * 510f / 255f);
     }
 
@@ -226,7 +218,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
         isTransformOut = true;
         int currentItem = viewPager.getCurrentItem();
         if (currentItem < list.size()) {
-            showFragment fragment = fragmentList.get(currentItem);
+            ShowFragment fragment = fragmentList.get(currentItem);
 
             fragment.changeBg(Color.TRANSPARENT);
             changeBg(Color.TRANSPARENT);
@@ -248,6 +240,6 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
 
     public void changeBg(int color) {
-        frameLayout.setBackgroundColor(color);
+        rootFLayout.setBackgroundColor(color);
     }
 }
