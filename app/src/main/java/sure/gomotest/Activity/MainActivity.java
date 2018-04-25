@@ -41,42 +41,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapter.ImageAdapter;
-import bean.imagePathBean;
-import bean.showImageBean;
-import event.showActivityEvent;
-import gson.resultGson;
-import gson.welfareGson;
+import bean.ImagePathBean;
+import bean.ShowImageBean;
+import event.ShowActivityEvent;
+import gson.ResultGson;
+import gson.WelfareGson;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit.getData;
+import retrofit.GetData;
 import retrofit2.Retrofit;
 import sure.gomotest.R;
 import widght.OnDoubleClickListener;
 import utils.RetrofitUtil;
 import widght.MyLayoutManager;
 
-
+/**
+ * Created by dell88 on 2018/3/7 0007.
+ * app首页
+ */
 
 public class MainActivity extends AppCompatActivity {
-    private File file;//拍照后图片存放的文件
-    private Toolbar toolbar;//toolbar
-    private RecyclerView recyclerView;//图片展示recyclerview
-    private ImageAdapter adapter;//图片展示adapter
-    private int page = 1;//当前图片加载页数
-    private ArrayList<String> imageList = new ArrayList<>();//首页展示图片URL的list
-    private SpringView springView;//上拉加载控件
+    private File photoFile;
+    private Toolbar mToolbar;
+    private RecyclerView recyclerView;
+    private ImageAdapter imageAdapter;
+    private int mPage = 1;
+    private ArrayList<String> imageList = new ArrayList<>();
+    private SpringView springView;
     private MyLayoutManager layoutManager;
-    private long backLastPressedTimestamp = 0;//用于判断双击退出程序
-    private List<resultGson> resultList;//retrofit请求后返回结果的list
-    private Retrofit retrofit ;//retrofit实例
-    private getData getData;//retrofit接口实例
-    private List<imagePathBean> pathList = new ArrayList<>();//数据库中存放的图片URL集合
-    private imagePathBean imagePath;//用于存储在数据库图片URL的实例
-    private ArrayList<showImageBean> showList = new ArrayList<>();//用于图片浏览时传递的list
-    private int start;
-    private int end;
+    private long backLastPressedTimestamp = 0;
+    private List<ResultGson> resultList;
+    private Retrofit mRetrofit ;
+    private GetData getData;
+    private List<ImagePathBean> pathList = new ArrayList<>();
+    private ImagePathBean imagePath;
+    private ArrayList<ShowImageBean> showList = new ArrayList<>();
+    private int startPos;
+    private int endPos;
     private int index = 0;
 
 
@@ -84,24 +87,33 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        retrofit= RetrofitUtil.getRetrofit(getResources().getString(R.string.url));
-        getData = retrofit.create(getData.class);
+        mRetrofit= RetrofitUtil.getRetrofit(getResources().getString(R.string.main_activity_url));
+        getData = mRetrofit.create(GetData.class);
         setContentView(R.layout.main_activity);
         initView();
         setListener();
     }
 
     private void initView() {
-        toolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.white));
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
+        mToolbar.setTitleTextColor(getResources().getColor(R.color.white));
+        setSupportActionBar(mToolbar);
         recyclerView = (RecyclerView) findViewById(R.id.main_activity_rv);
         layoutManager = new MyLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        layoutManager.setAutoMeasureEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
-        adapter = new ImageAdapter(imageList, MainActivity.this);
-        recyclerView.setAdapter(adapter);
-        pathList = DataSupport.findAll(imagePathBean.class);
-        setImage(page);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                layoutManager.invalidateSpanAssignments(); //防止第一行到顶部有空白区域
+            }
+        });
+        imageAdapter = new ImageAdapter(imageList, MainActivity.this);
+        recyclerView.setAdapter(imageAdapter);
+        pathList = DataSupport.findAll(ImagePathBean.class);
+        setImage(mPage);
         springView = (SpringView) findViewById(R.id.main_activity_sv);
         springView.setFooter(new DefaultFooter(MainActivity.this));
 
@@ -136,17 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLoadmore() {
-                setImage(++page);
+                setImage(++mPage);
             }
         });
 
-        adapter.setOnItemClickLitener(new ImageAdapter.OnItemClickLitener() {
+        imageAdapter.setOnItemClickLitener(new ImageAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(final View view, final int position) {
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
                 showList.clear();
                 for (int i = 0; i < imageList.size(); i++) {
-                    showImageBean showImageBean = new showImageBean(imageList.get(i));
+                    ShowImageBean showImageBean = new ShowImageBean(imageList.get(i));
                     showList.add(showImageBean);
                 }
                 int into[] = new int[3];
@@ -161,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemLongClick(View view, int position) {
             }
         });
-        toolbar.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
+        mToolbar.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
             @Override
             public void onDoubleClick() {
                 recyclerView.scrollToPosition(0);
@@ -174,11 +186,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void useCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+        photoFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/beauty/" + System.currentTimeMillis() + ".jpg");
-        file.getParentFile().mkdirs();
+        photoFile.getParentFile().mkdirs();
 
-        Uri uri = FileProvider.getUriForFile(this, "包名.fileprovider", file);
+        Uri uri = FileProvider.getUriForFile(this, "包名.fileprovider", photoFile);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -211,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
             useCamera();
         } else {
             // 没有获取 到权限，从新请求，或者关闭app
-            Toast.makeText(this, "需要存储权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.main_activity_toast_permission), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -221,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             //在手机相册中显示刚拍摄的图片
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri contentUri = Uri.fromFile(file);
+            Uri contentUri = Uri.fromFile(photoFile);
             String uri = contentUri.toString();
             int index = uri.indexOf("s");
             uri = uri.substring(index, uri.length());
@@ -263,22 +275,22 @@ public class MainActivity extends AppCompatActivity {
                 System.gc();
             }
             index = imageList.size() + 15;
-            start = imageList.size();
-            end = start;
+            startPos = imageList.size();
+            endPos = startPos;
             for (int i = imageList.size(); i < index; i++) {
-                imageList.add(pathList.get(i).getPath());
-                adapter.notifyItemInserted(end);
-                end++;
+                imageList.add(pathList.get(i).getImagePath());
+                imageAdapter.notifyItemInserted(endPos);
+                endPos++;
             }
             if (page != 1) {
                 springView.onFinishFreshAndLoad();
             }
         } else {
-            getData = retrofit.create(getData.class);
+            getData = mRetrofit.create(GetData.class);
             getData.getWelfare("15", page)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<welfareGson>() {
+                    .subscribe(new Observer<WelfareGson>() {
                         private Disposable disposable;
 
                         @Override
@@ -287,20 +299,20 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onNext(welfareGson value) {
-                            if (imageList.size() % 18 == 0) {
+                        public void onNext(WelfareGson value) {
+                            if (imageList.size() % 30 == 0) {
                                 System.gc();
                             }
                             resultList = value.getResults();
-                            start = imageList.size();
-                            end = start;
+                            startPos = imageList.size();
+                            endPos = startPos;
                             for (int i = 0; i < resultList.size(); i++) {
-                                imagePath = new imagePathBean();
+                                imagePath = new ImagePathBean();
                                 imageList.add(resultList.get(i).getUrl());
-                                imagePath.setPath(resultList.get(i).getUrl());
+                                imagePath.setImagePath(resultList.get(i).getUrl());
                                 imagePath.save();
-                                adapter.notifyItemInserted(end);
-                                end++;
+                                imageAdapter.notifyItemInserted(endPos);
+                                endPos++;
                                 imagePath = null;
                             }
                             if (page != 1) {
@@ -326,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        adapter.closeDisk();
+        imageAdapter.closeDisk();
         super.onDestroy();
         EventBus.getDefault().unregister(this);
 //        MyApplication.getRefWatcher(this).watch(this);
@@ -334,14 +346,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        adapter.fluchCache();
+        imageAdapter.fluchCache();
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
         if (System.currentTimeMillis() - backLastPressedTimestamp > 2 * 1000) {
-            Toast.makeText(MainActivity.this, R.string.press_back_again_to_exit, Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, R.string.main_activity_press_to_exit, Toast.LENGTH_SHORT).show();
             backLastPressedTimestamp = System.currentTimeMillis();
         } else {
             super.onBackPressed();
@@ -349,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refreshData(showActivityEvent messageEvent) {
+    public void refreshData(ShowActivityEvent messageEvent) {
 //        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 
@@ -377,6 +389,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void removeShowList(int position) {
         imageList.remove(position);
-        adapter.notifyDataSetChanged();
+        imageAdapter.notifyDataSetChanged();
     }
 }

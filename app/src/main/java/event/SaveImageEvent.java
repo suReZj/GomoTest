@@ -2,16 +2,16 @@ package event;
 
 /**
  * Created by zhangzijian on 2018/03/19.
+ * 用于图片编辑后产生新图片时刷新相册
  */
 
-//用于图片编辑后产生新图片时刷新相册
-public class saveImageEvent {
+public class SaveImageEvent {
     private String albumName;
-    private String path;
+    private String imagePath;
 
-    public saveImageEvent(String albumName, String path) {
+    public SaveImageEvent(String albumName, String path) {
         this.albumName = albumName;
-        this.path = path;
+        this.imagePath = path;
     }
 
     public String getAlbumName() {
@@ -23,10 +23,10 @@ public class saveImageEvent {
     }
 
     public String getPath() {
-        return path;
+        return imagePath;
     }
 
     public void setPath(String path) {
-        this.path = path;
+        this.imagePath = path;
     }
 }

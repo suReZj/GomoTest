@@ -13,10 +13,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 
 /**
+ * Created by zhangzijian on 2018/03/26.
  * 文件相关辅助类
- * 
- * @author panyi
- * 
  */
 public class FileUtil {
 	public static final String FOLDER_NAME = "GomoTest";

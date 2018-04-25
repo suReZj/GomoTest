@@ -27,7 +27,7 @@
             android:layout_gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="@string/selectAlbum"
+            android:text="@string/select_activity_tv_album"
             android:clickable="false"
             android:id="@+id/select_activity_textView"
             />

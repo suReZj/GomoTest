@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapter.ShowFragmentAdapter;
-import bean.showImageBean;
-import event.showActivityEvent;
+import bean.ShowImageBean;
+import event.ShowActivityEvent;
 import fragment.ShowFragment;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -49,28 +49,32 @@ import widght.DepthPageTransformer;
 import widght.MyViewPager;
 import widght.SmoothImageView;
 
+/**
+ * Created by zhangzijian on 2018/03/16.
+ * 图片浏览activity
+ */
 
 public class ShowActivity extends AppCompatActivity {
-    private Toolbar toolbar;
+    private Toolbar mToolbar;
     public MyViewPager viewPager;
-    final int downLoadImage = 0;//表示下载操作
-    final int editImage = 1;//表示编辑操作
-    private int position;//展示图片在list中的位置位置
+    private final int downLoadImage = 0;
+    private final int editImage = 1;
+    private int imagePosition;
     private FrameLayout frameLayout;
-    private List<ShowFragment> fragmentList = new ArrayList<>();//viewpager+fragment fragment的list集合
-    private ShowFragmentAdapter fragmentAdapter;//viewpager的adapter
-    private boolean isTransformOut = false;//判断退出动画
-    private ArrayList<showImageBean> showList = new ArrayList<>();//展示图片的list
+    private List<ShowFragment> fragmentList = new ArrayList<>();
+    private ShowFragmentAdapter fragmentAdapter;
+    private boolean isTransformOut = false;
+    private ArrayList<ShowImageBean> showList = new ArrayList<>();
 
     Handler handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    Toast.makeText(ShowActivity.this, "该图片已经存在", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowActivity.this, getResources().getString(R.string.select_activity_toast_exist), Toast.LENGTH_SHORT).show();
                     break;
                 case 2:
-                    Toast.makeText(ShowActivity.this, "下载成功", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShowActivity.this, getResources().getString(R.string.select_activity_toast_success), Toast.LENGTH_SHORT).show();
             }
             return false;
         }
@@ -80,9 +84,9 @@ public class ShowActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.show_activity);
-        toolbar = (Toolbar) findViewById(R.id.show_activity_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.show_activity_toolbar);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -91,7 +95,7 @@ public class ShowActivity extends AppCompatActivity {
 
         frameLayout = (FrameLayout) findViewById(R.id.show_activity_fl);
         Intent intent = getIntent();
-        position = intent.getIntExtra("position", 0);
+        imagePosition = intent.getIntExtra("position", 0);
 
         if (intent.getParcelableArrayListExtra("imagePaths") != null) {
             showList = intent.getParcelableArrayListExtra("imagePaths");
@@ -111,12 +115,12 @@ public class ShowActivity extends AppCompatActivity {
         viewPager.setOffscreenPageLimit(0);
         fragmentAdapter = new ShowFragmentAdapter(getSupportFragmentManager(), fragmentList, showList, getApplicationContext());
         viewPager.setAdapter(fragmentAdapter);
-        viewPager.setCurrentItem(position);
+        viewPager.setCurrentItem(imagePosition);
         viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                ShowFragment fragment = fragmentList.get(position);
+                ShowFragment fragment = fragmentList.get(imagePosition);
                 fragment.transformIn();
             }
         });
@@ -152,7 +156,6 @@ public class ShowActivity extends AppCompatActivity {
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/beauty/" + fileName + ".jpg");
         File outputFile = FileUtil.genEditFile();
-//        EditImageActivity.start(ShowActivity.this,url,outputFile.getAbsolutePath(),9);
         if (file.exists()) {
             if (type == 0) {
                 Message msg = handler.obtainMessage();
@@ -160,9 +163,7 @@ public class ShowActivity extends AppCompatActivity {
                 handler.sendMessage(msg);
                 return;
             } else {
-                EditImageActivity.start(ShowActivity.this, url, outputFile.getAbsolutePath(), 9);
-
-//                EditImageActivity.start(ShowActivity.this,savePath,outputFile.getAbsolutePath(),9);
+                EditImageActivity.start(ShowActivity.this, url, outputFile.getAbsolutePath(), 0);
             }
         } else {
             OkHttpClient client = new OkHttpClient();
@@ -224,7 +225,7 @@ public class ShowActivity extends AppCompatActivity {
             handler.sendMessage(msg);
         } else {
             File outputFile = FileUtil.genEditFile();
-            EditImageActivity.start(ShowActivity.this, savePath, outputFile.getAbsolutePath(), 9);
+            EditImageActivity.start(ShowActivity.this, savePath, outputFile.getAbsolutePath(), 0);
         }
     }
 
@@ -261,7 +262,7 @@ public class ShowActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        showActivityEvent event = new showActivityEvent(viewPager.getCurrentItem());
+        ShowActivityEvent event = new ShowActivityEvent(viewPager.getCurrentItem());
         EventBus.getDefault().post(event);
         transformOut();
     }
@@ -271,7 +272,7 @@ public class ShowActivity extends AppCompatActivity {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
         frameLayout.setBackgroundColor(a + rgb);
-        toolbar.setAlpha(alpha * 510f / 255f);
+        mToolbar.setAlpha(alpha * 510f / 255f);
     }
 
     public void transformOut() {

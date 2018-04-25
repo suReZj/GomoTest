@@ -12,43 +12,48 @@ import android.widget.RelativeLayout;
 
 import com.bumptech.glide.Glide;
 
-import bean.showImageBean;
+import bean.ShowImageBean;
 import sure.gomotest.Activity.AlbumDetailActivity;
 import sure.gomotest.Activity.ShowActivity;
 import sure.gomotest.R;
 import uk.co.senab.photoview.PhotoViewAttacher;
 import widght.SmoothImageView;
 
+/**
+ * Created by zhangzijian on 2018/03/20.
+ * 用于viewpager的fragment
+ */
+
 public class ShowFragment extends Fragment {
-    private SmoothImageView imageView;
-    private String path;
-    private Bundle arg;
+    private SmoothImageView mImageView;
+    private String imagePath;
+    private Bundle mBundle;
     private RelativeLayout rootView;
     private String showActivity = "Activity.ShowActivity";
     private String albumDetailActivity = "Activity.AlbumDetailActivity";
-    private showImageBean showBean;
+    private ShowImageBean showBean;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        arg = getArguments();
+        mBundle = getArguments();
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.show_fragment, null);
-        imageView = view.findViewById(R.id.fragment_show_photo);
-        rootView = view.findViewById(R.id.fragment_show_layout);
-        path = arg.getString("path");
-        showBean=arg.getParcelable("imagePaths");
+        mImageView = view.findViewById(R.id.show_fragment_iv);
+        rootView = view.findViewById(R.id.show_fragment_rl);
+        imagePath = mBundle.getString("path");
+        showBean=mBundle.getParcelable("imagePaths");
         if(showBean!=null){
-            imageView.setThumbRect(showBean.getBounds());
+            mImageView.setThumbRect(showBean.getBounds());
         }
 
-        Glide.with(container.getContext()).load(path).into(imageView);
+        Glide.with(container.getContext()).load(imagePath).into(mImageView);
 
-        imageView.setAlphaChangeListener(new SmoothImageView.OnAlphaChangeListener() {
+        mImageView.setAlphaChangeListener(new SmoothImageView.OnAlphaChangeListener() {
             @Override
             public void onAlphaChange(int alpha) {
                 if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
@@ -59,25 +64,25 @@ public class ShowFragment extends Fragment {
                 getColorWithAlpha(alpha / 255f, Color.BLACK);
             }
         });
-        imageView.setTransformOutListener(new SmoothImageView.OnTransformOutListener() {
+        mImageView.setTransformOutListener(new SmoothImageView.OnTransformOutListener() {
             @Override
             public void onTransformOut() {
-                if (imageView.checkMinScale()) {
+                if (mImageView.checkMinScale()) {
                     ((Activity) container.getContext()).onBackPressed();
                 }
             }
         });
-        imageView.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
+        mImageView.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
             @Override
             public void onScaleChange(float scaleFactor, float focusX, float focusY) {
                 if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
-                    if (imageView.getScale() <= 1.1) {
+                    if (mImageView.getScale() <= 1.1) {
                         ((ShowActivity) container.getContext()).viewPager.setScanScroll(true);
                     } else {
                         ((ShowActivity) container.getContext()).viewPager.setScanScroll(false);
                     }
                 } else if (((Activity) container.getContext()).getLocalClassName().equals(albumDetailActivity)) {
-                    if (imageView.getScale() <= 1.1) {
+                    if (mImageView.getScale() <= 1.1) {
                         ((AlbumDetailActivity) container.getContext()).viewPager.setScanScroll(true);
                     } else {
                         ((AlbumDetailActivity) container.getContext()).viewPager.setScanScroll(false);
@@ -107,11 +112,11 @@ public class ShowFragment extends Fragment {
     }
 
     public void transformOut(SmoothImageView.onTransformListener listener) {
-        imageView.transformOut(listener);
+        mImageView.transformOut(listener);
     }
 
     public void transformIn() {
-        imageView.transformIn(new SmoothImageView.onTransformListener() {
+        mImageView.transformIn(new SmoothImageView.onTransformListener() {
             @Override
             public void onTransformCompleted(SmoothImageView.Status status) {
                 if (((Activity) getContext()).getLocalClassName().equals(showActivity)) {

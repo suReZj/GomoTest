@@ -4,12 +4,12 @@
     >
     <item
         android:id="@+id/edit"
-        android:title="@string/edit"
-        android:icon="@drawable/ic_edit_white_24dp"
+        android:title="@string/menu_item_edit"
+        android:icon="@drawable/activity_detail_edit_btn_normal"
         app:showAsAction="always"/>
     <item
         android:id="@+id/download"
-        android:title="@string/downLoad"
-        android:icon="@drawable/ic_file_download_white_24dp"
+        android:title="@string/menu_item_download"
+        android:icon="@drawable/activity_show_download_btn_normal"
         app:showAsAction="always"/>
 </menu>

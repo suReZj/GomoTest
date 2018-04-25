@@ -31,25 +31,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapter.AlbumAdapter;
-import bean.albumBean;
-import bean.showImageBean;
-import event.showActivityEvent;
-import event.updateAlbumEvent;
+import bean.AlbumBean;
+import bean.ShowImageBean;
+import event.ShowActivityEvent;
+import event.UpdateAlbumEvent;
 import sure.gomotest.R;
 
+/**
+ * Created by dell88 on 2018/3/7 0007.
+ * 展示相册里的照片activity
+ */
 
 public class AlbumActivity extends AppCompatActivity {
-    private Toolbar toolbar;
-    private RecyclerView recyclerView;
-    private TextView textView;//用于展示相册名
-    private AlbumAdapter adapter;
-    private String albumName;//相册名
-    private Intent intent;
-    private List<albumBean> list;//根据相册名从数据库中获取照片实例的list
-    private String album;//用于存放相册名
-    private List<showImageBean> showList = new ArrayList<>();//用于展示的图片list
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
+    private TextView mTextView;
+    private AlbumAdapter albumAdapter;
+    private String albumName;
+    private Intent mIntent;
+    private List<AlbumBean> albumList;
+    private String intentAlbumName;
+    private List<ShowImageBean> showList = new ArrayList<>();
     private RecyclerView.LayoutManager layoutManager;
-    private showImageBean showImageBean;//展示的图片实例
+    private ShowImageBean showImageBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,36 +65,36 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     public void initView() {
-        intent = getIntent();
-        albumName = intent.getStringExtra("name");
-        album = albumName;
+        mIntent = getIntent();
+        albumName = mIntent.getStringExtra("name");
+        intentAlbumName = albumName;
 
-        toolbar = (Toolbar) findViewById(R.id.album_activity_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.album_activity_toolbar);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        recyclerView = (RecyclerView) findViewById(R.id.album_activity_rv);
-        textView = (TextView) findViewById(R.id.album_activity_tv);
+        mRecyclerView = (RecyclerView) findViewById(R.id.album_activity_rv);
+        mTextView = (TextView) findViewById(R.id.album_activity_tv);
 
-        list = DataSupport.where("albumName=?", albumName).find(albumBean.class);
+        albumList = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
 
-        for (int i = 0; i < list.size(); i++) {
-            showImageBean = new showImageBean(list.get(i).getPath());
+        for (int i = 0; i < albumList.size(); i++) {
+            showImageBean = new ShowImageBean(albumList.get(i).getPhotoPath());
             showList.add(showImageBean);
         }
 
-        adapter = new AlbumAdapter(list);
+        albumAdapter = new AlbumAdapter(albumList);
         layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setAdapter(albumAdapter);
 
         int position = albumName.lastIndexOf("/");
         albumName = albumName.substring(position + 1, albumName.length());
-        textView.setText(albumName);
+        mTextView.setText(albumName);
 
 
         Window window = this.getWindow();
@@ -114,11 +118,11 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     public void setListener() {
-        adapter.setOnItemClickLitener(new AlbumAdapter.OnItemClickLitener() {
+        albumAdapter.setOnItemClickLitener(new AlbumAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(final View view, final int position) {
                 Intent showItent = new Intent(AlbumActivity.this, AlbumDetailActivity.class);
-                showItent.putExtra("albumname", album);
+                showItent.putExtra("albumname", intentAlbumName);
                 showItent.putExtra("position", position);
                 int into[] = new int[3];
                 computeBoundsBackward(((StaggeredGridLayoutManager) layoutManager).findFirstVisibleItemPositions(into));
@@ -158,16 +162,16 @@ public class AlbumActivity extends AppCompatActivity {
     public void getData() {
         int index = albumName.lastIndexOf("/");
         String dirPath = albumName.substring(index + 1, albumName.length());
-        if (String.valueOf(textView.getText()).equals(dirPath)) {
-            list = DataSupport.where("albumName=?", albumName).find(albumBean.class);
-            adapter = new AlbumAdapter(list);
+        if (String.valueOf(mTextView.getText()).equals(dirPath)) {
+            albumList = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
+            albumAdapter = new AlbumAdapter(albumList);
             layoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.setAdapter(albumAdapter);
+            albumAdapter.notifyDataSetChanged();
             showList.clear();
-            for (int i = 0; i < list.size(); i++) {
-                showImageBean = new showImageBean(list.get(i).getPath());
+            for (int i = 0; i < albumList.size(); i++) {
+                showImageBean = new ShowImageBean(albumList.get(i).getPhotoPath());
                 showList.add(showImageBean);
             }
             setListener();
@@ -175,13 +179,13 @@ public class AlbumActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refreshData(updateAlbumEvent messageEvent) {
+    public void refreshData(UpdateAlbumEvent messageEvent) {
         albumName = messageEvent.getAlbumName();
         getData();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void changePosition(showActivityEvent messageEvent) {
+    public void changePosition(ShowActivityEvent messageEvent) {
 //        recyclerView.smoothScrollToPosition(messageEvent.getPosition());
     }
 

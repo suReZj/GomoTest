@@ -95,14 +95,7 @@ public class StickerFragment extends BaseEditFragment {
 
         //
         backToMenu = mainView.findViewById(R.id.back_to_main);
-//        typeList = (RecyclerView) mainView
-//                .findViewById(R.id.stickers_type_list);
-//        typeList.setHasFixedSize(true);
-//        LinearLayoutManager mLayoutManager = new LinearLayoutManager(activity);
-//        mLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-//        typeList.setLayoutManager(mLayoutManager);
-//        typeList.setAdapter(new StickerTypeAdapter(this));
-//        backToType = mainView.findViewById(R.id.back_to_type);// back按钮
+
 
         stickerList = (RecyclerView) mainView.findViewById(R.id.stickers_list);
         stickerList.setHasFixedSize(true);
@@ -118,12 +111,6 @@ public class StickerFragment extends BaseEditFragment {
 
 
 
-//        backToType.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {// 返回上一级列表
-//                flipper.showPrevious();
-//            }
-//        });
     }
 
     @Override
@@ -322,45 +309,4 @@ public class StickerFragment extends BaseEditFragment {
 //        mSaveTask.execute(activity.getMainBit());
         mSaveTask.execute(bitmap);
     }
-
-
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        Matrix touchMatrix = ((EditImageActivity)getContext()).mainImage.getImageViewMatrix();
-//        float[] data = new float[9];
-//        Bitmap resultBit = Bitmap.createBitmap(activity.getMainBit()).copy(
-//                Bitmap.Config.ARGB_8888, true);
-//        Canvas canvas = new Canvas(resultBit);
-//        touchMatrix.getValues(data);// 底部图片变化记录矩阵原始数据
-//        Matrix3 cal = new Matrix3(data);// 辅助矩阵计算类
-//        Matrix3 inverseMatrix = cal.inverseMatrix();// 计算逆矩阵
-//        Matrix m = new Matrix();
-//        m.setValues(inverseMatrix.getValues());
-//        LinkedHashMap<Integer, StickerItem> addItems = mStickerView.getBank();
-//        for (Integer id : addItems.keySet()) {
-//            StickerItem item = addItems.get(id);
-//            item.matrix.postConcat(m);// 乘以底部图片变化矩阵
-//            canvas.drawBitmap(item.bitmap, item.matrix, null);
-//        }// end for
-//        outState.putParcelable("bitmap",resultBit);
-//        super.onSaveInstanceState(outState);
-//    }
-//
-//    @Override
-//    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-//        super.onViewStateRestored(savedInstanceState);
-////        backToMain(getContext());
-//        Log.e("onViewStateRestored","onViewStateRestored");
-//    }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        Log.e("TAG", "onConfigurationChanged");
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            backToMain(getContext());
-//        } else {
-//            backToMain(getContext());
-//        }
-//        super.onConfigurationChanged(newConfig);
-//    }
 }// end class

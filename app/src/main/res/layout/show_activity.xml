@@ -18,7 +18,7 @@
             android:id="@+id/show_activity_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            app:navigationIcon="@drawable/activity_detail_back_btn_normal"
             app:titleTextColor="@color/white"
             android:background="#73000000"
             android:fitsSystemWindows="true"/>

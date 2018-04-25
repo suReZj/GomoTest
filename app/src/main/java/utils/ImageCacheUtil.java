@@ -23,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class ImageCacheUtil {
     private Context mContext;
-    private LruCache<String, Bitmap> mCache;//LruCache缓存对象
+    private LruCache<String, Bitmap> mCache;
 
 
     /**

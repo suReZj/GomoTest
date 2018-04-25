@@ -27,50 +27,51 @@ import utils.ImageCacheUtil;
 
 /**
  * Created by dell88 on 2018/3/6 0006.
+ * 用于首页展示图片recyclerview的adapter
  */
 
 public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
-    private List<String> list;//图片路径list
-    private Context context;
-    private ImageCacheUtil imageCache;//图片缓存
-    private OkHttpClient client = new OkHttpClient();
+    private List<String> mList;
+    private Context mContext;
+    private ImageCacheUtil mImageCache;
+    private OkHttpClient mClient = new OkHttpClient();
 
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private CardView cardView;
-        public ImageView imageView;
+        private CardView mCardView;
+        public ImageView mImageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.item_image);
-            cardView = itemView.findViewById(R.id.item_cardView);
+            mImageView = itemView.findViewById(R.id.item_image);
+            mCardView = itemView.findViewById(R.id.item_cardView);
             int width = ((Activity) itemView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
-            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            ViewGroup.LayoutParams params = mImageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
             params.width = (width - 6) / 3;
-            imageView.setLayoutParams(params);
+            mImageView.setLayoutParams(params);
         }
     }
 
     public ImageAdapter(List<String> list, Context context) {
-        this.list = list;
-        this.imageCache = new ImageCacheUtil(context);
+        this.mList = list;
+        this.mImageCache = new ImageCacheUtil(context);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (context == null) {
-            context = parent.getContext();
+        if (mContext == null) {
+            mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(context).inflate(R.layout.image_recycle_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.image_recycle_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
         return holder;
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mList.size();
     }
 
 
@@ -87,41 +88,41 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     }
 
     public void closeDisk() {
-        this.imageCache.closeDiskLruCache();
+        this.mImageCache.closeDiskLruCache();
     }
 
     public void fluchCache() {
-        this.imageCache.fluchCache();
+        this.mImageCache.fluchCache();
     }
 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.imageView.setImageResource(R.mipmap.loadimage);
-        Bitmap bitmap = imageCache.getBitmapFromCache(list.get(position));
+        holder.mImageView.setImageResource(R.mipmap.loadimage);
+        Bitmap bitmap = mImageCache.getBitmapFromCache(mList.get(position));
         double scale = 0;
         if (bitmap != null) {
             scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
-            ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+            ViewGroup.LayoutParams params = holder.mImageView.getLayoutParams();
             params.height = (int) (params.width * scale);
-            holder.imageView.setLayoutParams(params);
-            holder.imageView.setImageBitmap(bitmap);
+            holder.mImageView.setLayoutParams(params);
+            holder.mImageView.setImageBitmap(bitmap);
         } else {
-            bitmap = imageCache.getBitmapFromDisk(list.get(position));
+            bitmap = mImageCache.getBitmapFromDisk(mList.get(position));
             if (bitmap != null) {
-                imageCache.addBitmapToCache(list.get(position), bitmap);
+                mImageCache.addBitmapToCache(mList.get(position), bitmap);
                 scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
-                ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+                ViewGroup.LayoutParams params = holder.mImageView.getLayoutParams();
                 params.height = (int) (params.width * scale);
-                holder.imageView.setLayoutParams(params);
-                holder.imageView.setImageBitmap(bitmap);
+                holder.mImageView.setLayoutParams(params);
+                holder.mImageView.setImageBitmap(bitmap);
             } else {
-                getImageBitmap(list.get(position), holder, position);
+                getImageBitmap(mList.get(position), holder, position);
             }
         }
 
         if (mOnItemClickLitener != null) {
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mOnItemClickLitener.onItemClick(holder.itemView, position);
@@ -136,15 +137,15 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 .get()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(new okhttp3.Callback() {
+        mClient.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                ((Activity) context).runOnUiThread(new Runnable() {
+                ((Activity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        list.remove(position);
+                        mList.remove(position);
                         notifyItemRemoved(position);
-                        ((MainActivity)context).removeShowList(position);
+                        ((MainActivity)mContext).removeShowList(position);
                     }
                 });
             }
@@ -184,28 +185,28 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                 }
 
                 if (bitmap == null) {
-                    list.remove(position);
-                    ((Activity) context).runOnUiThread(new Runnable() {
+                    mList.remove(position);
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             notifyItemRemoved(position);
-                            ((MainActivity)context).removeShowList(position);
+                            ((MainActivity)mContext).removeShowList(position);
                         }
                     });
                 } else {
-                    imageCache.addToDiskLruCache(url, bitmap);
-                    imageCache.addBitmapToCache(url, bitmap);
-                    ((Activity) context).runOnUiThread(new Runnable() {
+                    mImageCache.addToDiskLruCache(url, bitmap);
+                    mImageCache.addBitmapToCache(url, bitmap);
+                    ((Activity) mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Bitmap bitmap = imageCache.getBitmapFromCache(url);
+                            Bitmap bitmap = mImageCache.getBitmapFromCache(url);
                             if (bitmap != null) {
                                 double scale = (double) (bitmap.getHeight()) / (double) (bitmap.getWidth());
-                                ViewGroup.LayoutParams params = holder.imageView.getLayoutParams();
+                                ViewGroup.LayoutParams params = holder.mImageView.getLayoutParams();
                                 params.height = (int) (params.width * scale);
-                                holder.imageView.setLayoutParams(params);
+                                holder.mImageView.setLayoutParams(params);
                             }
-                            holder.imageView.setImageBitmap(bitmap);
+                            holder.mImageView.setImageBitmap(bitmap);
                         }
                     });
                     bitmap = null;

@@ -32,16 +32,16 @@ import java.util.Map;
 public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
 
     public static String TAG = "MyCrash";
-    // 系统默认的UncaughtException处理类
+    /** 系统默认的UncaughtException处理类 */
     private Thread.UncaughtExceptionHandler mDefaultHandler;
 
     private static CrashHandlerUtil instance = new CrashHandlerUtil();
     private Context mContext;
 
-    // 用来存储设备信息和异常信息
+    /** 用来存储设备信息和异常信息 */
     private Map<String, String> infos = new HashMap<String, String>();
 
-    // 用于格式化日期,作为日志文件名的一部分
+    /** 用于格式化日期,作为日志文件名的一部分 */
     private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     /** 保证只有一个CrashHandler实例 */

@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by dell88 on 2018/3/7 0007.
  */
 
-public class resultGson {
+public class ResultGson {
     @SerializedName("_id")
     @Expose
     private String _id;

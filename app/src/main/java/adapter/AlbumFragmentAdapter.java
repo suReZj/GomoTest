@@ -7,35 +7,40 @@ import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.List;
 
-import bean.albumBean;
+import bean.AlbumBean;
 import fragment.ShowFragment;
 
-public class AlbumFragmentAdapter extends FragmentPagerAdapter {
-    private FragmentManager mfragmentManager;
-    private List<ShowFragment> mlist;
-    private List<albumBean> albumList;
-    private Context context;
+/**
+ * Created by zhangzijian on 2018/03/12.
+ * 用于相册页照片预览的viewpager的fragmentAdapter
+ */
 
-    public AlbumFragmentAdapter(FragmentManager fm, List<ShowFragment> list, List<albumBean> pathList, Context context) {
+public class AlbumFragmentAdapter extends FragmentPagerAdapter {
+    private FragmentManager mFragmentManager;
+    private List<ShowFragment> mFragmentList;
+    private List<AlbumBean> mAlbumList;
+    private Context mContext;
+
+    public AlbumFragmentAdapter(FragmentManager fm, List<ShowFragment> list, List<AlbumBean> pathList, Context context) {
         super(fm);
-        this.mfragmentManager=fm;
-        this.mlist=list;
-        this.albumList=pathList;
-        this.context=context;
+        this.mFragmentManager=fm;
+        this.mFragmentList=list;
+        this.mAlbumList=pathList;
+        this.mContext=context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        ShowFragment showFragment=mlist.get(position);
+        ShowFragment showFragment=mFragmentList.get(position);
         return showFragment;
     }
 
     @Override
     public int getCount() {
-        return mlist.size();
+        return mFragmentList.size();
     }
 
     public String getUrl(int position){
-        return albumList.get(position).getPath();
+        return mAlbumList.get(position).getPhotoPath();
     }
 }

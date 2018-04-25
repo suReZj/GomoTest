@@ -8,19 +8,24 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import bean.albumBean;
+import bean.AlbumBean;
 import uk.co.senab.photoview.PhotoView;
 
-public class PhotographAdapter extends PagerAdapter {
-    private List<albumBean> list;
+/**
+ * Created by dell88 on 2018/3/6 0006.
+ * 用于拍照返回的图片viewpager的adapter
+ */
 
-    public PhotographAdapter(List<albumBean> list) {
-        this.list = list;
+public class PhotographAdapter extends PagerAdapter {
+    private List<AlbumBean> mData;
+
+    public PhotographAdapter(List<AlbumBean> list) {
+        this.mData = list;
     }
 
     @Override
     public int getCount() {
-        return list.size();
+        return mData.size();
     }
 
     @Override
@@ -31,7 +36,7 @@ public class PhotographAdapter extends PagerAdapter {
     @Override
     public View instantiateItem(ViewGroup container, int position) {
         PhotoView photoView = new PhotoView(container.getContext());
-        Glide.with(container.getContext()).load(list.get(position).getPath()).into(photoView);
+        Glide.with(container.getContext()).load(mData.get(position).getPhotoPath()).into(photoView);
 
         container.addView(photoView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
@@ -44,7 +49,7 @@ public class PhotographAdapter extends PagerAdapter {
     }
 
     public String getUrl(int position){
-        return list.get(position).getPath();
+        return mData.get(position).getPhotoPath();
     }
 
     @Override

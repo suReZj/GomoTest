@@ -32,22 +32,27 @@ import java.util.HashMap;
 import java.util.List;
 
 import adapter.SelectAdapter;
-import bean.albumBean;
-import bean.mediaBean;
-import event.saveImageEvent;
-import event.updateAlbumEvent;
+import bean.AlbumBean;
+import bean.MediaBean;
+import event.SaveImageEvent;
+import event.UpdateAlbumEvent;
 import sure.gomotest.R;
 import utils.MyDecorationUtil;
 
+/**
+ * Created by zhangzijian on 2018/03/16.
+ * 相册选择页activity
+ */
+
 public class SelectActivity extends AppCompatActivity {
-    private Toolbar toolbar;
+    private Toolbar mToolbar;
     private RecyclerView recyclerView;
-    private SelectAdapter adapter = new SelectAdapter();
-    private HashMap<String, List<mediaBean>> allPhotosTemp;//string 为父路径 List<mediaBean>为父路径下的图片实例list
+    private SelectAdapter selectAdapter = new SelectAdapter();
+    private HashMap<String, List<MediaBean>> allPhotosTemp;
     private Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-    private List<String> albumName;//用于存放不同相册的名字
-    private boolean flag = false;
-    private updateAlbumEvent event = new updateAlbumEvent();//用于更新相册的event
+    private List<String> albumName;
+    private boolean mFlag = false;
+    private UpdateAlbumEvent updateEvent = new UpdateAlbumEvent();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +65,16 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     public void initView() {
-        toolbar = (Toolbar) findViewById(R.id.select_activity_toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.select_activity_toolbar);
+        mToolbar.setTitle("");
+        setSupportActionBar(mToolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         recyclerView = (RecyclerView) findViewById(R.id.select_activity_rv);
-        recyclerView.addItemDecoration(new MyDecorationUtil(SelectActivity.this, MyDecorationUtil.VERTICAL_LIST, R.drawable.recyclerview_divider));
+        recyclerView.addItemDecoration(new MyDecorationUtil(SelectActivity.this, MyDecorationUtil.VERTICAL_LIST, R.drawable.activity_recyclerview_divider));
 
         Window window = this.getWindow();
         //添加Flag把状态栏设为可绘制模式
@@ -92,7 +97,7 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     public void setListener() {
-        adapter.setOnItemClickLitener(new SelectAdapter.OnItemClickLitener() {
+        selectAdapter.setOnItemClickLitener(new SelectAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(View view, int position) {
                 Intent intent = new Intent(SelectActivity.this, AlbumActivity.class);
@@ -124,7 +129,7 @@ public class SelectActivity extends AppCompatActivity {
     }
 
     public void getData() {
-        final List<albumBean> list = new ArrayList<>();//用于将相册中的每张图片路径存放到数据库中
+        final List<AlbumBean> list = new ArrayList<>();//用于将相册中的每张图片路径存放到数据库中
         allPhotosTemp = new HashMap<>();
         albumName = new ArrayList<>();
         new Thread(new Runnable() {
@@ -149,23 +154,22 @@ public class SelectActivity extends AppCompatActivity {
                         String displayName = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME));
                         // 获取该图片的父路径名
                         String dirPath = new File(path).getParentFile().getAbsolutePath();
-                        //存储对应关系
 
-                        albumBean bean = new albumBean();
+                        AlbumBean bean = new AlbumBean();
                         if (allPhotosTemp.containsKey(dirPath)) {
-                            List<mediaBean> data = allPhotosTemp.get(dirPath);
-                            data.add(new mediaBean(path, size, displayName));
+                            List<MediaBean> data = allPhotosTemp.get(dirPath);
+                            data.add(new MediaBean(path, size, displayName));
                             bean.setAlbumName(dirPath);
-                            bean.setPath(path);
+                            bean.setPhotoPath(path);
                             list.add(bean);
                             continue;
                         } else {
                             albumName.add(dirPath);
-                            List<mediaBean> data = new ArrayList<>();
-                            data.add(new mediaBean(path, size, displayName));
+                            List<MediaBean> data = new ArrayList<>();
+                            data.add(new MediaBean(path, size, displayName));
                             allPhotosTemp.put(dirPath, data);
                             bean.setAlbumName(dirPath);
-                            bean.setPath(path);
+                            bean.setPhotoPath(path);
                             list.add(bean);
                         }
                     }
@@ -175,17 +179,17 @@ public class SelectActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        adapter = new SelectAdapter(allPhotosTemp, albumName);
-                        recyclerView.setAdapter(adapter);
+                        selectAdapter = new SelectAdapter(allPhotosTemp, albumName);
+                        recyclerView.setAdapter(selectAdapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(SelectActivity.this));
                         setListener();
-                        DataSupport.deleteAll(albumBean.class);
+                        DataSupport.deleteAll(AlbumBean.class);
                         DataSupport.saveAllAsync(list).listen(new SaveCallback() {
                             @Override
                             public void onFinish(boolean success) {
-                                if (flag) {
-                                    EventBus.getDefault().post(event);
-                                    flag = false;
+                                if (mFlag) {
+                                    EventBus.getDefault().post(updateEvent);
+                                    mFlag = false;
                                 }
                             }
                         });
@@ -205,11 +209,11 @@ public class SelectActivity extends AppCompatActivity {
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refreshData(saveImageEvent messageEvent) {
+    public void refreshData(SaveImageEvent messageEvent) {
         String path = messageEvent.getPath();
         String dirPath = new File(path).getParentFile().getAbsolutePath();
-        event.setAlbumName(dirPath);
+        updateEvent.setAlbumName(dirPath);
         getData();
-        flag = true;
+        mFlag = true;
     }
 }

@@ -10,7 +10,7 @@ import android.view.View;
 
 public class OnDoubleClickListener implements View.OnTouchListener {
     private final String TAG = this.getClass().getSimpleName();
-    private int count = 0;
+    private int mCount = 0;
     private long firClick = 0;
     private long secClick = 0;
     /**
@@ -31,10 +31,10 @@ public class OnDoubleClickListener implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
-            count++;
-            if (1 == count) {
+            mCount++;
+            if (1 == mCount) {
                 firClick = System.currentTimeMillis();
-            } else if (2 == count) {
+            } else if (2 == mCount) {
                 secClick = System.currentTimeMillis();
                 if (secClick - firClick < interval) {
                     if (mCallback != null) {
@@ -42,11 +42,11 @@ public class OnDoubleClickListener implements View.OnTouchListener {
                     } else {
                         Log.e(TAG, "请在构造方法中传入一个双击回调");
                     }
-                    count = 0;
+                    mCount = 0;
                     firClick = 0;
                 } else {
                     firClick = secClick;
-                    count = 1;
+                    mCount = 1;
                 }
                 secClick = 0;
             }

@@ -23,6 +23,9 @@ import com.previewlibrary.view.ImageUtils;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
+/**
+ * Created by zhangzijian on 2018/03/13.
+ */
 
 public class SmoothImageView extends PhotoView {
 

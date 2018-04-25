@@ -12,6 +12,12 @@ import sure.gomotest.R;
 import utils.SVGUtil;
 import yanzhikai.textpath.AsyncTextPathView;
 
+/**
+ * Created by dell88 on 2018/3/7 0007.
+ * app打开时的加载动画
+ */
+
+
 public class LoadingActivity extends AppCompatActivity {
     private AsyncTextPathView asyncTextPathView;
     private AsyncTextPathView sureTextPathView;

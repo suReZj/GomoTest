@@ -4,13 +4,13 @@
     >
     <item
         android:id="@+id/album"
-        android:title="@string/Album"
-        android:icon="@drawable/ic_image_white_24dp"
+        android:title="@string/menu_item_album"
+        android:icon="@drawable/activity_main_album_btn_normal"
         app:showAsAction="always"/>
     <item
         android:id="@+id/photograph"
-        android:title="@string/Photograph"
-        android:icon="@drawable/ic_camera_white_24dp"
+        android:title="@string/menu_item_photograph"
+        android:icon="@drawable/activity_main_camera_btn_normal"
         app:showAsAction="always"
         />
 

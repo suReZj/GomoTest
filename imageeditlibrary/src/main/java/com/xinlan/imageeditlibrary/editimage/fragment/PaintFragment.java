@@ -168,17 +168,6 @@ public class PaintFragment extends BaseEditFragment implements View.OnClickListe
             activity.undoLayout.setVisibility(View.GONE);
         }
 
-
-
-
-
-//        FrameLayout.LayoutParams textParams = new FrameLayout.LayoutParams(activity.mPaintView.getLayoutParams());
-
-//        FrameLayout.LayoutParams params=new FrameLayout.LayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-//                ViewGroup.LayoutParams.FILL_PARENT));
-//        params.width = dip2px(getContext(),textParams.height);
-//        params.height = dip2px(getContext(),textParams.width);
-//        activity.mPaintView.setLayoutParams(params);
     }
 
     @Override

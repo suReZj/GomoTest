@@ -3,6 +3,11 @@ package widght;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+/**
+ * Created by zhangzijian on 2018/03/19.
+ * viewpager切换动画
+ */
+
 public class DepthPageTransformer implements ViewPager.PageTransformer {
     private static final float MIN_SCALE = 0.75f;
 

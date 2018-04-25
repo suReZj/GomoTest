@@ -5,6 +5,6 @@
     <item
         android:id="@+id/detail_edit"
         android:title="@string/edit"
-        android:icon="@drawable/ic_edit_white_24dp"
+        android:icon="@drawable/activity_detail_edit_btn_normal"
         app:showAsAction="always"/>
 </menu>

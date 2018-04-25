@@ -1,18 +1,19 @@
 <resources>
     <string name="my_app_name">GomoTest</string>
-    <string name="Album">相册</string>
-    <string name="Photograph">拍照</string>
-    <string name="selectAlbum">选择相册</string>
-    <string name="cancel">取消</string>
-    <string name="downLoad">下载</string>
-    <string name="edit">编辑</string>
-    <string name="like">喜欢</string>
-    <string name="beautyAlbum">美女相册</string>
-    <string name="sure">Sure</string>
-    <string name="press_back_again_to_exit">再按一次退出</string>
-    <string name="url">http://gank.io/api/data/</string>
-    <string name="head">(</string>
-    <string name="foot">)</string>
+    <string name="menu_item_album">相册</string>
+    <string name="menu_item_photograph">拍照</string>
+    <string name="select_activity_tv_album">选择相册</string>
+    <string name="menu_item_download">下载</string>
+    <string name="menu_item_edit">编辑</string>
+    <string name="loading_activity_AsyncTextPathView_beautyAlbum">美女相册</string>
+    <string name="loading_activity_AsyncTextPathView_sure">Sure</string>
+    <string name="main_activity_press_to_exit">再按一次退出</string>
+    <string name="main_activity_url">http://gank.io/api/data/</string>
+    <string name="select_adapter_head_brackets">(</string>
+    <string name="select_adapter_foot_brackets">)</string>
+    <string name="select_activity_toast_exist">该图片已经存在</string>
+    <string name="select_activity_toast_success">下载成功</string>
+    <string name="main_activity_toast_permission">需要存储权限</string>
 
     <color name="google_red">#EA4335</color>
     <color name="google_yellow">#FBBC05</color>

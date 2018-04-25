@@ -12,52 +12,53 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-import bean.albumBean;
+import bean.AlbumBean;
 import sure.gomotest.R;
 
 /**
  * Created by zhangzijian on 2018/03/12.
+ * 用于相册页recyclerview的adapter
  */
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
-    private Context context;
-    private List<albumBean> list;
+    private Context mContext;
+    private List<AlbumBean> mData;
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView;
+        private ImageView mImageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            imageView = itemView.findViewById(R.id.item_album_image);
-            int width = ((Activity) imageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
-            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            mImageView = itemView.findViewById(R.id.item_album_image);
+            int width = ((Activity) mImageView.getContext()).getWindowManager().getDefaultDisplay().getWidth();
+            ViewGroup.LayoutParams params = mImageView.getLayoutParams();
             //设置图片的相对于屏幕的宽高比
-            params.width = (width-6) / 3;
+            params.width = (width - 6) / 3;
             params.height = width / 3;
-            imageView.setLayoutParams(params);
+            mImageView.setLayoutParams(params);
         }
     }
 
-    public AlbumAdapter(List<albumBean> list) {
-        this.list = list;
+    public AlbumAdapter(List<AlbumBean> list) {
+        this.mData = list;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (context == null) {
-            context = parent.getContext();
+        if (mContext == null) {
+            mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(context).inflate(R.layout.album_recycle_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.album_recycle_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
         return holder;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-        holder.imageView.setImageResource(R.mipmap.loadimage);
-        Glide.with(context).load(list.get(position).getPath()).into(holder.imageView);
+        holder.mImageView.setImageResource(R.mipmap.loadimage);
+        Glide.with(mContext).load(mData.get(position).getPhotoPath()).into(holder.mImageView);
         if (mOnItemClickLitener != null) {
-            holder.imageView.setOnClickListener(new View.OnClickListener() {
+            holder.mImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mOnItemClickLitener.onItemClick(holder.itemView, position);
@@ -68,7 +69,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mData.size();
     }
 
     public interface OnItemClickLitener {
