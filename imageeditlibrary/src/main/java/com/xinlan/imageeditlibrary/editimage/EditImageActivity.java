@@ -217,7 +217,7 @@ public class EditImageActivity extends BaseActivity {
         });
 
         mRedoUndoController = new RedoUndoController(this, findViewById(R.id.redo_uodo_panel));
-        undoLayout=findViewById(R.id.redo_uodo_panel);
+        undoLayout = findViewById(R.id.redo_uodo_panel);
     }
 
     /**
@@ -407,9 +407,9 @@ public class EditImageActivity extends BaseActivity {
                 mainBitmap = newBit;
                 mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                if(!mainBitmap.isRecycled()){
+                if (!mainBitmap.isRecycled()) {
                     mainBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    byte[] bytes=baos.toByteArray();
+                    byte[] bytes = baos.toByteArray();
                     Glide.with(getApplicationContext()).load(bytes).into(mainImage);
                 }
             }
@@ -475,7 +475,7 @@ public class EditImageActivity extends BaseActivity {
             path = params[0];
             Bitmap bitmap = null;
             try {
-                bitmap=Glide.with(getApplicationContext()).load(filePath).asBitmap().fitCenter().into(imageWidth, imageHeight).get();
+                bitmap = Glide.with(getApplicationContext()).load(filePath).asBitmap().fitCenter().into(imageWidth, imageHeight).get();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

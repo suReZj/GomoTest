@@ -37,7 +37,6 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.os.Environment;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -323,54 +322,50 @@ public class BitmapUtils {
     /**
      * Resize a bitmap object to fit the passed width and height
      *
-     * @param input
-     *           The bitmap to be resized
-     * @param destWidth
-     *           Desired maximum width of the result bitmap
-     * @param destHeight
-     *           Desired maximum height of the result bitmap
+     * @param input      The bitmap to be resized
+     * @param destWidth  Desired maximum width of the result bitmap
+     * @param destHeight Desired maximum height of the result bitmap
      * @return A new resized bitmap
-     * @throws OutOfMemoryError
-     *            if the operation exceeds the available vm memory
+     * @throws OutOfMemoryError if the operation exceeds the available vm memory
      */
-    public static Bitmap resizeBitmap( final Bitmap input, int destWidth, int destHeight, int rotation ) throws OutOfMemoryError {
+    public static Bitmap resizeBitmap(final Bitmap input, int destWidth, int destHeight, int rotation) throws OutOfMemoryError {
 
         int dstWidth = destWidth;
         int dstHeight = destHeight;
         final int srcWidth = input.getWidth();
         final int srcHeight = input.getHeight();
 
-        if ( rotation == 90 || rotation == 270 ) {
+        if (rotation == 90 || rotation == 270) {
             dstWidth = destHeight;
             dstHeight = destWidth;
         }
 
         boolean needsResize = false;
         float p;
-        if ( ( srcWidth > dstWidth ) || ( srcHeight > dstHeight ) ) {
+        if ((srcWidth > dstWidth) || (srcHeight > dstHeight)) {
             needsResize = true;
-            if ( ( srcWidth > srcHeight ) && ( srcWidth > dstWidth ) ) {
+            if ((srcWidth > srcHeight) && (srcWidth > dstWidth)) {
                 p = (float) dstWidth / (float) srcWidth;
-                dstHeight = (int) ( srcHeight * p );
+                dstHeight = (int) (srcHeight * p);
             } else {
                 p = (float) dstHeight / (float) srcHeight;
-                dstWidth = (int) ( srcWidth * p );
+                dstWidth = (int) (srcWidth * p);
             }
         } else {
             dstWidth = srcWidth;
             dstHeight = srcHeight;
         }
 
-        if ( needsResize || rotation != 0 ) {
+        if (needsResize || rotation != 0) {
             Bitmap output;
 
-            if ( rotation == 0 ) {
-                output = Bitmap.createScaledBitmap( input, dstWidth, dstHeight, true );
+            if (rotation == 0) {
+                output = Bitmap.createScaledBitmap(input, dstWidth, dstHeight, true);
             } else {
                 Matrix matrix = new Matrix();
-                matrix.postScale( (float) dstWidth / srcWidth, (float) dstHeight / srcHeight );
-                matrix.postRotate( rotation );
-                output = Bitmap.createBitmap( input, 0, 0, srcWidth, srcHeight, matrix, true );
+                matrix.postScale((float) dstWidth / srcWidth, (float) dstHeight / srcHeight);
+                matrix.postRotate(rotation);
+                output = Bitmap.createBitmap(input, 0, 0, srcWidth, srcHeight, matrix, true);
             }
             return output;
         } else
@@ -387,11 +382,11 @@ public class BitmapUtils {
      * @return
      * @throws OutOfMemoryError
      */
-    public static Bitmap resizeBitmap( final Bitmap input, int destWidth, int destHeight ) throws OutOfMemoryError {
-        return resizeBitmap( input, destWidth, destHeight, 0 );
+    public static Bitmap resizeBitmap(final Bitmap input, int destWidth, int destHeight) throws OutOfMemoryError {
+        return resizeBitmap(input, destWidth, destHeight, 0);
     }
 
-    public static Bitmap getSampledBitmap(String filePath, int reqWidth, int reqHeight,Context context) {
+    public static Bitmap getSampledBitmap(String filePath, int reqWidth, int reqHeight, Context context) {
 //        BitmapFactory.Options options = new BitmapFactory.Options();
 //        options.inJustDecodeBounds = true;
 //        BitmapFactory.decodeFile(filePath, options);
@@ -400,9 +395,9 @@ public class BitmapUtils {
 //        options.inPreferredConfig = Bitmap.Config.RGB_565;
 //        options.inJustDecodeBounds = false;
 //        return BitmapFactory.decodeFile(filePath, options);
-        Bitmap bitmap=null;
+        Bitmap bitmap = null;
         try {
-            bitmap=Glide.with(context).load(filePath).asBitmap().fitCenter().into(reqWidth,reqHeight).get();
+            bitmap = Glide.with(context).load(filePath).asBitmap().fitCenter().into(reqWidth, reqHeight).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

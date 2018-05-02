@@ -57,16 +57,16 @@ import widght.SmoothImageView;
 public class ShowActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     public MyViewPager viewPager;
-    private final int downLoadImage = 0;
-    private final int editImage = 1;
-    private int imagePosition;
-    private FrameLayout frameLayout;
-    private List<ShowFragment> fragmentList = new ArrayList<>();
-    private ShowFragmentAdapter fragmentAdapter;
-    private boolean isTransformOut = false;
-    private ArrayList<ShowImageBean> showList = new ArrayList<>();
+    private final int mDownLoadImage = 0;
+    private final int mEditImage = 1;
+    private int mImagePosition;
+    private FrameLayout mFrameLayout;
+    private List<ShowFragment> mFragmentList = new ArrayList<>();
+    private ShowFragmentAdapter mFragmentAdapter;
+    private boolean mIsTransformOut = false;
+    private ArrayList<ShowImageBean> mShowList = new ArrayList<>();
 
-    Handler handler = new Handler(new Handler.Callback() {
+    Handler mHandler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
@@ -93,19 +93,19 @@ public class ShowActivity extends AppCompatActivity {
         }
 
 
-        frameLayout = (FrameLayout) findViewById(R.id.show_activity_fl);
+        mFrameLayout = (FrameLayout) findViewById(R.id.show_activity_fl);
         Intent intent = getIntent();
-        imagePosition = intent.getIntExtra("position", 0);
+        mImagePosition = intent.getIntExtra("position", 0);
 
         if (intent.getParcelableArrayListExtra("imagePaths") != null) {
-            showList = intent.getParcelableArrayListExtra("imagePaths");
-            for (int i = 0; i < showList.size(); i++) {
+            mShowList = intent.getParcelableArrayListExtra("imagePaths");
+            for (int i = 0; i < mShowList.size(); i++) {
                 Bundle bundle = new Bundle();
-                bundle.putString("path", showList.get(i).getPath());
-                bundle.putParcelable("imagePaths", showList.get(i));
+                bundle.putString("path", mShowList.get(i).getPath());
+                bundle.putParcelable("imagePaths", mShowList.get(i));
                 ShowFragment fragment = ShowFragment.newInstance(bundle);
                 fragment.setUserVisibleHint(false);
-                fragmentList.add(fragment);
+                mFragmentList.add(fragment);
             }
         }
 
@@ -113,14 +113,14 @@ public class ShowActivity extends AppCompatActivity {
         viewPager = (MyViewPager) findViewById(R.id.show_activity_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
         viewPager.setOffscreenPageLimit(0);
-        fragmentAdapter = new ShowFragmentAdapter(getSupportFragmentManager(), fragmentList, showList, getApplicationContext());
-        viewPager.setAdapter(fragmentAdapter);
-        viewPager.setCurrentItem(imagePosition);
+        mFragmentAdapter = new ShowFragmentAdapter(getSupportFragmentManager(), mFragmentList, mShowList, getApplicationContext());
+        viewPager.setAdapter(mFragmentAdapter);
+        viewPager.setCurrentItem(mImagePosition);
         viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                ShowFragment fragment = fragmentList.get(imagePosition);
+                ShowFragment fragment = mFragmentList.get(mImagePosition);
                 fragment.transformIn();
             }
         });
@@ -158,9 +158,9 @@ public class ShowActivity extends AppCompatActivity {
         File outputFile = FileUtil.genEditFile();
         if (file.exists()) {
             if (type == 0) {
-                Message msg = handler.obtainMessage();
+                Message msg = mHandler.obtainMessage();
                 msg.what = 1;
-                handler.sendMessage(msg);
+                mHandler.sendMessage(msg);
                 return;
             } else {
                 EditImageActivity.start(ShowActivity.this, url, outputFile.getAbsolutePath(), 0);
@@ -220,9 +220,9 @@ public class ShowActivity extends AppCompatActivity {
         // 最后通知图库更新
         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + savePath)));
         if (type == 0) {
-            Message msg = handler.obtainMessage();
+            Message msg = mHandler.obtainMessage();
             msg.what = 2;
-            handler.sendMessage(msg);
+            mHandler.sendMessage(msg);
         } else {
             File outputFile = FileUtil.genEditFile();
             EditImageActivity.start(ShowActivity.this, savePath, outputFile.getAbsolutePath(), 0);
@@ -232,9 +232,9 @@ public class ShowActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            handler = null;
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler = null;
         }
     }
 
@@ -251,10 +251,10 @@ public class ShowActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.download:
-                getImageBitmap(fragmentAdapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, downLoadImage);
+                getImageBitmap(mFragmentAdapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, mDownLoadImage);
                 break;
             case R.id.edit:
-                getImageBitmap(fragmentAdapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, editImage);
+                getImageBitmap(mFragmentAdapter.getUrl(viewPager.getCurrentItem()), ShowActivity.this, mEditImage);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -271,21 +271,21 @@ public class ShowActivity extends AppCompatActivity {
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
-        frameLayout.setBackgroundColor(a + rgb);
+        mFrameLayout.setBackgroundColor(a + rgb);
         mToolbar.setAlpha(alpha * 510f / 255f);
     }
 
     public void transformOut() {
-        if (isTransformOut) {
+        if (mIsTransformOut) {
             return;
         }
-        isTransformOut = true;
+        mIsTransformOut = true;
         int currentItem = viewPager.getCurrentItem();
-        if (currentItem < showList.size()) {
-            ShowFragment fragment = fragmentList.get(currentItem);
+        if (currentItem < mShowList.size()) {
+            ShowFragment fragment = mFragmentList.get(currentItem);
             fragment.changeBg(Color.TRANSPARENT);
             changeBg(Color.TRANSPARENT);
-            fragment.transformOut(new SmoothImageView.onTransformListener() {
+            fragment.transformOut(new SmoothImageView.OnTransformListener() {
                 @Override
                 public void onTransformCompleted(SmoothImageView.Status status) {
                     exit();
@@ -303,7 +303,7 @@ public class ShowActivity extends AppCompatActivity {
 
 
     public void changeBg(int color) {
-        frameLayout.setBackgroundColor(color);
+        mFrameLayout.setBackgroundColor(color);
     }
 }
 

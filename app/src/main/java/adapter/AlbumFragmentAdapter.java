@@ -23,15 +23,15 @@ public class AlbumFragmentAdapter extends FragmentPagerAdapter {
 
     public AlbumFragmentAdapter(FragmentManager fm, List<ShowFragment> list, List<AlbumBean> pathList, Context context) {
         super(fm);
-        this.mFragmentManager=fm;
-        this.mFragmentList=list;
-        this.mAlbumList=pathList;
-        this.mContext=context;
+        this.mFragmentManager = fm;
+        this.mFragmentList = list;
+        this.mAlbumList = pathList;
+        this.mContext = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        ShowFragment showFragment=mFragmentList.get(position);
+        ShowFragment showFragment = mFragmentList.get(position);
         return showFragment;
     }
 
@@ -40,7 +40,7 @@ public class AlbumFragmentAdapter extends FragmentPagerAdapter {
         return mFragmentList.size();
     }
 
-    public String getUrl(int position){
+    public String getUrl(int position) {
         return mAlbumList.get(position).getPhotoPath();
     }
 }

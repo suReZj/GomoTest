@@ -11,27 +11,27 @@ import android.os.Parcelable;
 
 
 public class ShowImageBean implements Parcelable {
-    private String imagePath;
-    private Rect imageBounds;
+    private String mImagePath;
+    private Rect mImageBounds;
 
     public ShowImageBean(String path) {
-        this.imagePath = path;
+        this.mImagePath = path;
     }
 
     public String getPath() {
-        return imagePath;
+        return mImagePath;
     }
 
     public void setPath(String path) {
-        this.imagePath = path;
+        this.mImagePath = path;
     }
 
     public Rect getBounds() {
-        return imageBounds;
+        return mImageBounds;
     }
 
     public void setBounds(Rect bounds) {
-        this.imageBounds = bounds;
+        this.mImageBounds = bounds;
     }
 
     @Override
@@ -41,13 +41,13 @@ public class ShowImageBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.imagePath);
-        dest.writeParcelable(this.imageBounds, 0);
+        dest.writeString(this.mImagePath);
+        dest.writeParcelable(this.mImageBounds, 0);
     }
 
     protected ShowImageBean(Parcel in) {
-        this.imagePath = in.readString();
-        this.imageBounds = in.readParcelable(Rect.class.getClassLoader());
+        this.mImagePath = in.readString();
+        this.mImageBounds = in.readParcelable(Rect.class.getClassLoader());
     }
 
     public static final Creator<ShowImageBean> CREATOR = new Creator<ShowImageBean>() {

@@ -26,12 +26,12 @@ import widght.SmoothImageView;
 
 public class ShowFragment extends Fragment {
     private SmoothImageView mImageView;
-    private String imagePath;
+    private String mImagePath;
     private Bundle mBundle;
-    private RelativeLayout rootView;
-    private String showActivity = "Activity.ShowActivity";
-    private String albumDetailActivity = "Activity.AlbumDetailActivity";
-    private ShowImageBean showBean;
+    private RelativeLayout mRootView;
+    private String mShowActivity = "Activity.ShowActivity";
+    private String mAlbumDetailActivity = "Activity.AlbumDetailActivity";
+    private ShowImageBean mShowBean;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,21 +44,21 @@ public class ShowFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable final ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.show_fragment, null);
         mImageView = view.findViewById(R.id.show_fragment_iv);
-        rootView = view.findViewById(R.id.show_fragment_rl);
-        imagePath = mBundle.getString("path");
-        showBean=mBundle.getParcelable("imagePaths");
-        if(showBean!=null){
-            mImageView.setThumbRect(showBean.getBounds());
+        mRootView = view.findViewById(R.id.show_fragment_rl);
+        mImagePath = mBundle.getString("path");
+        mShowBean = mBundle.getParcelable("imagePaths");
+        if (mShowBean != null) {
+            mImageView.setThumbRect(mShowBean.getBounds());
         }
 
-        Glide.with(container.getContext()).load(imagePath).into(mImageView);
+        Glide.with(container.getContext()).load(mImagePath).into(mImageView);
 
         mImageView.setAlphaChangeListener(new SmoothImageView.OnAlphaChangeListener() {
             @Override
             public void onAlphaChange(int alpha) {
-                if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
+                if (((Activity) container.getContext()).getLocalClassName().equals(mShowActivity)) {
                     ((ShowActivity) container.getContext()).getColorWithAlpha(alpha / 510f, Color.BLACK);
-                } else if (((Activity) container.getContext()).getLocalClassName().equals(albumDetailActivity)) {
+                } else if (((Activity) container.getContext()).getLocalClassName().equals(mAlbumDetailActivity)) {
                     ((AlbumDetailActivity) container.getContext()).getColorWithAlpha(alpha / 510f, Color.BLACK);
                 }
                 getColorWithAlpha(alpha / 255f, Color.BLACK);
@@ -75,13 +75,13 @@ public class ShowFragment extends Fragment {
         mImageView.setOnScaleChangeListener(new PhotoViewAttacher.OnScaleChangeListener() {
             @Override
             public void onScaleChange(float scaleFactor, float focusX, float focusY) {
-                if (((Activity) container.getContext()).getLocalClassName().equals(showActivity)) {
+                if (((Activity) container.getContext()).getLocalClassName().equals(mShowActivity)) {
                     if (mImageView.getScale() <= 1.1) {
                         ((ShowActivity) container.getContext()).viewPager.setScanScroll(true);
                     } else {
                         ((ShowActivity) container.getContext()).viewPager.setScanScroll(false);
                     }
-                } else if (((Activity) container.getContext()).getLocalClassName().equals(albumDetailActivity)) {
+                } else if (((Activity) container.getContext()).getLocalClassName().equals(mAlbumDetailActivity)) {
                     if (mImageView.getScale() <= 1.1) {
                         ((AlbumDetailActivity) container.getContext()).viewPager.setScanScroll(true);
                     } else {
@@ -104,25 +104,25 @@ public class ShowFragment extends Fragment {
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
-        rootView.setBackgroundColor(a + rgb);
+        mRootView.setBackgroundColor(a + rgb);
     }
 
     public void changeBg(int color) {
-        rootView.setBackgroundColor(color);
+        mRootView.setBackgroundColor(color);
     }
 
-    public void transformOut(SmoothImageView.onTransformListener listener) {
+    public void transformOut(SmoothImageView.OnTransformListener listener) {
         mImageView.transformOut(listener);
     }
 
     public void transformIn() {
-        mImageView.transformIn(new SmoothImageView.onTransformListener() {
+        mImageView.transformIn(new SmoothImageView.OnTransformListener() {
             @Override
             public void onTransformCompleted(SmoothImageView.Status status) {
-                if (((Activity) getContext()).getLocalClassName().equals(showActivity)) {
-                    ((ShowActivity)getContext()).changeBg(Color.BLACK);
-                } else if (((Activity)getContext()).getLocalClassName().equals(albumDetailActivity)) {
-                    ((AlbumDetailActivity)getContext()).changeBg(Color.BLACK);
+                if (((Activity) getContext()).getLocalClassName().equals(mShowActivity)) {
+                    ((ShowActivity) getContext()).changeBg(Color.BLACK);
+                } else if (((Activity) getContext()).getLocalClassName().equals(mAlbumDetailActivity)) {
+                    ((AlbumDetailActivity) getContext()).changeBg(Color.BLACK);
                 }
             }
         });

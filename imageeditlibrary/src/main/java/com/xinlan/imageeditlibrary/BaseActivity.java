@@ -59,7 +59,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public static Dialog getLoadingDialog(Context context, int titleId,
                                           boolean canCancel) {
-        return getLoadingDialog(context,context.getString(titleId),canCancel);
+        return getLoadingDialog(context, context.getString(titleId), canCancel);
     }
 
 

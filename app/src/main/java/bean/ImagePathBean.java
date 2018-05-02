@@ -11,13 +11,13 @@ import org.litepal.crud.DataSupport;
 
 
 public class ImagePathBean extends DataSupport {
-    private String imagePath;
+    private String mImagePath;
 
     public String getImagePath() {
-        return imagePath;
+        return mImagePath;
     }
 
     public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+        this.mImagePath = imagePath;
     }
 }

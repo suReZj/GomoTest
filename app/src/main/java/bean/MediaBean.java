@@ -8,22 +8,22 @@ import java.io.Serializable;
  */
 
 public class MediaBean implements Serializable {
-    private String localPath;
+    private String mLocalPath;
     private long mSize;
-    private String displayName;
+    private String mDisplayName;
 
     public MediaBean(String localPath, long size, String displayName) {
-        this.localPath = localPath;
+        this.mLocalPath = localPath;
         this.mSize = size;
-        this.displayName = displayName;
+        this.mDisplayName = displayName;
     }
 
     public String getLocalPath() {
-        return localPath;
+        return mLocalPath;
     }
 
     public void setLocalPath(String localPath) {
-        this.localPath = localPath;
+        this.mLocalPath = localPath;
     }
 
     public long getSize() {
@@ -35,10 +35,10 @@ public class MediaBean implements Serializable {
     }
 
     public String getDisplayName() {
-        return displayName;
+        return mDisplayName;
     }
 
     public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        this.mDisplayName = displayName;
     }
 }

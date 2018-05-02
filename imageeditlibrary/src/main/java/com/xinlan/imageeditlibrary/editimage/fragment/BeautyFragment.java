@@ -19,6 +19,7 @@ import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 import com.xinlan.imageeditlibrary.editimage.ModuleConfig;
 import com.xinlan.imageeditlibrary.editimage.fliter.PhotoProcessing;
 import com.xinlan.imageeditlibrary.editimage.view.imagezoom.ImageViewTouchBase;
+
 import java.lang.ref.WeakReference;
 
 
@@ -134,7 +135,7 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
         activity.mainImage.setVisibility(View.VISIBLE);
         activity.mainImage.setScaleEnabled(true);
         activity.bannerFlipper.showPrevious();
-        if(activity.undoLayout.getVisibility()==View.GONE){
+        if (activity.undoLayout.getVisibility() == View.GONE) {
             activity.undoLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -146,15 +147,15 @@ public class BeautyFragment extends BaseEditFragment implements SeekBar.OnSeekBa
         activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
         activity.mainImage.setScaleEnabled(false);
         activity.bannerFlipper.showNext();
-        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+        if (activity.undoLayout.getVisibility() == View.VISIBLE) {
             activity.undoLayout.setVisibility(View.GONE);
         }
     }
 
     public void applyBeauty() {
-        if(mResultBitmapRef!=null){
+        if (mResultBitmapRef != null) {
             if (mResultBitmapRef.get() != null && (mSmooth != 0 || mWhiteSkin != 0)) {
-                activity.changeMainBitmap(null,mResultBitmapRef.get(),true);
+                activity.changeMainBitmap(null, mResultBitmapRef.get(), true);
             }
         }
         backToMain(getContext());

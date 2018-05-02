@@ -22,15 +22,15 @@ public class ShowFragmentAdapter extends FragmentPagerAdapter {
 
     public ShowFragmentAdapter(FragmentManager fm, List<ShowFragment> list, List<ShowImageBean> pathList, Context context) {
         super(fm);
-        this.mFragmentManager=fm;
-        this.mFragmentList=list;
-        this.mPathList=pathList;
-        this.mContext=context;
+        this.mFragmentManager = fm;
+        this.mFragmentList = list;
+        this.mPathList = pathList;
+        this.mContext = context;
     }
 
     @Override
     public ShowFragment getItem(int position) {
-        ShowFragment showFragment=mFragmentList.get(position);
+        ShowFragment showFragment = mFragmentList.get(position);
         return showFragment;
     }
 
@@ -39,7 +39,7 @@ public class ShowFragmentAdapter extends FragmentPagerAdapter {
         return mFragmentList.size();
     }
 
-    public String getUrl(int position){
+    public String getUrl(int position) {
         return mPathList.get(position).getPath();
     }
 }

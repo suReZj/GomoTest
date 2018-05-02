@@ -31,26 +31,36 @@ import java.util.Map;
 @SuppressLint("SimpleDateFormat")
 public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
 
-    public static String TAG = "MyCrash";
-    /** 系统默认的UncaughtException处理类 */
+    public static String sTAG = "MyCrash";
+    /**
+     * 系统默认的UncaughtException处理类
+     */
     private Thread.UncaughtExceptionHandler mDefaultHandler;
 
-    private static CrashHandlerUtil instance = new CrashHandlerUtil();
+    private static CrashHandlerUtil sinstance = new CrashHandlerUtil();
     private Context mContext;
 
-    /** 用来存储设备信息和异常信息 */
-    private Map<String, String> infos = new HashMap<String, String>();
+    /**
+     * 用来存储设备信息和异常信息
+     */
+    private Map<String, String> mInfos = new HashMap<String, String>();
 
-    /** 用于格式化日期,作为日志文件名的一部分 */
-    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    /**
+     * 用于格式化日期,作为日志文件名的一部分
+     */
+    private DateFormat mFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-    /** 保证只有一个CrashHandler实例 */
+    /**
+     * 保证只有一个CrashHandler实例
+     */
     private CrashHandlerUtil() {
     }
 
-    /** 获取CrashHandler实例 ,单例模式 */
+    /**
+     * 获取CrashHandler实例 ,单例模式
+     */
     public static CrashHandlerUtil getInstance() {
-        return instance;
+        return sinstance;
     }
 
     /**
@@ -90,9 +100,9 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
      * @return true:如果处理了该异常信息; 否则返回false.
      */
     private boolean handleException(Throwable ex) {
-        if (ex == null)
+        if (ex == null) {
             return false;
-
+        }
         try {
             // 使用Toast来显示异常信息
             new Thread() {
@@ -130,27 +140,28 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
             if (pi != null) {
                 String versionName = pi.versionName + "";
                 String versionCode = pi.versionCode + "";
-                infos.put("versionName", versionName);
-                infos.put("versionCode", versionCode);
+                mInfos.put("versionName", versionName);
+                mInfos.put("versionCode", versionCode);
             }
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "an error occured when collect package info", e);
+            Log.e(sTAG, "an error occured when collect package info", e);
         }
         Field[] fields = Build.class.getDeclaredFields();
         for (Field field : fields) {
             try {
                 field.setAccessible(true);
-                infos.put(field.getName(), field.get(null).toString());
+                mInfos.put(field.getName(), field.get(null).toString());
             } catch (Exception e) {
-                Log.e(TAG, "an error occured when collect crash info", e);
+                Log.e(sTAG, "an error occured when collect crash info", e);
             }
         }
     }
 
     /**
      * 保存错误信息到文件中
+     *
      * @param ex
-     * @return 返回文件名称,便于将文件传送到服务器
+     * @return 返回文件名称, 便于将文件传送到服务器
      * @throws Exception
      */
     private String saveCrashInfoFile(Throwable ex) throws Exception {
@@ -160,7 +171,7 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
                     "yyyy-MM-dd HH:mm:ss");
             String date = sDateFormat.format(new java.util.Date());
             sb.append("\r\n" + date + "\n");
-            for (Map.Entry<String, String> entry : infos.entrySet()) {
+            for (Map.Entry<String, String> entry : mInfos.entrySet()) {
                 String key = entry.getKey();
                 String value = entry.getValue();
                 sb.append(key + "=" + value + "\n");
@@ -182,7 +193,7 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
             String fileName = writeFile(sb.toString());
             return fileName;
         } catch (Exception e) {
-            Log.e(TAG, "an error occured while writing file...", e);
+            Log.e(sTAG, "an error occured while writing file...", e);
             sb.append("an error occured while writing file...\r\n");
             writeFile(sb.toString());
         }
@@ -190,14 +201,14 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
     }
 
     private String writeFile(String sb) throws Exception {
-        String time = formatter.format(new Date());
+        String time = mFormatter.format(new Date());
         String fileName = "crash-" + time + ".log";
         if (FileUtil.hasSdcard()) {
             String path = getGlobalpath();
             File dir = new File(path);
-            if (!dir.exists())
+            if (!dir.exists()) {
                 dir.mkdirs();
-
+            }
             FileOutputStream fos = new FileOutputStream(path + fileName, true);
             fos.write(sb.getBytes());
             fos.flush();
@@ -212,11 +223,12 @@ public class CrashHandlerUtil implements Thread.UncaughtExceptionHandler {
     }
 
     public static void setTag(String tag) {
-        TAG = tag;
+        sTAG = tag;
     }
 
     /**
      * 文件删除
+     *
      * @param day 文件保存天数
      */
     public void autoClear(final int autoClearDay) {

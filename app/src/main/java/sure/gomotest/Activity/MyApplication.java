@@ -14,8 +14,9 @@ import utils.CrashHandlerUtil;
  */
 
 public class MyApplication extends Application {
-    private static MyApplication instance;
+    private static MyApplication sinstance;
     private RefWatcher mRefWatcher;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -23,8 +24,9 @@ public class MyApplication extends Application {
         CrashHandlerUtil.getInstance().init(this);
 //        mRefWatcher = LeakCanary.install(this);
     }
+
     public static MyApplication getInstance() {
-        return instance;
+        return sinstance;
     }
 //    public static RefWatcher getRefWatcher(Context context){
 //        MyApplication baseApplication = (MyApplication) context.getApplicationContext();

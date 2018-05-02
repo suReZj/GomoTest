@@ -251,7 +251,7 @@ public class CropImageView extends View {
      */
     private void scaleCropController(float x, float y) {
         tempRect.set(cropRect);// 存贮原有数据，以便还原
-        float f ;
+        float f;
         if (ratio < 0) {
             switch (selectedControllerCicle) {
                 case 1:// 左上角控制点
@@ -276,7 +276,7 @@ public class CropImageView extends View {
         } else {
             switch (selectedControllerCicle) {
                 case 1:// 左上角控制点
-                    f=Math.abs(tempRect.top - y);
+                    f = Math.abs(tempRect.top - y);
                     if (y < tempRect.top) {
                         cropRect.top = tempRect.top - f;
                         cropRect.left = tempRect.left - f * this.ratio;
@@ -288,7 +288,7 @@ public class CropImageView extends View {
                     }
                     break;
                 case 2:// 右上角控制点
-                    f=Math.abs(tempRect.top - y);
+                    f = Math.abs(tempRect.top - y);
                     if (y < tempRect.top) {
                         cropRect.top = tempRect.top - f;
                         cropRect.right = tempRect.right + f * this.ratio;
@@ -300,7 +300,7 @@ public class CropImageView extends View {
                     }
                     break;
                 case 3:// 左下角控制点
-                    f=Math.abs(tempRect.bottom - y);
+                    f = Math.abs(tempRect.bottom - y);
                     if (y < tempRect.bottom) {
                         cropRect.bottom = tempRect.bottom - f;
                         cropRect.left = tempRect.left + f * this.ratio;
@@ -312,7 +312,7 @@ public class CropImageView extends View {
                     }
                     break;
                 case 4:// 右下角控制点
-                    f=Math.abs(tempRect.bottom - y);
+                    f = Math.abs(tempRect.bottom - y);
                     if (y < tempRect.bottom) {
                         cropRect.bottom = tempRect.bottom - f;
                         cropRect.right = tempRect.right - f * this.ratio;

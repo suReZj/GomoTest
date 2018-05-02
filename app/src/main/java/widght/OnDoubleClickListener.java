@@ -9,14 +9,14 @@ import android.view.View;
  */
 
 public class OnDoubleClickListener implements View.OnTouchListener {
-    private final String TAG = this.getClass().getSimpleName();
+    private final String mTAG = this.getClass().getSimpleName();
     private int mCount = 0;
-    private long firClick = 0;
-    private long secClick = 0;
+    private long mFirClick = 0;
+    private long mSecClick = 0;
     /**
      * 两次点击时间间隔，单位毫秒
      */
-    private final int interval = 1500;
+    private final int mInterval = 1500;
     private DoubleClickCallback mCallback;
 
     public interface DoubleClickCallback {
@@ -33,22 +33,22 @@ public class OnDoubleClickListener implements View.OnTouchListener {
         if (MotionEvent.ACTION_DOWN == event.getAction()) {
             mCount++;
             if (1 == mCount) {
-                firClick = System.currentTimeMillis();
+                mFirClick = System.currentTimeMillis();
             } else if (2 == mCount) {
-                secClick = System.currentTimeMillis();
-                if (secClick - firClick < interval) {
+                mSecClick = System.currentTimeMillis();
+                if (mSecClick - mFirClick < mInterval) {
                     if (mCallback != null) {
                         mCallback.onDoubleClick();
                     } else {
-                        Log.e(TAG, "请在构造方法中传入一个双击回调");
+                        Log.e(mTAG, "请在构造方法中传入一个双击回调");
                     }
                     mCount = 0;
-                    firClick = 0;
+                    mFirClick = 0;
                 } else {
-                    firClick = secClick;
+                    mFirClick = mSecClick;
                     mCount = 1;
                 }
-                secClick = 0;
+                mSecClick = 0;
             }
         }
         return true;

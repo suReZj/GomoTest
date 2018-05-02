@@ -1,6 +1,5 @@
 package bean;
 
-import android.util.Log;
 
 import org.litepal.crud.DataSupport;
 
@@ -11,22 +10,22 @@ import org.litepal.crud.DataSupport;
 
 
 public class AlbumBean extends DataSupport {
-    private String albumName;
-    private String photoPath;
+    private String mAlbumName;
+    private String mPhotoPath;
 
     public String getAlbumName() {
-        return albumName;
+        return mAlbumName;
     }
 
     public void setAlbumName(String albumName) {
-        this.albumName = albumName;
+        this.mAlbumName = albumName;
     }
 
     public String getPhotoPath() {
-        return photoPath;
+        return mPhotoPath;
     }
 
     public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
+        this.mPhotoPath = photoPath;
     }
 }

@@ -6,27 +6,27 @@ package event;
  */
 
 public class SaveImageEvent {
-    private String albumName;
-    private String imagePath;
+    private String mAlbumName;
+    private String mImagePath;
 
     public SaveImageEvent(String albumName, String path) {
-        this.albumName = albumName;
-        this.imagePath = path;
+        this.mAlbumName = albumName;
+        this.mImagePath = path;
     }
 
     public String getAlbumName() {
-        return albumName;
+        return mAlbumName;
     }
 
     public void setAlbumName(String albumName) {
-        this.albumName = albumName;
+        this.mAlbumName = albumName;
     }
 
     public String getPath() {
-        return imagePath;
+        return mImagePath;
     }
 
     public void setPath(String path) {
-        this.imagePath = path;
+        this.mImagePath = path;
     }
 }

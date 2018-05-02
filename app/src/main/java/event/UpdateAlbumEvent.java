@@ -6,13 +6,13 @@ package event;
  */
 
 public class UpdateAlbumEvent {
-    private String albumName;
+    private String mAlbumName;
 
     public String getAlbumName() {
-        return albumName;
+        return mAlbumName;
     }
 
     public void setAlbumName(String albumName) {
-        this.albumName = albumName;
+        this.mAlbumName = albumName;
     }
 }

@@ -10,109 +10,109 @@ import com.google.gson.annotations.SerializedName;
 public class ResultGson {
     @SerializedName("_id")
     @Expose
-    private String _id;
+    private String mId;
 
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    private String mCreatedAt;
 
     @SerializedName("desc")
     @Expose
-    private String desc;
+    private String mDesc;
 
     @SerializedName("publishedAt")
     @Expose
-    private String publishedAt;
+    private String mPublishedAt;
 
     @SerializedName("source")
     @Expose
-    private String source;
+    private String mSource;
 
     @SerializedName("type")
     @Expose
-    private String type;
+    private String mType;
 
     @SerializedName("url")
     @Expose
-    private String url;
+    private String mUrl;
 
     @SerializedName("used")
     @Expose
-    private boolean used;
+    private boolean mUsed;
 
     @SerializedName("who")
     @Expose
-    private String who;
+    private String mWho;
 
-    public String get_id() {
-        return _id;
+    public String getmId() {
+        return mId;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setmId(String mId) {
+        this.mId = mId;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getmCreatedAt() {
+        return mCreatedAt;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setmCreatedAt(String mCreatedAt) {
+        this.mCreatedAt = mCreatedAt;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getmDesc() {
+        return mDesc;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setmDesc(String mDesc) {
+        this.mDesc = mDesc;
     }
 
-    public String getPublishedAt() {
-        return publishedAt;
+    public String getmPublishedAt() {
+        return mPublishedAt;
     }
 
-    public void setPublishedAt(String publishedAt) {
-        this.publishedAt = publishedAt;
+    public void setmPublishedAt(String mPublishedAt) {
+        this.mPublishedAt = mPublishedAt;
     }
 
-    public String getSource() {
-        return source;
+    public String getmSource() {
+        return mSource;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setmSource(String mSource) {
+        this.mSource = mSource;
     }
 
-    public String getType() {
-        return type;
+    public String getmType() {
+        return mType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setmType(String mType) {
+        this.mType = mType;
     }
 
-    public String getUrl() {
-        return url;
+    public String getmUrl() {
+        return mUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setmUrl(String mUrl) {
+        this.mUrl = mUrl;
     }
 
-    public boolean isUsed() {
-        return used;
+    public boolean ismUsed() {
+        return mUsed;
     }
 
-    public void setUsed(boolean used) {
-        this.used = used;
+    public void setmUsed(boolean mUsed) {
+        this.mUsed = mUsed;
     }
 
-    public String getWho() {
-        return who;
+    public String getmWho() {
+        return mWho;
     }
 
-    public void setWho(String who) {
-        this.who = who;
+    public void setmWho(String mWho) {
+        this.mWho = mWho;
     }
 }

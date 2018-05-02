@@ -1,14 +1,11 @@
 package com.xinlan.imageeditlibrary.editimage.fragment;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -76,7 +73,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mTextStickerView = (TextStickerView)getActivity().findViewById(R.id.text_sticker_panel);
+        mTextStickerView = (TextStickerView) getActivity().findViewById(R.id.text_sticker_panel);
 
         backToMenu = mainView.findViewById(R.id.back_to_main);
         mInputText = (EditText) mainView.findViewById(R.id.text_input);
@@ -164,7 +161,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
      */
     @Override
     public void backToMain(Context context) {
-        activity=(EditImageActivity)context;
+        activity = (EditImageActivity) context;
         hideInput();
         activity.mode = EditImageActivity.MODE_NONE;
         activity.bottomGallery.setCurrentItem(MainMenuFragment.INDEX);
@@ -175,7 +172,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         mTextStickerView.setVisibility(View.GONE);
         mTextStickerView.setEditText(null);
         mTextStickerView.clearFocus();
-        if(activity.undoLayout.getVisibility()==View.GONE){
+        if (activity.undoLayout.getVisibility() == View.GONE) {
             activity.undoLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -187,12 +184,12 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
         activity.bannerFlipper.showNext();
         mTextStickerView.setVisibility(View.VISIBLE);
         mInputText.clearFocus();
-        float width=activity.mainImage.getBitmapRect().right-activity.mainImage.getBitmapRect().left;
-        float height=activity.mainImage.getBitmapRect().bottom-activity.mainImage.getBitmapRect().top;
-        RelativeLayout.LayoutParams layoutParams=new RelativeLayout.LayoutParams((int)width,(int)height);
-        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT,RelativeLayout.TRUE);
+        float width = activity.mainImage.getBitmapRect().right - activity.mainImage.getBitmapRect().left;
+        float height = activity.mainImage.getBitmapRect().bottom - activity.mainImage.getBitmapRect().top;
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams((int) width, (int) height);
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
         mTextStickerView.setLayoutParams(layoutParams);
-        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+        if (activity.undoLayout.getVisibility() == View.VISIBLE) {
             activity.undoLayout.setVisibility(View.GONE);
         }
     }
@@ -242,7 +239,7 @@ public class AddTextFragment extends BaseEditFragment implements TextWatcher {
             mTextStickerView.clearTextContent();
             mTextStickerView.resetView();
 
-            activity.changeMainBitmap(null,result , true);
+            activity.changeMainBitmap(null, result, true);
             backToMain(getContext());
         }
     }//end inner class

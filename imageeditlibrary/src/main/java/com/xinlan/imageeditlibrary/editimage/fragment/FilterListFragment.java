@@ -82,7 +82,7 @@ public class FilterListFragment extends BaseEditFragment {
         activity.mainImage.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
         activity.mainImage.setScaleEnabled(false);
         activity.bannerFlipper.showNext();
-        if(activity.undoLayout.getVisibility()==View.VISIBLE){
+        if (activity.undoLayout.getVisibility() == View.VISIBLE) {
             activity.undoLayout.setVisibility(View.GONE);
         }
     }
@@ -99,7 +99,7 @@ public class FilterListFragment extends BaseEditFragment {
         activity.bottomGallery.setCurrentItem(0);
         activity.mainImage.setScaleEnabled(true);
         activity.bannerFlipper.showPrevious();
-        if(activity.undoLayout.getVisibility()==View.GONE){
+        if (activity.undoLayout.getVisibility() == View.GONE) {
             activity.undoLayout.setVisibility(View.VISIBLE);
         }
     }
@@ -115,7 +115,7 @@ public class FilterListFragment extends BaseEditFragment {
             return;
         } else {// 经滤镜处理后的图片
             // System.out.println("滤镜图片");
-            activity.changeMainBitmap(null,fliterBit,true);
+            activity.changeMainBitmap(null, fliterBit, true);
             backToMain(getContext());
         }// end if
     }

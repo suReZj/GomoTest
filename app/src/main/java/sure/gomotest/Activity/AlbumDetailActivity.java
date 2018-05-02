@@ -50,25 +50,25 @@ import widght.SmoothImageView;
 
 public class AlbumDetailActivity extends AppCompatActivity {
     private Toolbar mToolbar;
-    private String editPath;
+    private String mEditPath;
     public MyViewPager viewPager;
-    private PhotographAdapter photographAdapter;
-    private List<AlbumBean> albumList;
-    private String albumName;
-    private AlbumFragmentAdapter fragmentAdapter;
-    private List<ShowFragment> fragmentList = new ArrayList<>();
-    private FrameLayout rootFLayout;
-    private ArrayList<ShowImageBean> showList = new ArrayList<>();
-    private boolean isTransformOut = false;
+    private PhotographAdapter mPhotographAdapter;
+    private List<AlbumBean> mAlbumList;
+    private String mAlbumName;
+    private AlbumFragmentAdapter mFragmentAdapter;
+    private List<ShowFragment> mFragmentList = new ArrayList<>();
+    private FrameLayout mRootFLayout;
+    private ArrayList<ShowImageBean> mShowList = new ArrayList<>();
+    private boolean mIsTransformOut = false;
     private Intent mIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        albumName = getIntent().getStringExtra("albumname");
+        mAlbumName = getIntent().getStringExtra("albumname");
         setContentView(R.layout.detail_activity);
         EventBus.getDefault().register(this);
-        rootFLayout = (FrameLayout) findViewById(R.id.detail_activity_fl);
+        mRootFLayout = (FrameLayout) findViewById(R.id.detail_activity_fl);
         mToolbar = (Toolbar) findViewById(R.id.detail_activity_toolbar);
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
@@ -79,36 +79,36 @@ public class AlbumDetailActivity extends AppCompatActivity {
         viewPager = (MyViewPager) findViewById(R.id.detail_activity_viewPager);
         viewPager.setPageTransformer(true, new DepthPageTransformer());
         mIntent = getIntent();
-        showList = mIntent.getParcelableArrayListExtra("imagePaths");
+        mShowList = mIntent.getParcelableArrayListExtra("imagePaths");
 
-        if (mIntent.getStringArrayListExtra("list") != null) {//相机拍照后的展示
+        if (mIntent.getStringArrayListExtra("list") != null) { //相机拍照后的展示
             AlbumBean albumBean = new AlbumBean();
             albumBean.setPhotoPath(mIntent.getStringArrayListExtra("list").get(0));
-            albumList = new ArrayList<>();
-            albumList.add(albumBean);
-            photographAdapter = new PhotographAdapter(albumList);
-            viewPager.setAdapter(photographAdapter);
+            mAlbumList = new ArrayList<>();
+            mAlbumList.add(albumBean);
+            mPhotographAdapter = new PhotographAdapter(mAlbumList);
+            viewPager.setAdapter(mPhotographAdapter);
             viewPager.setCurrentItem(mIntent.getIntExtra("position", 0));
             changeBg(Color.BLACK);
-        } else {//点击相册后的展示相册图片
-            albumList = DataSupport.where("albumName=?", albumName).find(AlbumBean.class);
-            for (int i = 0; i < albumList.size(); i++) {
+        } else { //点击相册后的展示相册图片
+            mAlbumList = DataSupport.where("mAlbumName=?", mAlbumName).find(AlbumBean.class);
+            for (int i = 0; i < mAlbumList.size(); i++) {
                 Bundle bundle = new Bundle();
-                bundle.putString("path", albumList.get(i).getPhotoPath());
-                bundle.putParcelable("imagePaths", showList.get(i));
+                bundle.putString("path", mAlbumList.get(i).getPhotoPath());
+                bundle.putParcelable("imagePaths", mShowList.get(i));
                 ShowFragment fragment = ShowFragment.newInstance(bundle);
-                fragmentList.add(fragment);
+                mFragmentList.add(fragment);
             }
 
-            fragmentAdapter = new AlbumFragmentAdapter(getSupportFragmentManager(), fragmentList, albumList, getApplicationContext());
-            viewPager.setAdapter(fragmentAdapter);
+            mFragmentAdapter = new AlbumFragmentAdapter(getSupportFragmentManager(), mFragmentList, mAlbumList, getApplicationContext());
+            viewPager.setAdapter(mFragmentAdapter);
             final int position = mIntent.getIntExtra("position", 0);
             viewPager.setCurrentItem(position);
             viewPager.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     viewPager.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    ShowFragment fragment = fragmentList.get(position);
+                    ShowFragment fragment = mFragmentList.get(position);
                     fragment.transformIn();
                 }
             });
@@ -150,15 +150,15 @@ public class AlbumDetailActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (editPath != null) {
-            File file = new File(editPath);
+        if (mEditPath != null) {
+            File file = new File(mEditPath);
             if (file.exists()) {
                 // 获取该图片的父路径名
-                String dirPath = new File(editPath).getParentFile().getAbsolutePath();
+                String dirPath = new File(mEditPath).getParentFile().getAbsolutePath();
                 AlbumBean bean = new AlbumBean();
                 bean.setAlbumName(dirPath);
-                bean.setPhotoPath(editPath);
-                SaveImageEvent event = new SaveImageEvent(dirPath, editPath);
+                bean.setPhotoPath(mEditPath);
+                SaveImageEvent event = new SaveImageEvent(dirPath, mEditPath);
                 EventBus.getDefault().post(event);
             }
         }
@@ -178,11 +178,11 @@ public class AlbumDetailActivity extends AppCompatActivity {
                 break;
             case R.id.detail_edit:
                 File outputFile = FileUtil.genEditFile();
-                editPath = outputFile.getAbsolutePath();
+                mEditPath = outputFile.getAbsolutePath();
                 if (getIntent().getStringArrayListExtra("list") != null) {
-                    EditImageActivity.start(AlbumDetailActivity.this, photographAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                    EditImageActivity.start(AlbumDetailActivity.this, mPhotographAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
                 } else {
-                    EditImageActivity.start(AlbumDetailActivity.this, fragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
+                    EditImageActivity.start(AlbumDetailActivity.this, mFragmentAdapter.getUrl(viewPager.getCurrentItem()), outputFile.getAbsolutePath(), 9);
                 }
                 if (mIntent.getStringArrayListExtra("list") != null) {
                     finish();
@@ -194,7 +194,7 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshData(UpdateAlbumEvent messageEvent) {
-        fragmentAdapter.notifyDataSetChanged();
+        mFragmentAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -211,22 +211,22 @@ public class AlbumDetailActivity extends AppCompatActivity {
     public void getColorWithAlpha(float alpha, int baseColor) {
         int a = Math.min(255, Math.max(0, (int) (alpha * 255))) << 24;
         int rgb = 0x00ffffff & baseColor;
-        rootFLayout.setBackgroundColor(a + rgb);
+        mRootFLayout.setBackgroundColor(a + rgb);
         mToolbar.setAlpha(alpha * 510f / 255f);
     }
 
     public void transformOut() {
-        if (isTransformOut) {
+        if (mIsTransformOut) {
             return;
         }
-        isTransformOut = true;
+        mIsTransformOut = true;
         int currentItem = viewPager.getCurrentItem();
-        if (currentItem < albumList.size()) {
-            ShowFragment fragment = fragmentList.get(currentItem);
+        if (currentItem < mAlbumList.size()) {
+            ShowFragment fragment = mFragmentList.get(currentItem);
 
             fragment.changeBg(Color.TRANSPARENT);
             changeBg(Color.TRANSPARENT);
-            fragment.transformOut(new SmoothImageView.onTransformListener() {
+            fragment.transformOut(new SmoothImageView.OnTransformListener() {
                 @Override
                 public void onTransformCompleted(SmoothImageView.Status status) {
                     exit();
@@ -244,6 +244,6 @@ public class AlbumDetailActivity extends AppCompatActivity {
 
 
     public void changeBg(int color) {
-        rootFLayout.setBackgroundColor(color);
+        mRootFLayout.setBackgroundColor(color);
     }
 }

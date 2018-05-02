@@ -63,32 +63,32 @@ import widght.MyLayoutManager;
  */
 
 public class MainActivity extends AppCompatActivity {
-    private File photoFile;
+    private File mPhotoFile;
     private Toolbar mToolbar;
-    private RecyclerView recyclerView;
-    private ImageAdapter imageAdapter;
+    private RecyclerView mRecyclerView;
+    private ImageAdapter mImageAdapter;
     private int mPage = 1;
-    private ArrayList<String> imageList = new ArrayList<>();
-    private SpringView springView;
-    private MyLayoutManager layoutManager;
-    private long backLastPressedTimestamp = 0;
-    private List<ResultGson> resultList;
-    private Retrofit mRetrofit ;
-    private GetData getData;
-    private List<ImagePathBean> pathList = new ArrayList<>();
-    private ImagePathBean imagePath;
-    private ArrayList<ShowImageBean> showList = new ArrayList<>();
-    private int startPos;
-    private int endPos;
-    private int index = 0;
+    private ArrayList<String> mImageList = new ArrayList<>();
+    private SpringView mSpringView;
+    private MyLayoutManager mLayoutManager;
+    private long mBackLastPressedTimestamp = 0;
+    private List<ResultGson> mResultList;
+    private Retrofit mRetrofit;
+    private GetData mGetData;
+    private List<ImagePathBean> mPathList = new ArrayList<>();
+    private ImagePathBean mImagePath;
+    private ArrayList<ShowImageBean> mShowList = new ArrayList<>();
+    private int mStartPos;
+    private int mEndPos;
+    private int mIndex = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        mRetrofit= RetrofitUtil.getRetrofit(getResources().getString(R.string.main_activity_url));
-        getData = mRetrofit.create(GetData.class);
+        mRetrofit = RetrofitUtil.getRetrofit(getResources().getString(R.string.main_activity_url));
+        mGetData = mRetrofit.create(GetData.class);
         setContentView(R.layout.main_activity);
         initView();
         setListener();
@@ -98,24 +98,24 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.main_activity_toolbar);
         mToolbar.setTitleTextColor(getResources().getColor(R.color.white));
         setSupportActionBar(mToolbar);
-        recyclerView = (RecyclerView) findViewById(R.id.main_activity_rv);
-        layoutManager = new MyLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setAutoMeasureEnabled(true);
-        recyclerView.setLayoutManager(layoutManager);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.main_activity_rv);
+        mLayoutManager = new MyLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+        mLayoutManager.setAutoMeasureEnabled(true);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mLayoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_NONE);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                layoutManager.invalidateSpanAssignments(); //防止第一行到顶部有空白区域
+                mLayoutManager.invalidateSpanAssignments(); //防止第一行到顶部有空白区域
             }
         });
-        imageAdapter = new ImageAdapter(imageList, MainActivity.this);
-        recyclerView.setAdapter(imageAdapter);
-        pathList = DataSupport.findAll(ImagePathBean.class);
+        mImageAdapter = new ImageAdapter(mImageList, MainActivity.this);
+        mRecyclerView.setAdapter(mImageAdapter);
+        mPathList = DataSupport.findAll(ImagePathBean.class);
         setImage(mPage);
-        springView = (SpringView) findViewById(R.id.main_activity_sv);
-        springView.setFooter(new DefaultFooter(MainActivity.this));
+        mSpringView = (SpringView) findViewById(R.id.main_activity_sv);
+        mSpringView.setFooter(new DefaultFooter(MainActivity.this));
 
 
         Window window = this.getWindow();
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setListener() {
-        springView.setListener(new SpringView.OnFreshListener() {
+        mSpringView.setListener(new SpringView.OnFreshListener() {
             @Override
             public void onRefresh() {
             }
@@ -152,20 +152,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        imageAdapter.setOnItemClickLitener(new ImageAdapter.OnItemClickLitener() {
+        mImageAdapter.setOnItemClickLitener(new ImageAdapter.OnItemClickLitener() {
             @Override
             public void onItemClick(final View view, final int position) {
                 Intent intent = new Intent(MainActivity.this, ShowActivity.class);
-                showList.clear();
-                for (int i = 0; i < imageList.size(); i++) {
-                    ShowImageBean showImageBean = new ShowImageBean(imageList.get(i));
-                    showList.add(showImageBean);
+                mShowList.clear();
+                for (int i = 0; i < mImageList.size(); i++) {
+                    ShowImageBean showImageBean = new ShowImageBean(mImageList.get(i));
+                    mShowList.add(showImageBean);
                 }
                 int into[] = new int[3];
-                computeBoundsBackward(layoutManager.findFirstVisibleItemPositions(into));
-                intent.putExtra("size", showList.size());
+                computeBoundsBackward(mLayoutManager.findFirstVisibleItemPositions(into));
+                intent.putExtra("size", mShowList.size());
                 intent.putExtra("position", position);
-                intent.putParcelableArrayListExtra("imagePaths", showList);
+                intent.putParcelableArrayListExtra("imagePaths", mShowList);
                 startActivity(intent);
             }
 
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
         mToolbar.setOnTouchListener(new OnDoubleClickListener(new OnDoubleClickListener.DoubleClickCallback() {
             @Override
             public void onDoubleClick() {
-                recyclerView.scrollToPosition(0);
+                mRecyclerView.scrollToPosition(0);
             }
         }));
     }
@@ -186,11 +186,11 @@ public class MainActivity extends AppCompatActivity {
      */
     private void useCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        photoFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+        mPhotoFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/beauty/" + System.currentTimeMillis() + ".jpg");
-        photoFile.getParentFile().mkdirs();
+        mPhotoFile.getParentFile().mkdirs();
 
-        Uri uri = FileProvider.getUriForFile(this, "包名.fileprovider", photoFile);
+        Uri uri = FileProvider.getUriForFile(this, "包名.fileprovider", mPhotoFile);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             //在手机相册中显示刚拍摄的图片
             Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-            Uri contentUri = Uri.fromFile(photoFile);
+            Uri contentUri = Uri.fromFile(mPhotoFile);
             String uri = contentUri.toString();
             int index = uri.indexOf("s");
             uri = uri.substring(index, uri.length());
@@ -270,61 +270,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setImage(final int page) {
-        if ((pathList.size() != 0) && (imageList.size() < pathList.size())) {
-            if (imageList.size() % 15 == 0) {
+        if ((mPathList.size() != 0) && (mImageList.size() < mPathList.size())) {
+            if (mImageList.size() % 15 == 0) {
                 System.gc();
             }
-            index = imageList.size() + 15;
-            startPos = imageList.size();
-            endPos = startPos;
-            for (int i = imageList.size(); i < index; i++) {
-                imageList.add(pathList.get(i).getImagePath());
-                imageAdapter.notifyItemInserted(endPos);
-                endPos++;
+            mIndex = mImageList.size() + 15;
+            mStartPos = mImageList.size();
+            mEndPos = mStartPos;
+            for (int i = mImageList.size(); i < mIndex; i++) {
+                mImageList.add(mPathList.get(i).getImagePath());
+                mImageAdapter.notifyItemInserted(mEndPos);
+                mEndPos++;
             }
             if (page != 1) {
-                springView.onFinishFreshAndLoad();
+                mSpringView.onFinishFreshAndLoad();
             }
         } else {
-            getData = mRetrofit.create(GetData.class);
-            getData.getWelfare("15", page)
+            mGetData = mRetrofit.create(GetData.class);
+            mGetData.getWelfare("15", page)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<WelfareGson>() {
-                        private Disposable disposable;
+                        private Disposable mDisposable;
 
                         @Override
                         public void onSubscribe(Disposable d) {
-                            disposable = d;
+                            mDisposable = d;
                         }
 
                         @Override
                         public void onNext(WelfareGson value) {
-                            if (imageList.size() % 30 == 0) {
+                            if (mImageList.size() % 30 == 0) {
                                 System.gc();
                             }
-                            resultList = value.getResults();
-                            startPos = imageList.size();
-                            endPos = startPos;
-                            for (int i = 0; i < resultList.size(); i++) {
-                                imagePath = new ImagePathBean();
-                                imageList.add(resultList.get(i).getUrl());
-                                imagePath.setImagePath(resultList.get(i).getUrl());
-                                imagePath.save();
-                                imageAdapter.notifyItemInserted(endPos);
-                                endPos++;
-                                imagePath = null;
+                            mResultList = value.getmResults();
+                            mStartPos = mImageList.size();
+                            mEndPos = mStartPos;
+                            for (int i = 0; i < mResultList.size(); i++) {
+                                mImagePath = new ImagePathBean();
+                                mImageList.add(mResultList.get(i).getmUrl());
+                                mImagePath.setImagePath(mResultList.get(i).getmUrl());
+                                mImagePath.save();
+                                mImageAdapter.notifyItemInserted(mEndPos);
+                                mEndPos++;
+                                mImagePath = null;
                             }
                             if (page != 1) {
-                                springView.onFinishFreshAndLoad();
+                                mSpringView.onFinishFreshAndLoad();
                             }
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            disposable.dispose();
+                            mDisposable.dispose();
                             if (page != 1) {
-                                springView.onFinishFreshAndLoad();
+                                mSpringView.onFinishFreshAndLoad();
                             }
                             Toast.makeText(MainActivity.this, "网络出现问题", Toast.LENGTH_SHORT).show();
                         }
@@ -338,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        imageAdapter.closeDisk();
+        mImageAdapter.closeDisk();
         super.onDestroy();
         EventBus.getDefault().unregister(this);
 //        MyApplication.getRefWatcher(this).watch(this);
@@ -346,15 +346,15 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        imageAdapter.fluchCache();
+        mImageAdapter.fluchCache();
         super.onPause();
     }
 
     @Override
     public void onBackPressed() {
-        if (System.currentTimeMillis() - backLastPressedTimestamp > 2 * 1000) {
+        if (System.currentTimeMillis() - mBackLastPressedTimestamp > 2 * 1000) {
             Toast.makeText(MainActivity.this, R.string.main_activity_press_to_exit, Toast.LENGTH_SHORT).show();
-            backLastPressedTimestamp = System.currentTimeMillis();
+            mBackLastPressedTimestamp = System.currentTimeMillis();
         } else {
             super.onBackPressed();
         }
@@ -370,8 +370,8 @@ public class MainActivity extends AppCompatActivity {
      * 计算recyclerview的每个item的位置
      */
     private void computeBoundsBackward(int firstCompletelyVisiblePos[]) {
-        for (int i = firstCompletelyVisiblePos[0]; i < showList.size(); i++) {
-            View itemView = layoutManager.findViewByPosition(i);
+        for (int i = firstCompletelyVisiblePos[0]; i < mShowList.size(); i++) {
+            View itemView = mLayoutManager.findViewByPosition(i);
             Rect bounds = new Rect();
             Rect rect = new Rect();
             getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
@@ -380,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                 imageView.getGlobalVisibleRect(bounds);
                 bounds.top = bounds.top + rect.top;
             }
-            showList.get(i).setBounds(bounds);
+            mShowList.get(i).setBounds(bounds);
         }
     }
 
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
      * 移除list中加载错误的图片
      */
     public void removeShowList(int position) {
-        imageList.remove(position);
-        imageAdapter.notifyDataSetChanged();
+        mImageList.remove(position);
+        mImageAdapter.notifyDataSetChanged();
     }
 }

@@ -2,7 +2,7 @@
 <litepal>
     <dbname value="sure" />
 
-    <version value="8" />
+    <version value="9" />
     <list>
         <mapping class="bean.AlbumBean" />
         <mapping class="bean.ImagePathBean" />

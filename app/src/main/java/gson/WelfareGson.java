@@ -12,25 +12,25 @@ import java.util.List;
 public class WelfareGson {
     @SerializedName("error")
     @Expose
-    private String error;
+    private String mError;
 
     @SerializedName("results")
     @Expose
-    private List<ResultGson> results;
+    private List<ResultGson> mResults;
 
-    public String getError() {
-        return error;
+    public String getmError() {
+        return mError;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setmError(String mError) {
+        this.mError = mError;
     }
 
-    public List<ResultGson> getResults() {
-        return results;
+    public List<ResultGson> getmResults() {
+        return mResults;
     }
 
-    public void setResults(List<ResultGson> results) {
-        this.results = results;
+    public void setmResults(List<ResultGson> mResults) {
+        this.mResults = mResults;
     }
 }

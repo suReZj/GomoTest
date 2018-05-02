@@ -48,7 +48,7 @@ public class PhotographAdapter extends PagerAdapter {
         container.removeView((View) object);
     }
 
-    public String getUrl(int position){
+    public String getUrl(int position) {
         return mData.get(position).getPhotoPath();
     }
 

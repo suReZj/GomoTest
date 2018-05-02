@@ -37,7 +37,6 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private OkHttpClient mClient = new OkHttpClient();
 
 
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private CardView mCardView;
         public ImageView mImageView;
@@ -145,7 +144,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                     public void run() {
                         mList.remove(position);
                         notifyItemRemoved(position);
-                        ((MainActivity)mContext).removeShowList(position);
+                        ((MainActivity) mContext).removeShowList(position);
                     }
                 });
             }
@@ -175,7 +174,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                         //清空baos
                         baos.reset();
                         bitmap.compress(Bitmap.CompressFormat.JPEG, option, baos);
-                        option -= 10;//每次都减少10
+                        option -= 10; //每次都减少10
                     }
                     //把压缩后的数据baos存放到ByteArrayInputStream中
                     ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());
@@ -190,7 +189,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
                         @Override
                         public void run() {
                             notifyItemRemoved(position);
-                            ((MainActivity)mContext).removeShowList(position);
+                            ((MainActivity) mContext).removeShowList(position);
                         }
                     });
                 } else {

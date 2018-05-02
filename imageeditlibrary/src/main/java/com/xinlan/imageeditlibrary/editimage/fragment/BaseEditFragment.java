@@ -13,9 +13,9 @@ import com.xinlan.imageeditlibrary.editimage.EditImageActivity;
 public abstract class BaseEditFragment extends Fragment {
     protected EditImageActivity activity;
 
-    protected EditImageActivity ensureEditActivity(){
-        if(activity==null){
-            activity = (EditImageActivity)getActivity();
+    protected EditImageActivity ensureEditActivity() {
+        if (activity == null) {
+            activity = (EditImageActivity) getActivity();
         }
         return activity;
     }

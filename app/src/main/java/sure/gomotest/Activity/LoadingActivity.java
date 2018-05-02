@@ -19,15 +19,15 @@ import yanzhikai.textpath.AsyncTextPathView;
 
 
 public class LoadingActivity extends AppCompatActivity {
-    private AsyncTextPathView asyncTextPathView;
-    private AsyncTextPathView sureTextPathView;
-    private AnimatedSvgView svgView;
+    private AsyncTextPathView mAsyncTextPathView;
+    private AsyncTextPathView mSureTextPathView;
+    private AnimatedSvgView mSvgView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-         /*set it to be no title*/
+        /*set it to be no title*/
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         /*set it to be full screen*/
@@ -39,18 +39,18 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
     public void initView() {
-        asyncTextPathView = (AsyncTextPathView) findViewById(R.id.firstAsyncTextPathView);
-        svgView = (AnimatedSvgView) findViewById(R.id.animated_svg_view);
-        sureTextPathView=(AsyncTextPathView)findViewById(R.id.secondAsyncTextPathView);
+        mAsyncTextPathView = (AsyncTextPathView) findViewById(R.id.firstAsyncTextPathView);
+        mSvgView = (AnimatedSvgView) findViewById(R.id.animated_svg_view);
+        mSureTextPathView = (AsyncTextPathView) findViewById(R.id.secondAsyncTextPathView);
         setSvg(SVGUtil.values()[0]);
     }
 
     public void setListener() {
-        svgView.setOnStateChangeListener(new AnimatedSvgView.OnStateChangeListener() {
+        mSvgView.setOnStateChangeListener(new AnimatedSvgView.OnStateChangeListener() {
             @Override
             public void onStateChange(int state) {
-                if(state==AnimatedSvgView.STATE_FINISHED){
-                    Intent intent=new Intent(LoadingActivity.this,MainActivity.class);
+                if (state == AnimatedSvgView.STATE_FINISHED) {
+                    Intent intent = new Intent(LoadingActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -59,16 +59,16 @@ public class LoadingActivity extends AppCompatActivity {
     }
 
     private void setSvg(SVGUtil svg) {
-        svgView.setGlyphStrings(svg.glyphs);
-        svgView.setFillColors(svg.colors);
-        svgView.setViewportSize(svg.width, svg.height);
-        svgView.setTraceResidueColor(0x32000000);
-        svgView.setTraceColors(svg.colors);
-        svgView.rebuildGlyphData();
-        svgView.start();
+        mSvgView.setGlyphStrings(svg.glyphs);
+        mSvgView.setFillColors(svg.colors);
+        mSvgView.setViewportSize(svg.width, svg.height);
+        mSvgView.setTraceResidueColor(0x32000000);
+        mSvgView.setTraceColors(svg.colors);
+        mSvgView.rebuildGlyphData();
+        mSvgView.start();
 
         //从无到显示
-        asyncTextPathView.startAnimation(0,1);
-        sureTextPathView.startAnimation(0,1);
+        mAsyncTextPathView.startAnimation(0, 1);
+        mSureTextPathView.startAnimation(0, 1);
     }
 }

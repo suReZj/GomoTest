@@ -13,7 +13,7 @@ public enum SVGUtil {
             new int[]{
                     Color.BLACK
             },
-           1024, 1024
+            1024, 1024
     );
 
     public final String[] glyphs;

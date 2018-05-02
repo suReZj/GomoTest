@@ -103,20 +103,22 @@ public class EditCache {
 
     /**
      * 可以撤销到前一步的操作
+     *
      * @return
      */
     public boolean checkNextBitExist() {
         int point = mCurrent - 1;
-        return point>=0 && point<mCacheList.size();
+        return point >= 0 && point < mCacheList.size();
     }
 
     /**
      * 可取消撤销到后一操作
+     *
      * @return
      */
     public boolean checkPreBitExist() {
         int point = mCurrent + 1;
-        return point>=0 && point<mCacheList.size();
+        return point >= 0 && point < mCacheList.size();
     }
 
 
